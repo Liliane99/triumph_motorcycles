@@ -43,6 +43,7 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
 
 #### Bonus :
 1. CQRS :
+
   a. Utiliser des commandes pour les requêtes b. Utiliser des queries pour les demandes c. Permet de préparer l’Event-Sourcing
 
 3. Event-Sourcing :
