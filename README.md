@@ -12,15 +12,22 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
 
 ● Rappels automatiques : Notifications envoyées aux gestionnaires et aux clients lorsqu’un entretien est dû, avec possibilité de renseigner manuellement le kilométrage par le client.
 ● Suivi des entretiens réalisés : Historique détaillé des entretiens effectués, incluant les pièces changées, les coûts associés et les recommandations des techniciens, à la fois côté gestionnaire et client.
+
 ● Gestion des pannes & garanties : Enregistrement des pannes et garanties, gestion des réparations et suivi des actions correctives avec historisation.
-Gestion des pièces détachées et des stocks :
+
+#### Gestion des pièces détachées et des stocks :
 ● Suivi des pièces détachées : Gestion du stock de pièces détachées utilisées pour la maintenance (filtre à huile, pneus, freins, etc.).
+
 ● Alerte de stock bas : Notifications envoyées lorsqu’une pièce atteint un seuil critique de disponibilité.
+
 ● Historique des commandes de pièces : Suivi des commandes de pièces, coûts, délais de livraison et quantité restante.
 
 #### Suivi des essais :
+
 ● Profil des conducteurs : Gestion des conducteurs utilisant les motos, avec des informations sur leur permis, leur expérience, et leur historique de conduite.
+
 ● Essais moto : Gestion des motos assignées à chaque conducteur avec suivi des dates et de la durée de l’utilisation pour les essais moto.
+
 ● Historique des incidents : Enregistrement des incidents liés à chaque conducteur (accidents, infractions, etc.).
 
 #### Contraintes techniques :
@@ -36,10 +43,14 @@ Gestion des pièces détachées et des stocks :
 #### Bonus :
 1. CQRS :
   a. Utiliser des commandes pour les requêtes b. Utiliser des queries pour les demandes c. Permet de préparer l’Event-Sourcing
-2. Event-Sourcing :
+
+3. Event-Sourcing :
   a. Utiliser l’Event-Sourcing avec comme objectif le retour dans le temps des événements passés
+
   b. Utilisation de microservices bienvenue
-3. Framework Frontend :
+4. Framework Frontend :
   a. Utilisation de plusieurs frameworks frontend
+
   b. Angular, React & Solid.js à privilégier
+  
   c. Lister les avantages et inconvénients de chacun
