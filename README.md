@@ -59,3 +59,9 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
   b. Angular, React & Solid.js à privilégier
   
   c. Lister les avantages et inconvénients de chacun
+
+
+Schéma CQRS :
+
+  ![image](https://github.com/user-attachments/assets/0d458bd7-4c87-491f-8138-6f518cbc00b6)
+
