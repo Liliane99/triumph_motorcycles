@@ -11,6 +11,7 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
 ● Planification des entretiens : Possibilité de définir des intervalles d'entretien en fonction du du modèle de moto choisi par un client (ex. 10 000 km pour une Street Triple ou tous les ans, 16 000 km pour une Tiger Sport 660, etc).
 
 ● Rappels automatiques : Notifications envoyées aux gestionnaires et aux clients lorsqu’un entretien est dû, avec possibilité de renseigner manuellement le kilométrage par le client.
+
 ● Suivi des entretiens réalisés : Historique détaillé des entretiens effectués, incluant les pièces changées, les coûts associés et les recommandations des techniciens, à la fois côté gestionnaire et client.
 
 ● Gestion des pannes & garanties : Enregistrement des pannes et garanties, gestion des réparations et suivi des actions correctives avec historisation.
@@ -48,6 +49,7 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
   a. Utiliser l’Event-Sourcing avec comme objectif le retour dans le temps des événements passés
 
   b. Utilisation de microservices bienvenue
+
 4. Framework Frontend :
   a. Utilisation de plusieurs frameworks frontend
 
