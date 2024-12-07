@@ -47,11 +47,13 @@ Triumph Motorcycles cherche à améliorer la gestion des motos utilisées par de
   a. Utiliser des commandes pour les requêtes b. Utiliser des queries pour les demandes c. Permet de préparer l’Event-Sourcing
 
 3. Event-Sourcing :
+   
   a. Utiliser l’Event-Sourcing avec comme objectif le retour dans le temps des événements passés
 
   b. Utilisation de microservices bienvenue
 
 4. Framework Frontend :
+   
   a. Utilisation de plusieurs frameworks frontend
 
   b. Angular, React & Solid.js à privilégier
