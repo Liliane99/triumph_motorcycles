@@ -17,7 +17,7 @@ app.get('/hello', (req, res) => {
   res.status(200).json({ message: 'Ceci est juste un test' });
 });
 
-// Middleware pour gérer les routes non trouvées (404)
+// Filtre pour gérer les routes non trouvées (404)
 app.use(notFoundFilter);
 
 
