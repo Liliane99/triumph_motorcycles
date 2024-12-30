@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 
-
+// Fonction middleware pour Express
 export function notFoundFilter(req: Request, res: Response, next: NextFunction) {
   res.status(404).json({
     statusCode: 404,
@@ -9,7 +9,7 @@ export function notFoundFilter(req: Request, res: Response, next: NextFunction) 
   });
 }
 
-
+// Classe NotFoundFilter pour NestJS
 @Catch()
 export class NotFoundFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
