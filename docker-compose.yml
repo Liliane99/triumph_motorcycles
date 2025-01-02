@@ -15,8 +15,14 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    command: mongod --auth
     volumes:
       - mongo_data:/data/db
+      - ./backend/scripts:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_USER: ${MONGO_INITDB_USER}
+      MONGO_INITDB_PASSWORD: ${MONGO_INITDB_PASSWORD}
 
   # Service Backend (Express)
   backend-express:
