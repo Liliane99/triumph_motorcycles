@@ -13,7 +13,7 @@ app.use('/api', userRoutes);
 // Middleware pour les routes non trouvées (404)
 app.use(notFoundFilter);
 
-const PORT = 3000;
+const PORT = 4002;
 app.listen(PORT, () => {
   console.log(`Express server running on http://localhost:${PORT}`);
 });

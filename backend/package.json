@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:nest": "ts-node-dev src/main-nest.ts",
-    "start:express": "ts-node-dev src/main-express.ts"
+    "start:express": "ts-node-dev src/main-express.ts",
+    "build": "tsc",
+    "start": "node dist/main-${SERVER_TYPE}.js"
   },
   "keywords": [],
   "author": "",
