@@ -1,3 +1,11 @@
-export default function Login () {
-    return <h1 className="text-8xl">Login</h1>
+"use client";
+
+import { LoginForm } from "@/components/login/login-form";
+
+export default function LoginPage() {
+  return (
+    <div className="flex min-h-screen">
+      <LoginForm />
+    </div>
+  );
 }
