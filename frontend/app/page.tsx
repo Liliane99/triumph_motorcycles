@@ -1,10 +1,7 @@
-import Footer from "@/components/Footer";
-import Navbar from "@/components/navbar/Navbar";
+import { Nav } from "../components/navbar";
 
 export default function Home() {
   return <main>
-    <Navbar />
-    <h1 className='text-8xl'>Bienvenu !!</h1>
-    <Footer />
+    <Nav></Nav>
   </main>
 }
