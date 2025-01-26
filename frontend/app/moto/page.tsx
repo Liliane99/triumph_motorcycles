@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from "@/components/ui/pagination";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -48,7 +49,9 @@ export default function Page() {
                 <p>À partir de 5895 €</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Voir la fiche</Button>
+                <Link href="moto/details" className="w-full">
+                    <Button className="w-full">Voir la fiche</Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
