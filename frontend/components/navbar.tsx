@@ -45,7 +45,7 @@ const Nav = () => {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuLink className={navigationMenuItemStyle}>
+            <NavigationMenuLink href="/essaie" className={navigationMenuItemStyle}>
               Essai moto
             </NavigationMenuLink>
           </NavigationMenuItem>
