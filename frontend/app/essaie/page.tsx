@@ -32,7 +32,7 @@ export default function Page() {
               Pour réserver un essai, il vous suffit d'avoir un permis moto valide. Ensuite, il vous faudra vous rendre dans l'une de nos boutiques Triumph Motorcycles pour compléter votre réservation.
             </p>
             <p className="text-lg mb-6">
-              Avant de réserver un essai, nous vous recommandons de consulter les modèles disponibles dans notre rubrique boutique pour choisir la moto qui vous intéresse.
+              Avant de réserver un essai, nous vous recommandons de consulter les modèles disponibles dans notre rubrique moto pour choisir la moto qui vous intéresse.
             </p>
 
             <div className="mt-6">
