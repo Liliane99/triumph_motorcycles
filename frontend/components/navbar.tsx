@@ -39,14 +39,8 @@ const Nav = () => {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuLink className={navigationMenuItemStyle}>
+            <NavigationMenuLink href="/moto" className={navigationMenuItemStyle}>
               Moto
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuLink className={navigationMenuItemStyle}>
-              Pièces détachées
             </NavigationMenuLink>
           </NavigationMenuItem>
 
@@ -103,12 +97,6 @@ const Nav = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink className={navigationMenuItemStyle}>
                   Moto
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuLink className={navigationMenuItemStyle}>
-                  Pièces détachées
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
