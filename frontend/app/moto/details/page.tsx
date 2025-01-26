@@ -1,6 +1,7 @@
 import Nav from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -73,9 +74,11 @@ export default function Page() {
 
             
             <div className="mt-8">
-              <Button className="w-full">
-                Retour
-              </Button>
+                <Link href="/moto" className="w-full">
+                    <Button className="w-full">
+                        Retour
+                    </Button>
+                </Link>
             </div>
           </div>
         </div>
