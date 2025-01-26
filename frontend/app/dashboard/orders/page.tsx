@@ -10,12 +10,20 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { DataTable } from "../../../components/users/data-table";
-import { columns, users } from "../../../components/users/columns";
+import { DataTable } from "@/components/orders/data-table";
+import { columns, orders } from "@/components/orders/columns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-export default function UsersPage() {
+export default function OrdersPage() {
+  const recentOrders = orders.filter((order) => {
+    const today = new Date();
+    const orderDate = new Date(order.orderDate);
+    return (today.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24) <= 30;
+  });
+
+  const totalRevenue = orders.reduce((total, order) => total + order.totalPrice, 0);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -29,9 +37,9 @@ export default function UsersPage() {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Utilisateurs</BreadcrumbPage>
+                  <BreadcrumbPage>Commandes</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -42,36 +50,32 @@ export default function UsersPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total Utilisateurs</CardTitle>
+                <CardTitle>Total Commandes</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">{users.length}</p>
+                <p className="text-3xl font-bold">{orders.length}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>Admins</CardTitle>
+                <CardTitle>Commandes Récentes</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">
-                  {users.filter((user) => user.role === "admin").length}
-                </p>
+                <p className="text-3xl font-bold">{recentOrders.length}</p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>Managers</CardTitle>
+                <CardTitle>Revenu Total (€)</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">
-                  {users.filter((user) => user.role === "manager").length}
-                </p>
+                <p className="text-3xl font-bold">{totalRevenue.toFixed(2)} €</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="mt-8">
-            <DataTable columns={columns} data={users} />
+            <DataTable columns={columns} data={orders} />
           </div>
         </div>
       </SidebarInset>

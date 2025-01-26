@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpDown, Edit, Trash2, Eye } from "lucide-react";
+import Link from "next/link";
 
 export type User = {
   id: string;
@@ -84,15 +85,25 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original;
       return (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => console.log("Modifier :", user.id)}>
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => console.log("Supprimer :", user.id)}>
+          <Link href={`/dashboard/users/${user.id}/edit`}>
+            <Button variant="ghost" size="sm">
+              <Edit className="w-4 h-4" />
+            </Button>
+          </Link>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => console.log("Supprimer :", user.id)}
+          >
             <Trash2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => console.log("Détails :", user.id)}>
-            <Eye className="w-4 h-4" />
-          </Button>
+
+          <Link href={`/dashboard/users/${user.id}`}>
+            <Button variant="ghost" size="sm">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       );
     },

@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash2, Eye } from "lucide-react";
+import Link from "next/link";
 
 export type Client = {
   id: string;
@@ -52,7 +53,7 @@ export const columns: ColumnDef<Client>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const client = row.original; // Access client data here
+      const client = row.original; 
       return (
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={() => console.log("Modifier :", client.id)}>
@@ -61,8 +62,10 @@ export const columns: ColumnDef<Client>[] = [
           <Button variant="ghost" size="sm" onClick={() => console.log("Supprimer :", client.id)}>
             <Trash2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => console.log("Détails :", client.id)}>
-            <Eye className="w-4 h-4" />
+          <Button variant="ghost" size="sm">
+            <Link href={`/dashboard/clients/${client.id}`}>
+              <Eye className="w-4 h-4" />
+            </Link>
           </Button>
         </div>
       );

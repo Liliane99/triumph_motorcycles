@@ -39,7 +39,6 @@ export default function EntretiensPage() {
         </header>
 
         <div className="p-4">
-          {/* Cards Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="flex items-center justify-center">
@@ -66,8 +65,6 @@ export default function EntretiensPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Data Table Section */}
           <div className="mt-8">
             <DataTable columns={columns} data={entretiens} />
           </div>

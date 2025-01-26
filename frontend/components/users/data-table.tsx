@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 
 import {
   Select,
@@ -57,7 +58,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     },
   });
 
-  // Appliquer un filtre par rôle lorsque l'utilisateur sélectionne une valeur
   React.useEffect(() => {
     if (roleFilter === "all") {
       table.getColumn("role")?.setFilterValue(undefined);
@@ -68,10 +68,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <div>
-      {/* Search and Filters Section */}
       <div className="flex justify-between items-center py-4">
         <div className="flex gap-4">
-          {/* Barre de recherche */}
           <Input
             placeholder="Rechercher..."
             value={(table.getColumn("raisonSociale")?.getFilterValue() as string) ?? ""}
@@ -81,7 +79,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             className="max-w-sm"
           />
 
-          {/* Filtrer par rôle */}
           <Select onValueChange={(value) => setRoleFilter(value)} defaultValue="all">
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Filtrer par rôle" />
@@ -95,14 +92,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </Select>
         </div>
 
-        {/* Bouton Ajouter */}
-        <Button className="flex gap-2" variant="default">
-          <Plus className="w-4 h-4" />
-          Ajouter un utilisateur
-        </Button>
+        <Link href="/dashboard/users/new">
+          <Button className="flex gap-2" variant="default">
+            <Plus className="w-4 h-4" />
+            Ajouter un utilisateur
+          </Button>
+        </Link>
       </div>
 
-      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -140,7 +137,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
