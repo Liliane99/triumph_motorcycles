@@ -10,6 +10,9 @@ export default function Page() {
     <>
       <Nav />
       <div className="p-8">
+        <h2 className="text-3xl font-bold text-center mb-8 border-b-2 border-gray-200 pb-2">
+            Découvrez nos motos
+        </h2>
         <div className="flex items-center justify-between mb-6 gap-4">
           <Input placeholder="Rechercher une moto" className="flex-1" />
           <Select>
