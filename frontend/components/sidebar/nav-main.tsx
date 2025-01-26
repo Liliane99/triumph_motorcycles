@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -26,21 +26,21 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild tooltip={item.title}>
-              <a href={item.url} className="text-base">
+              <a href={item.url}>
                 <item.icon />
-                <span>{item.title}</span>
+                <span className="text-base font-semibold">{item.title}</span>
               </a>
             </SidebarMenuButton>
             {item.items?.length ? (
               <>
-                <SidebarMenuAction className="data-[state=open]:rotate-90">
+                {/* <SidebarMenuAction className="data-[state=open]:rotate-90">
                   <ChevronRight />
-                </SidebarMenuAction>
+                </SidebarMenuAction> */}
                 <SidebarMenuSub>
                   {item.items.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>

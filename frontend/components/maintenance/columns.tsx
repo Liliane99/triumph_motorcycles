@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash2, Eye } from "lucide-react";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export type Entretien = {
   id: string;
@@ -62,16 +63,27 @@ export const columns: ColumnDef<Entretien>[] = [
       const entretien = row.original;
       return (
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => console.log("Modifier :", entretien.id)}>
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => console.log("Supprimer :", entretien.id)}>
+          <Link href={`/dashboard/maintenance/${entretien.id}/edit`}>
+            <Button variant="ghost" size="sm">
+              <Edit className="w-4 h-4" />
+            </Button>
+          </Link>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleDelete(entretien.id)}
+          >
             <Trash2 className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => console.log("Détails :", entretien.id)}>
-            <Eye className="w-4 h-4" />
-          </Button>
+
+          <Link href={`/dashboard/maintenance/${entretien.id}`}>
+            <Button variant="ghost" size="sm">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
+
       );
     },
   },

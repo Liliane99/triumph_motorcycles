@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   ColumnDef,
   SortingState,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -22,19 +21,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus } from "lucide-react";
+import { Plus, CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends object, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState<string>("");
+  const [dateFilter, setDateFilter] = React.useState<Date | undefined>();
 
   const table = useReactTable({
     data,
@@ -44,27 +52,63 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
-      columnFilters,
+      globalFilter,
+    },
+    globalFilterFn: (row, columnId, filterValue) => {
+      const reference = row.getValue<string>("reference")?.toLowerCase();
+      const manager = row.getValue<string>("manager")?.toLowerCase();
+      return (
+        reference?.includes(filterValue.toLowerCase()) ||
+        manager?.includes(filterValue.toLowerCase())
+      );
     },
   });
+
+  React.useEffect(() => {
+    if (dateFilter) {
+      table.getColumn("orderDate")?.setFilterValue(format(dateFilter, "yyyy-MM-dd"));
+    } else {
+      table.getColumn("orderDate")?.setFilterValue(undefined);
+    }
+  }, [dateFilter]);
 
   return (
     <div>
       <div className="flex justify-between items-center py-4">
-        <Input
-          placeholder="Rechercher..."
-          value={(table.getColumn("raisonSociale")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("raisonSociale")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Button className="flex gap-2" variant="default">
-          <Plus className="w-4 h-4" />
-          Ajouter un client
+        <div className="flex gap-4">
+          <Input
+            placeholder="Rechercher par référence ou manager..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="max-w-sm"
+          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[250px] justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtrer par date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <Calendar
+                mode="single"
+                selected={dateFilter}
+                onSelect={setDateFilter}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <Button asChild className="flex gap-2" variant="default">
+          <Link href="/dashboard/orders/new">
+            <Plus className="w-4 h-4" />
+            Ajouter une commande
+          </Link>
         </Button>
       </div>
 
@@ -96,7 +140,7 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={columns.length + 1} className="h-24 text-center">
                   Aucun résultat.
                 </TableCell>
               </TableRow>

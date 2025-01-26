@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]; 
@@ -75,7 +76,6 @@ export function DataTable<TData extends object, TValue>({
 
   return (
     <div>
-      {/* Search, Date Filter, and Add Button */}
       <div className="flex justify-between items-center py-4">
         <div className="flex gap-4">
           <Input
@@ -85,7 +85,6 @@ export function DataTable<TData extends object, TValue>({
             className="max-w-sm"
           />
 
-          {/* Date Picker Filter */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -107,13 +106,14 @@ export function DataTable<TData extends object, TValue>({
           </Popover>
         </div>
 
-        <Button className="flex gap-2" variant="default">
-          <Plus className="w-4 h-4" />
-          Ajouter un entretien
+        <Button asChild className="flex gap-2" variant="default">
+          <Link href="/dashboard/maintenance/new">
+            <Plus className="w-4 h-4" />
+            Ajouter un entretien
+          </Link>
         </Button>
       </div>
 
-      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -157,7 +157,6 @@ export function DataTable<TData extends object, TValue>({
         </Table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
