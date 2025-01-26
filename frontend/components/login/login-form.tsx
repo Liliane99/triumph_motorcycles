@@ -16,10 +16,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       )}
       {...props}
     >
-      {/* Form Section */}
       <form className="flex flex-col justify-center gap-10 px-10 md:px-20 bg-background">
         <div className="flex flex-col gap-10">
-          {/* Header Section */}
           <div className="flex flex-col items-center text-center">
             <h1 className="text-3xl font-bold">Bienvenue chez Triumph Motorcycle</h1>
             <p className="text-xl text-muted-foreground">
@@ -27,7 +25,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </p>
           </div>
 
-          {/* Email Field */}
           <div className="grid gap-4">
             <Label
               htmlFor="email"
@@ -44,7 +41,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             />
           </div>
 
-          {/* Password Field */}
           <div className="grid gap-4">
             <Label
               htmlFor="password"
@@ -61,7 +57,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             />
           </div>
 
-          {/* Login Button */}
           <Button
             type="submit"
             className="w-full text-xl py-6"
@@ -71,7 +66,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         </div>
       </form>
 
-      {/* Image Section */}
       <div className="relative hidden md:block">
         <Image
           src="/images/login_triumph.png"

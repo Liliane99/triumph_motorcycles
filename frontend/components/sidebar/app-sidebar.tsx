@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, List, Package, User } from "lucide-react";
+import { Home, List, Package, User, ShoppingBag } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,19 +15,19 @@ import { NavUser } from "./nav-user";
 
 const data = {
   user: {
-    name: "Utilisateur",
-    email: "user@example.com",
+    name: "Ines",
+    email: "ines@example.com",
     avatar: "/avatars/user.jpg", 
   },
   navMain: [
     {
       title: "Accueil",
-      url: "#",
+      url: "/dashboard",
       icon: Home,
       isActive: true,
     },
     {
-      title: "Vehicles management",
+      title: "Gestion des motos",
       url: "#",
       icon: List,
       items: [
@@ -42,6 +42,11 @@ const data = {
       title: "Pièces détachées",
       url: "#",
       icon: Package,
+    },
+    {
+      title: "Commandes",
+      url: "/dashboard/orders",
+      icon: ShoppingBag,
     },
     {
       title: "Clients",
@@ -69,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-base leading-tight">
                   <span className="truncate font-semibold">Triumph Motorcycle</span>
-                  <span className="truncate text-xs">Management app</span>
+                  <span className="truncate text-xs">Gestion de flotte</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -80,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} /> {/* Utilisation de NavUser ici */}
+        <NavUser user={data.user} /> 
       </SidebarFooter>
     </Sidebar>
   );
