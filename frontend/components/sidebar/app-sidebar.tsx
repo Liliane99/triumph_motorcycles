@@ -32,7 +32,7 @@ const data = {
       icon: List,
       items: [
         { title: "Motos", url: "/dashboard/motos" },
-        { title: "Locations", url: "#" },
+        { title: "Locations", url: "/dashboard/rental" },
         { title: "Essais", url: "#" },
         { title: "Entretiens", url: "/dashboard/maintenance" },
         { title: "Incidents", url: "#" },
