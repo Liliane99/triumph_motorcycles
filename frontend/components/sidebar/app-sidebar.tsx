@@ -31,7 +31,7 @@ const data = {
       url: "#",
       icon: List,
       items: [
-        { title: "Motos", url: "#" },
+        { title: "Motos", url: "/dashboard/motos" },
         { title: "Locations", url: "#" },
         { title: "Essais", url: "#" },
         { title: "Entretiens", url: "/dashboard/maintenance" },
