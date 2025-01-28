@@ -47,7 +47,7 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/maintenance">Motos</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/motos">Motos</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
