@@ -16,14 +16,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
@@ -138,12 +130,12 @@ export default function MotoDetailsPage({ params }: { params: { id: string } }) 
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Date d'achat :</strong>{" "}
+                    <strong>Date dachat :</strong>{" "}
                     {new Date(moto.date).toLocaleDateString()}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Garantie jusqu'au :</strong>{" "}
+                    <strong>Garantie jusquau :</strong>{" "}
                     {new Date(moto.warranty).toLocaleDateString()}
                   </p>
                   <p className="flex items-center gap-2 text-lg">

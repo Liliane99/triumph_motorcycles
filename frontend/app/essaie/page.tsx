@@ -29,7 +29,7 @@ export default function Page() {
           <div className="bg-black bg-opacity-70 p-8 rounded-2xl shadow-xl text-white">
             <h3 className="text-2xl font-semibold mb-4">Conditions pour réserver un essai</h3>
             <p className="text-lg mb-6">
-              Pour réserver un essai, il vous suffit d'avoir un permis moto valide. Ensuite, il vous faudra vous rendre dans l'une de nos boutiques Triumph Motorcycles pour compléter votre réservation.
+              Pour réserver un essai, il vous suffit davoir un permis moto valide. Ensuite, il vous faudra vous rendre dans lune de nos boutiques Triumph Motorcycles pour compléter votre réservation.
             </p>
             <p className="text-lg mb-6">
               Avant de réserver un essai, nous vous recommandons de consulter les modèles disponibles dans notre rubrique moto pour choisir la moto qui vous intéresse.

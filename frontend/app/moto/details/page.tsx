@@ -2,6 +2,7 @@ import Nav from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Page() {
   return (
@@ -20,21 +21,21 @@ export default function Page() {
               <Carousel>
                 <CarouselContent>
                   <CarouselItem>
-                    <img
+                    <Image
                       src="/images/moto-650-1.png"
                       alt="Suzuki Bandit 650 - Vue 1"
                       className="w-full h-auto rounded-lg shadow-lg"
                     />
                   </CarouselItem>
                   <CarouselItem>
-                    <img
+                    <Image
                       src="/images/moto-650-2.png"
                       alt="Suzuki Bandit 650 - Vue 2"
                       className="w-full h-auto rounded-lg shadow-lg"
                     />
                   </CarouselItem>
                   <CarouselItem>
-                    <img
+                    <Image
                       src="/images/moto-650-3.png"
                       alt="Suzuki Bandit 650 - Vue 3"
                       className="w-full h-auto rounded-lg shadow-lg"
@@ -54,7 +55,7 @@ export default function Page() {
               <h3 className="text-2xl font-semibold mb-4 text-gray-800">Description</h3>
               <p className="text-gray-600 leading-relaxed">
                 Moto au caractère bien trempé, alliant puissance, confort et maniabilité. Ce modèle emblématique de la
-                marque japonaise est idéal pour les motards à la recherche d'une machine polyvalente qui excelle aussi
+                marque japonaise est idéal pour les motards à la recherche dune machine polyvalente qui excelle aussi
                 bien en ville que sur les routes sinueuses. Son moteur bicylindre en ligne de 650 cm³ délivre une
                 puissance impressionnante tout en restant accessible aux pilotes de tous niveaux.
               </p>
