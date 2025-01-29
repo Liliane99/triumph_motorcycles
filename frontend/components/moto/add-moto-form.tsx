@@ -11,7 +11,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Plus, Trash } from "lucide-react";
 
 export type MotoFormValues = {
     id: string;
@@ -22,7 +21,7 @@ export type MotoFormValues = {
     date: Date | null;
     warranty: Date | null;
     maintenanceInterval: number;
-    kilometer: number;  // Ajout de l'attribut kilometer
+    kilometer: number;  
     client: string;
 };
 
@@ -30,11 +29,11 @@ const motoSchema = z.object({
     id: z.string().optional(),
     brand: z.string().min(1, { message: "Marque obligatoire." }),
     model: z.string().min(1, { message: "Modèle obligatoire." }),
-    licensePlate: z.string().min(1, { message: "Plaque d'immatriculation obligatoire." }),
+    licensePlate: z.string().min(1, { message: "Plaque dimmatriculation obligatoire." }),
     price: z.string().min(1, { message: "Prix obligatoire." }),
     date: z.date({ required_error: "La date est obligatoire." }).nullable(),
     warranty: z.date({ required_error: "La date est obligatoire." }).nullable(),
-    maintenanceInterval: z.number({ required_error: "Intervalle d'entretien obligatoire." }).positive(),
+    maintenanceInterval: z.number({ required_error: "Intervalle dentretien obligatoire." }).positive(),
     kilometer: z.number().positive().int().min(0, { message: "Kilométrage doit être positif" }), // Validation du kilométrage
     client: z.string().min(1, { message: "Client obligatoire." }),
 });
@@ -110,9 +109,9 @@ export function AddMotoForm({
                     name="licensePlate"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Plaque d'immatriculation</FormLabel>
+                            <FormLabel>Plaque dimmatriculation</FormLabel>
                             <FormControl>
-                                <Input placeholder="Plaque d'immatriculation" {...field} />
+                                <Input placeholder="Plaque dimmatriculation" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -138,7 +137,7 @@ export function AddMotoForm({
                     name="date"
                     render={() => (
                         <FormItem>
-                            <FormLabel>Date d'achat</FormLabel>
+                            <FormLabel>Date dachat</FormLabel>
                             <FormControl>
                                 <Popover>
                                     <PopoverTrigger asChild>

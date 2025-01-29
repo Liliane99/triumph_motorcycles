@@ -40,7 +40,7 @@ export default function Page() {
                 />
                 <CardDescription>
                   Moto au caractère bien trempé, alliant puissance, confort et maniabilité. Ce modèle emblématique de la
-                  marque japonaise est idéal pour les motards à la recherche d'une machine polyvalente qui excelle aussi
+                  marque japonaise est idéal pour les motards à la recherche dune machine polyvalente qui excelle aussi
                   bien en ville que sur les routes sinueuses. Son moteur bicylindre en ligne de 650 cm³ délivre une
                   puissance impressionnante tout en restant accessible aux pilotes de tous niveaux.
                 </CardDescription>
