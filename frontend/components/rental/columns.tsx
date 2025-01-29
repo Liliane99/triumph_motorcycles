@@ -61,7 +61,7 @@ export const columns: ColumnDef<Location>[] = [
   },
   {
     accessorKey: "licensePlate",
-    header: () => (<div className="text-center">Plaque d'immatriculation</div>),
+    header: () => (<div className="text-center">Plaque dimmatriculation</div>),
     cell: ({ row }) => <div className="text-center">{row.getValue("licensePlate")}</div>,
   },
   {

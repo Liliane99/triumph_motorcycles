@@ -18,7 +18,8 @@ export type LocationFormValues = {
     brand: string;
     model: string;
     licensePlate: string;
-    date: Date | null;
+    startDate: Date | null;
+    endDate: Date | null;
     client: string;
 };
 
@@ -27,8 +28,9 @@ const locationSchema = z.object({
     reference: z.string().min(1, { message: "Référence obligatoire." }),
     brand: z.string().min(1, { message: "Marque obligatoire." }),
     model: z.string().min(1, { message: "Modèle obligatoire." }),
-    licensePlate: z.string().min(1, { message: "Plaque d'immatriculation obligatoire." }),
-    date: z.date({ required_error: "La date est obligatoire." }).nullable(),
+    licensePlate: z.string().min(1, { message: "Plaque dimmatriculation obligatoire." }),
+    startDate: z.date({ required_error: "La date est obligatoire." }).nullable(),
+    endDate: z.date({ required_error: "La date est obligatoire." }).nullable(),
     client: z.string().min(1, { message: "Client obligatoire." }),
 });
 
@@ -43,7 +45,8 @@ export function AddLocationForm({
     defaultValues,
     mode = "create",
 }: AddLocationFormProps) {
-    const [date, setDate] = useState<Date | undefined>(defaultValues?.date || undefined);
+    const [startDate, setStartDate] = useState<Date | undefined>(defaultValues?.startDate || undefined);
+    //const [endDate, setEndDate] = useState<Date | undefined>(defaultValues?.endDate || undefined);
 
     const form = useForm<LocationFormValues>({
         resolver: zodResolver(locationSchema),
@@ -53,7 +56,8 @@ export function AddLocationForm({
             brand: "",
             model: "",
             licensePlate: "",
-            date: null,
+            startDate: null,
+            endDate: null,
             client: "",
             ...defaultValues,
         },
@@ -109,9 +113,9 @@ export function AddLocationForm({
                     name="licensePlate"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Plaque d'immatriculation</FormLabel>
+                            <FormLabel>Plaque dimmatriculation</FormLabel>
                             <FormControl>
-                                <Input placeholder="Plaque d'immatriculation" {...field} />
+                                <Input placeholder="Plaque dimmatriculation" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -120,24 +124,24 @@ export function AddLocationForm({
 
                 <FormField
                     control={form.control}
-                    name="date"
+                    name="startDate"
                     render={() => (
                         <FormItem>
-                            <FormLabel>Date de location</FormLabel>
+                            <FormLabel>Date début location</FormLabel>
                             <FormControl>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" className="w-full">
-                                            {date ? format(date, "dd/MM/yyyy") : "Choisir une date"}
+                                            {startDate ? format(startDate, "dd/MM/yyyy") : "Choisir une date"}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent>
                                         <Calendar
                                             mode="single"
-                                            selected={date}
+                                            selected={startDate}
                                             onSelect={(selectedDate) => {
-                                                setDate(selectedDate || undefined);
-                                                form.setValue("date", selectedDate || null);
+                                                setStartDate(selectedDate || undefined);
+                                                form.setValue("startDate", selectedDate || null);
                                             }}
                                             initialFocus
                                         />
