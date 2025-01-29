@@ -50,7 +50,7 @@ export const columns: ColumnDef<Moto>[] = [
   },
   {
     accessorKey: "licensePlate",
-    header: ({ }) => (<div className="text-center">Plaque d'immatriculation</div>),
+    header: ({ }) => (<div className="text-center">Plaque dimmatriculation</div>),
     cell: ({ row }) => <div className="text-center">{row.getValue("licensePlate")}</div>,
   },
   {
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Moto>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date d'achat <ArrowUpDown />
+          Date dachat <ArrowUpDown />
         </Button>
       </div>
     ),

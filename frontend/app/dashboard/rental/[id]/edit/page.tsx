@@ -16,8 +16,8 @@ export default function EditLocationPage({ params }: { params: { id: string } })
       client: "Liam Macquaire",
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-01-07"),
-      totalPrice: 500,
-      motorcycle: "Suzuki Bandit 650",
+      // totalPrice: 500,
+      // motorcycle: "Suzuki Bandit 650",
     };
     setDefaultValues(mockLocation);
   }, [params.id]);
@@ -47,7 +47,7 @@ export default function EditLocationPage({ params }: { params: { id: string } })
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{defaultValues.motorcycle}</BreadcrumbPage>
+                  {/* <BreadcrumbPage>{defaultValues.motorcycle}</BreadcrumbPage> */}
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
