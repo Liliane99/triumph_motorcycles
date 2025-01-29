@@ -33,7 +33,7 @@ const data = {
       items: [
         { title: "Motos", url: "/dashboard/motos" },
         { title: "Locations", url: "/dashboard/rental" },
-        { title: "Essais", url: "#" },
+        { title: "Essais", url: "/dashboard/trials" },
         { title: "Entretiens", url: "/dashboard/maintenance" },
         { title: "Incidents", url: "/dashboard/incidents" },
       ],
