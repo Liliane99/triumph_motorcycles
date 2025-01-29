@@ -35,7 +35,7 @@ const data = {
         { title: "Locations", url: "/dashboard/rental" },
         { title: "Essais", url: "#" },
         { title: "Entretiens", url: "/dashboard/maintenance" },
-        { title: "Incidents", url: "#" },
+        { title: "Incidents", url: "/dashboard/incidents" },
       ],
     },
     {
