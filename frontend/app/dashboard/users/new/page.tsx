@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { AddUserForm } from "@/components/users/add-user-form";
+//import { AddUserForm } from "@/components/users/add-user-form";
 
 export default function NewUserPage() {
   return (
@@ -42,7 +42,7 @@ export default function NewUserPage() {
 
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-6">Ajouter un utilisateur</h1>
-          <AddUserForm />
+          {/*<AddUserForm />*/}
         </div>
       </SidebarInset>
     </SidebarProvider>

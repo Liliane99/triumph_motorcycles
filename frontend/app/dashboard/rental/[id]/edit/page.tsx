@@ -2,7 +2,7 @@
 
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { AddLocationForm, LocationFormValues } from "@/components/rental/add-rental-form";  
 import { useEffect, useState } from "react";
@@ -13,11 +13,13 @@ export default function EditLocationPage({ params }: { params: { id: string } })
   useEffect(() => {
     const mockLocation: LocationFormValues = {
       id: "1",
+      reference: "LOC-0001",
+      brand: "Toyota",
+      model: "Corolla",
+      licensePlate: "AB-123-CD",
       client: "Liam Macquaire",
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-01-07"),
-      // totalPrice: 500,
-      // motorcycle: "Suzuki Bandit 650",
     };
     setDefaultValues(mockLocation);
   }, [params.id]);
@@ -46,9 +48,6 @@ export default function EditLocationPage({ params }: { params: { id: string } })
                   <BreadcrumbLink href="/dashboard/rental">Locations</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  {/* <BreadcrumbPage>{defaultValues.motorcycle}</BreadcrumbPage> */}
-                </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>

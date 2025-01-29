@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from "@/components/ui/pagination";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Page() {
   return (
@@ -33,7 +34,7 @@ export default function Page() {
             <Card key={index} className="bg-white shadow-lg rounded-lg">
               <CardHeader>
                 <CardTitle>SUZUKI GSF Bandit 650</CardTitle>
-                <img
+                <Image
                   src="/images/suzuki-bandit-650.png"
                   alt="Suzuki Bandit 650"
                   className="w-full h-48 object-cover mb-4 rounded-lg"
