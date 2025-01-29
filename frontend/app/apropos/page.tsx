@@ -12,7 +12,7 @@ export default function Page() {
             src="/images/apropos.png"
             alt="Moto background"
             fill
-            className="object-cover opacity-60" // Ajuste l'opacité pour une meilleure lisibilité du texte
+            className="object-cover opacity-60" // Ajuste lopacité pour une meilleure lisibilité du texte
             priority
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -27,7 +27,7 @@ export default function Page() {
 
           {/* Paragraphe amélioré */}
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Depuis notre création, Triumph Motorcycles s'engage à transformer la gestion des flottes de motos pour les concessionnaires et leurs clients. Découvrez comment notre plateforme innovante peut vous aider à optimiser vos opérations et à suivre vos motos en toute simplicité.
+            Depuis notre création, Triumph Motorcycles sengage à transformer la gestion des flottes de motos pour les concessionnaires et leurs clients. Découvrez comment notre plateforme innovante peut vous aider à optimiser vos opérations et à suivre vos motos en toute simplicité.
           </p>
 
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8 leading-relaxed">

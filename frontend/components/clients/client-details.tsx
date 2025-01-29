@@ -56,7 +56,7 @@ export function ClientDetails({ client }: { client: Client }) {
               </p>
               <p className="flex items-center gap-2 text-lg">
                 <Star className="h-5 w-5 text-muted-foreground" />
-                <strong>Niveau d'expérience :</strong> {client.experience}
+                <strong>Niveau dexpérience :</strong> {client.experience}
               </p>
             </div>
           </div>

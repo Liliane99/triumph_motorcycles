@@ -1,11 +1,11 @@
 "use client"
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
-} from "./ui/navigation-menu"
+} from "./ui/navigation-menu";
 import { ChevronDown, Menu, X } from "lucide-react"
 
 const navigationMenuItemStyle =
