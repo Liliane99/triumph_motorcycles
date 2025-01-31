@@ -1,4 +1,4 @@
-export class AddMotorcycleCommand {
+export class CreateMotorcycleCommand {
   constructor(
     public readonly brand: string,
     public readonly model: string,

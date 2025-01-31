@@ -1,9 +1,8 @@
-import { Moto } from "../entities/Motorcycle";
+import { Motorcycle } from '../entities/Motorcycle';
 
-export interface MotoRepository {
-  create(moto: Moto): Promise<Moto>;
-  findById(id: string): Promise<Moto | null>;
-  findAll(): Promise<Moto[]>;
-  update(moto: Moto): Promise<Moto | null>;
-  delete(id: string): Promise<boolean>;
+export interface MotorcycleRepository {
+  save(motorcycle: Motorcycle): Promise<Motorcycle>;
+  findById(id: string): Promise<Motorcycle | null>;
+  getAll(): Promise<Motorcycle[]>;
+  delete(id: string): Promise<void>;
 }
