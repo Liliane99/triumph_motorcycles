@@ -14,9 +14,13 @@ model User {
   createdAt DateTime @default(now())
 }
 
-model Moto {
-  id     String @id @default(uuid())
-  marque String
-  modele String
-  annee  Int
+model Motorcycle {
+  id           String @id @default(uuid())
+  brand        String
+  model        String
+  year         Int
+  licensePlate String @unique
+  kilometers   Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
