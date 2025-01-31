@@ -1,15 +1,19 @@
-import { GetMotorcycleHandler } from '../../../../application/queries/handlers/GetMotorcycleHandler';
+import { GetMotorcycleHandler } from "../../../../application/queries/handlers/GetMotorcycleHandler";
+import { GetAllMotorcyclesHandler } from "../../../../application/queries/handlers/GetAllMotorcyclesHandler";
 import { MotorcycleRepositoryImpl } from '../repositories/MotorcycleRepository';
-import { GetAllMotorcyclesHandler } from '../../../../application/queries/handlers/GetMotorcycleHandler';
+import { GetMotorcycleUseCase } from "../../../../application/usecases/GetMotorcycleUseCase";
+import { GetAllMotorcyclesUseCase } from "../../../../application/usecases/GetAllMotorcyclesUseCase";
 
 export class QueryBus {
   private handlers: Map<string, any> = new Map();
 
   constructor() {
     const motorcycleRepository = new MotorcycleRepositoryImpl(); 
+    const getMotorcycleUseCase = new GetMotorcycleUseCase(motorcycleRepository);
+    const getAllMotorcyclesUseCase = new GetAllMotorcyclesUseCase(motorcycleRepository);
 
-    this.handlers.set('GetMotorcycleQuery', new GetMotorcycleHandler(motorcycleRepository));
-    this.handlers.set('GetAllMotorcyclesQuery', new GetAllMotorcyclesHandler(motorcycleRepository));
+    this.handlers.set("GetMotorcycleQuery", new GetMotorcycleHandler(getMotorcycleUseCase));
+    this.handlers.set("GetAllMotorcyclesQuery", new GetAllMotorcyclesHandler(getAllMotorcyclesUseCase));
   }
 
   async execute(query: any): Promise<any> {

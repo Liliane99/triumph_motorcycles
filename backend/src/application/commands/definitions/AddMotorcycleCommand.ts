@@ -7,3 +7,4 @@ export class CreateMotorcycleCommand {
     public readonly kilometers: number
   ) {}
 }
+

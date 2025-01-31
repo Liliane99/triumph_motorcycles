@@ -6,7 +6,7 @@ import { UpdateMotorcycleCommand } from '../../../../application/commands/defini
 import { DeleteMotorcycleCommand } from '../../../../application/commands/definitions/DeleteMotorcycleCommand';
 import { GetMotorcycleQuery } from '../../../../application/queries/definitions/GetMotorcycleQuery';
 import { GetAllMotorcyclesQuery } from '../../../../application/queries/definitions/GetMotorcycleQuery';
-import { Motorcycle } from '../../../../domain/entities/Motorcycle';
+
 
 
 const router = express.Router();

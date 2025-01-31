@@ -1,10 +1,10 @@
-import { MotorcycleRepository } from '../../../domain/repositories/MotorcycleRepository';
-import { DeleteMotorcycleCommand } from '../definitions/DeleteMotorcycleCommand';
+import { DeleteMotorcycleCommand } from "../definitions/DeleteMotorcycleCommand";
+import { DeleteMotorcycleUseCase } from "../../usecases/DeleteMotorcycleUseCase";
 
 export class DeleteMotorcycleHandler {
-  constructor(private readonly motorcycleRepository: MotorcycleRepository) {}
+  constructor(private readonly useCase: DeleteMotorcycleUseCase) {}
 
   async execute(command: DeleteMotorcycleCommand) {
-    await this.motorcycleRepository.delete(command.id);
+    await this.useCase.execute(command);
   }
 }

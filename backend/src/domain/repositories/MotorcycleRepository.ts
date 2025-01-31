@@ -1,4 +1,4 @@
-import { Motorcycle } from '../entities/Motorcycle';
+import { Motorcycle } from "../entities/Motorcycle";
 
 export interface MotorcycleRepository {
   save(motorcycle: Motorcycle): Promise<Motorcycle>;
