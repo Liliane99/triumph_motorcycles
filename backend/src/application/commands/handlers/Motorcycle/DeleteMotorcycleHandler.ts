@@ -1,5 +1,5 @@
-import { DeleteMotorcycleCommand } from "../definitions/DeleteMotorcycleCommand";
-import { DeleteMotorcycleUseCase } from "../../usecases/DeleteMotorcycleUseCase";
+import { DeleteMotorcycleCommand } from "../../definitions/Motorcycle/DeleteMotorcycleCommand";
+import { DeleteMotorcycleUseCase } from "../../../usecases/Motorcycle/DeleteMotorcycleUseCase";
 
 export class DeleteMotorcycleHandler {
   constructor(private readonly useCase: DeleteMotorcycleUseCase) {}

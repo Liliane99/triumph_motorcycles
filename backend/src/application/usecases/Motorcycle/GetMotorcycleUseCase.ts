@@ -1,5 +1,5 @@
-import { MotorcycleRepository } from "../../domain/repositories/MotorcycleRepository";
-import { GetMotorcycleQuery } from "../queries/definitions/GetMotorcycleQuery";
+import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { GetMotorcycleQuery } from "../../queries/definitions/GetMotorcycleQuery";
 
 export class GetMotorcycleUseCase {
   constructor(private readonly motorcycleRepository: MotorcycleRepository) {}

@@ -1,5 +1,5 @@
-import { CreateMotorcycleCommand } from "../definitions/AddMotorcycleCommand";
-import { CreateMotorcycleUseCase } from "../../usecases/AddMotorcycleUseCase";
+import { CreateMotorcycleCommand } from "../../definitions/Motorcycle/AddMotorcycleCommand";
+import { CreateMotorcycleUseCase } from "../../../usecases/Motorcycle/AddMotorcycleUseCase";
 
 export class CreateMotorcycleHandler {
   constructor(private readonly useCase: CreateMotorcycleUseCase) {}

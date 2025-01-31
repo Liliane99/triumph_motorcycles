@@ -1,5 +1,5 @@
-import { MotorcycleRepository } from "../../domain/repositories/MotorcycleRepository";
-import { DeleteMotorcycleCommand } from "../commands/definitions/DeleteMotorcycleCommand";
+import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { DeleteMotorcycleCommand } from "../../commands/definitions/Motorcycle/DeleteMotorcycleCommand";
 
 export class DeleteMotorcycleUseCase {
   constructor(private readonly motorcycleRepository: MotorcycleRepository) {}

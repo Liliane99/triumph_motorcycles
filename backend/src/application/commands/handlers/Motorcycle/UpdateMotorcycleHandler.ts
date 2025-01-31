@@ -1,5 +1,5 @@
-import { UpdateMotorcycleCommand } from "../definitions/UpdateMotorcycleCommand";
-import { UpdateMotorcycleUseCase } from "../../usecases/UpdateMotorcycleUseCase";
+import { UpdateMotorcycleCommand } from "../../definitions/Motorcycle/UpdateMotorcycleCommand";
+import { UpdateMotorcycleUseCase } from "../../../usecases/Motorcycle/UpdateMotorcycleUseCase";
 
 export class UpdateMotorcycleHandler {
   constructor(private readonly useCase: UpdateMotorcycleUseCase) {}

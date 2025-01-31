@@ -1,5 +1,5 @@
-import { MotorcycleRepository } from "../../domain/repositories/MotorcycleRepository";
-import { UpdateMotorcycleCommand } from "../commands/definitions/UpdateMotorcycleCommand";
+import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { UpdateMotorcycleCommand } from "../../commands/definitions/Motorcycle/UpdateMotorcycleCommand";
 
 export class UpdateMotorcycleUseCase {
   constructor(private readonly motorcycleRepository: MotorcycleRepository) {}

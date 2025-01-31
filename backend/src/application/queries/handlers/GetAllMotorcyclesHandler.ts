@@ -1,5 +1,5 @@
 import { GetAllMotorcyclesQuery } from "../definitions/GetMotorcycleQuery";
-import { GetAllMotorcyclesUseCase } from "../../usecases/GetAllMotorcyclesUseCase";
+import { GetAllMotorcyclesUseCase } from "../../usecases/Motorcycle/GetAllMotorcyclesUseCase";
 
 export class GetAllMotorcyclesHandler {
   constructor(private readonly useCase: GetAllMotorcyclesUseCase) {}

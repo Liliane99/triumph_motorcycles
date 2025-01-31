@@ -1,10 +1,10 @@
-import { CreateMotorcycleHandler } from '../../../../application/commands/handlers/AddMotorcycleHandler';
-import { UpdateMotorcycleHandler } from '../../../../application/commands/handlers/UpdateMotorcycleHandler';
-import { DeleteMotorcycleHandler } from '../../../../application/commands/handlers/DeleteMotorcycleHandler';
+import { CreateMotorcycleHandler } from '../../../../application/commands/handlers/Motorcycle/AddMotorcycleHandler';
+import { UpdateMotorcycleHandler } from '../../../../application/commands/handlers/Motorcycle/UpdateMotorcycleHandler';
+import { DeleteMotorcycleHandler } from '../../../../application/commands/handlers/Motorcycle/DeleteMotorcycleHandler';
 import { MotorcycleRepositoryImpl } from '../repositories/MotorcycleRepository';
-import { CreateMotorcycleUseCase } from '../../../../application/usecases/AddMotorcycleUseCase';
-import { DeleteMotorcycleUseCase } from "../../../../application/usecases/DeleteMotorcycleUseCase";
-import { UpdateMotorcycleUseCase } from "../../../../application/usecases/UpdateMotorcycleUseCase";
+import { CreateMotorcycleUseCase } from '../../../../application/usecases/Motorcycle/AddMotorcycleUseCase';
+import { DeleteMotorcycleUseCase } from "../../../../application/usecases/Motorcycle/DeleteMotorcycleUseCase";
+import { UpdateMotorcycleUseCase } from "../../../../application/usecases/Motorcycle/UpdateMotorcycleUseCase";
 
 export class CommandBus {
   private handlers: Map<string, any> = new Map();
