@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   async save(motorcycle: Motorcycle): Promise<Motorcycle> {
+    console.log("Motorcycle to save:", motorcycle);
     
     const createdMotorcycle = await prisma.motorcycle.create({
       data: {

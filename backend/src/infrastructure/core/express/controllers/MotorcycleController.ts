@@ -15,13 +15,14 @@ const queryBus = new QueryBus();
 
 // Créer une moto
 router.post('/', async (req: Request, res: Response) => {
+  console.log("Received data:", req.body); 
+
   const { brand, model, year, licensePlate, kilometers } = req.body;
 
-  // Crée une nouvelle instance de Motorcycle en utilisant les données de la requête
-  const motorcycle = new Motorcycle('', brand, model, year, licensePlate, kilometers); 
+  console.log("Extracted fields:", { brand, model, year, licensePlate, kilometers });  
 
   const command = new CreateMotorcycleCommand(brand, model, year, licensePlate, kilometers);
-
+  
   try {
     const result = await commandBus.execute(command);
     res.status(201).json(result);
@@ -30,6 +31,7 @@ router.post('/', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Mettre à jour une moto
 router.put('/:id', async (req: Request, res: Response) => {
