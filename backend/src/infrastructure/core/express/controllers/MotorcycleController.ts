@@ -17,11 +17,11 @@ const queryBus = new QueryBus();
 router.post('/', async (req: Request, res: Response) => {
   console.log("Received data:", req.body); 
 
-  const { brand, model, year, licensePlate, kilometers } = req.body;
+  const { brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval} = req.body;
 
-  console.log("Extracted fields:", { brand, model, year, licensePlate, kilometers });  
+  console.log("Extracted fields:", { brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval });  
 
-  const command = new CreateMotorcycleCommand(brand, model, year, licensePlate, kilometers);
+  const command = new CreateMotorcycleCommand(brand, model, date , licensePlate, kilometers, warranty , maintenanceInterval);
   
   try {
     const result = await commandBus.execute(command);
@@ -36,8 +36,8 @@ router.post('/', async (req: Request, res: Response) => {
 // Mettre à jour une moto
 router.put('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { brand, model, year, licensePlate, kilometers } = req.body;
-  const command = new UpdateMotorcycleCommand(id, brand, model, year, licensePlate, kilometers);
+  const { brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval } = req.body;
+  const command = new UpdateMotorcycleCommand(id, brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval);
 
   try {
     const result = await commandBus.execute(command);

@@ -12,9 +12,11 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
       data: {
         brand: motorcycle.brand,
         model: motorcycle.model,
-        year: motorcycle.year,
+        date: motorcycle.date,
         licensePlate: motorcycle.licensePlate,
         kilometers: motorcycle.kilometers,
+        warranty:motorcycle.warranty,
+        maintenanceInterval:motorcycle.maintenanceInterval
       },
     });
 

@@ -3,8 +3,10 @@ export class Motorcycle {
     public readonly id: string,
     public brand: string,
     public model: string,
-    public year: number,
+    public date: Date,
     public licensePlate: string,
-    public kilometers: number
+    public kilometers: number,
+    public warranty: Date,  
+    public maintenanceInterval: number
   ) {}
 }

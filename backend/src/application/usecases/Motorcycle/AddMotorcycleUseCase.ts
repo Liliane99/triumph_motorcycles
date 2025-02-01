@@ -10,9 +10,11 @@ export class CreateMotorcycleUseCase {
       `${Math.random()}`, 
       command.brand,
       command.model,
-      command.year,
+      command.date,
       command.licensePlate,
-      command.kilometers
+      command.kilometers,
+      command.warranty,
+      command.maintenanceInterval
     );
 
     return this.motorcycleRepository.save(motorcycle);
