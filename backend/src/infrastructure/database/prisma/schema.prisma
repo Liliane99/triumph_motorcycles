@@ -18,11 +18,12 @@ model Motorcycle {
   id           String @id @default(uuid())
   brand        String
   model        String
-  date         DateTime
+  purchaseDate DateTime
   licensePlate String @unique
   kilometers   Int
-  warranty     DateTime 
+  warrantyDate DateTime 
   maintenanceInterval Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+

@@ -17,11 +17,11 @@ const queryBus = new QueryBus();
 router.post('/', async (req: Request, res: Response) => {
   console.log("Received data:", req.body); 
 
-  const { brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval} = req.body;
+  const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval} = req.body;
 
-  console.log("Extracted fields:", { brand, model, date, licensePlate, kilometers, warranty, maintenanceInterval });  
+  console.log("Extracted fields:", { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval });  
 
-  const command = new CreateMotorcycleCommand(brand, model, date , licensePlate, kilometers, warranty , maintenanceInterval);
+  const command = new CreateMotorcycleCommand(brand, model, purchaseDate , licensePlate, kilometers, warrantyDate , maintenanceInterval);
   
   try {
     const result = await commandBus.execute(command);

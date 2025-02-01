@@ -1,20 +1,23 @@
 import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
-import { Motorcycle } from "../../../domain/entities/Motorcycle";
 import { CreateMotorcycleCommand } from "../../commands/definitions/Motorcycle/AddMotorcycleCommand";
+import { Motorcycle } from "../../../domain/entities/Motorcycle";
 
 export class CreateMotorcycleUseCase {
   constructor(private readonly motorcycleRepository: MotorcycleRepository) {}
 
   async execute(command: CreateMotorcycleCommand): Promise<Motorcycle> {
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval } = command;
+
+    
     const motorcycle = new Motorcycle(
-      `${Math.random()}`, 
-      command.brand,
-      command.model,
-      command.date,
-      command.licensePlate,
-      command.kilometers,
-      command.warranty,
-      command.maintenanceInterval
+      `${Math.random()}`,  
+      brand,
+      model,
+      purchaseDate,
+      licensePlate,
+      kilometers,
+      warrantyDate,
+      maintenanceInterval
     );
 
     return this.motorcycleRepository.save(motorcycle);

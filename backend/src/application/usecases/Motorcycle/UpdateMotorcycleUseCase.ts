@@ -10,13 +10,16 @@ export class UpdateMotorcycleUseCase {
       throw new Error("Motorcycle not found");
     }
 
-    if (command.brand !== undefined) motorcycle.brand = command.brand;
-    if (command.model !== undefined) motorcycle.model = command.model;
-    if (command.date !== undefined) motorcycle.date = command.date;
-    if (command.licensePlate !== undefined) motorcycle.licensePlate = command.licensePlate;
-    if (command.kilometers !== undefined) motorcycle.kilometers = command.kilometers;
-    if (command.warranty) motorcycle.warranty = command.warranty;
-    if (command.maintenanceInterval) motorcycle.maintenanceInterval = command.maintenanceInterval;
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval } = command;
+
+    
+    if (brand) motorcycle.updateBrand(brand);
+    if (model) motorcycle.updateModel(model);
+    if (purchaseDate) motorcycle.updatePurchaseDate(purchaseDate);
+    if (licensePlate) motorcycle.updateLicensePlate(licensePlate);
+    if (kilometers) motorcycle.updateKilometers(kilometers);
+    if (warrantyDate) motorcycle.updateWarrantyDate(warrantyDate);
+    if (maintenanceInterval) motorcycle.updateMaintenanceInterval(maintenanceInterval);
 
     return this.motorcycleRepository.save(motorcycle);
   }
