@@ -8,20 +8,30 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   async save(motorcycle: Motorcycle): Promise<Motorcycle> {
     console.log("Motorcycle to save:", motorcycle);
     
-    const createdMotorcycle = await prisma.motorcycle.create({
-      data: {
+    const updatedMotorcycle = await prisma.motorcycle.upsert({
+      where: { licensePlate: motorcycle.licensePlate  },  
+      update: {
+        brand: motorcycle.brand,
+        model: motorcycle.model,
+        date: motorcycle.date,
+        licensePlate: motorcycle.licensePlate, 
+        kilometers: motorcycle.kilometers,
+        warranty: motorcycle.warranty,
+        maintenanceInterval: motorcycle.maintenanceInterval
+      },
+      create: {
+        id: motorcycle.id,
         brand: motorcycle.brand,
         model: motorcycle.model,
         date: motorcycle.date,
         licensePlate: motorcycle.licensePlate,
         kilometers: motorcycle.kilometers,
-        warranty:motorcycle.warranty,
-        maintenanceInterval:motorcycle.maintenanceInterval
-      },
+        warranty: motorcycle.warranty,
+        maintenanceInterval: motorcycle.maintenanceInterval
+      }
     });
-
-    
-    return createdMotorcycle;
+  
+    return updatedMotorcycle;
   }
 
   async findById(id: string): Promise<Motorcycle | null> {
