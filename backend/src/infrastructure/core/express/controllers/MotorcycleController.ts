@@ -4,8 +4,8 @@ import { QueryBus } from '../cqrs/QueryBus';
 import { CreateMotorcycleCommand } from '../../../../application/commands/definitions/Motorcycle/AddMotorcycleCommand';
 import { UpdateMotorcycleCommand } from '../../../../application/commands/definitions/Motorcycle/UpdateMotorcycleCommand';
 import { DeleteMotorcycleCommand } from '../../../../application/commands/definitions/Motorcycle/DeleteMotorcycleCommand';
-import { GetMotorcycleQuery } from '../../../../application/queries/definitions/GetMotorcycleQuery';
-import { GetAllMotorcyclesQuery } from '../../../../application/queries/definitions/GetMotorcycleQuery';
+import { GetMotorcycleQuery } from '../../../../application/queries/definitions/Motorcycle/GetMotorcycleQuery';
+import { GetAllMotorcyclesQuery } from '../../../../application/queries/definitions/Motorcycle/GetMotorcycleQuery';
 
 
 
