@@ -19,3 +19,4 @@ Thumbs.db
 .idea/
 
 docker-compose.override.yml
+request.http
