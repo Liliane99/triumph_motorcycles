@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MongoClient, Db, Collection } from "mongodb";
-import { IEventPublisherService } from "../../../application/ports/services/EventPublisherService";
-import { EventShape } from "../../../domain/events/EventShape";
+import { IEventPublisherService } from "../../../../../application/ports/services/EventPublisherService";
+import { EventShape } from "../../../../../domain/events/EventShape";
 import * as dotenv from "dotenv";
 dotenv.config();
 

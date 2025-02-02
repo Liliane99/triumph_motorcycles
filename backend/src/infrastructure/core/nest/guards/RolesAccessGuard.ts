@@ -7,21 +7,20 @@ import { IUserRepository } from "../../../../application/ports/repositories/User
 export class RolesAccessGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    @Inject("IUserRepository") private readonly userRepository: IUserRepository // 🔥 Injection du repo
+    @Inject("IUserRepository") private readonly userRepository: IUserRepository 
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const user = request.user; // Utilisateur authentifié
-    const route = context.getHandler().name; // Nom de la méthode appelée
-    const targetId = request.params.id; // ID de l'utilisateur cible
+    const user = request.user; 
+    const route = context.getHandler().name; 
+    const targetId = request.params.id; 
     let targetRole: string | null = null;
 
     if (!user) {
       throw new ForbiddenException("Utilisateur non authentifié.");
     }
 
-    // 🚀 Récupération dynamique du rôle de l'utilisateur cible (si applicable)
     if (["updateUser", "deleteUser", "getUserById"].includes(route) && targetId) {
       targetRole = await this.userRepository.getUserRoleById(targetId);
       if (!targetRole) {
@@ -29,7 +28,6 @@ export class RolesAccessGuard implements CanActivate {
       }
     }
 
-    // 🔥 Règles de contrôle d'accès 🔥
     const rules = {
       createUser: (userRole: string, bodyRole: string) =>
         userRole === "admin" || (userRole === "manager" && bodyRole !== "admin"),
@@ -51,7 +49,6 @@ export class RolesAccessGuard implements CanActivate {
         (userRole === "client" && userId === targetId),
     };
 
-    // Vérification des accès
     switch (route) {
       case "createUser":
         if (!rules.createUser(user.role, request.body.role)) {
@@ -70,7 +67,6 @@ export class RolesAccessGuard implements CanActivate {
         if (!rules.listUsers(user.role)) {
           throw new ForbiddenException("Vous n'êtes pas autorisé à voir la liste des utilisateurs.");
         }
-        // 🔥 Filtrage des utilisateurs récupérés
         request.query.roleFilter = user.role === "manager" ? ["manager", "client"] : [];
         break;
 

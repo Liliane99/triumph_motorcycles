@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../database/prisma/PrismaService";
-import { IUserRepository } from "../../../application/ports/repositories/UserRepository";
-import { User } from "../../../domain/entities/User";
+import { PrismaService } from "../../../../database/prisma/PrismaService";
+import { IUserRepository } from "../../../../../application/ports/repositories/UserRepository";
+import { User } from "../../../../../domain/entities/User";
 import { User as PrismaUser } from "@prisma/client";
-import { Username } from "../../../domain/values/users/Username";
-import { Email } from "../../../domain/values/users/Email";
-import { Password } from "../../../domain/values/users/Password";
-import { Role } from "../../../domain/values/users/Role";
-import { PhoneNumber } from "../../../domain/values/users/PhoneNumber";
-import { LicenseNumber } from "../../../domain/values/users/LicenseNumber";
+import { Username } from "../../../../../domain/values/users/Username";
+import { Email } from "../../../../../domain/values/users/Email";
+import { Password } from "../../../../../domain/values/users/Password";
+import { Role } from "../../../../../domain/values/users/Role";
+import { PhoneNumber } from "../../../../../domain/values/users/PhoneNumber";
+import { LicenseNumber } from "../../../../../domain/values/users/LicenseNumber";
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ITokenService } from "../../../application/ports/services/AuthenticationService";
+import { ITokenService } from "../../../../../application/ports/services/AuthenticationService";
 import * as jwt from "jsonwebtoken";
 
 @Injectable()

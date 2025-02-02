@@ -6,21 +6,14 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { JwtAuthGuard } from "../../guards/JwtAuthGuard";
 import { RolesAccessGuard } from "../../guards/RolesAccessGuard"; 
 import { v4 as uuidv4 } from "uuid";
-
-// ✅ Import des Commandes et Queries
 import { CreateUserCommand } from "../../../../../application/commands/definitions/CreateUserCommand";
 import { UpdateUserCommand } from "../../../../../application/commands/definitions/UpdateUserCommand";
-//import { DeleteUserCommand } from "../../../../../application/commands/definitions/DeleteUserCommand";
 import { GetUserByIdQuery } from "../../../../../application/queries/definitions/GetUserByIdQuery";
 import { ListUsersQuery } from "../../../../../application/queries/definitions/ListUsersQuery";
 import { LoginUserCommand } from "../../../../../application/commands/definitions/LoginUserCommand";
-
-// ✅ Import des DTOs
 import { CreateUserDto } from "../../dto/CreateUserDto";
 import { UpdateUserDto } from "../../dto/UpdateUserDto";
 import { LoginUserDto } from "../../dto/LoginUserDto";
-
-// ✅ Import des Erreurs
 import { EmailAlreadyExistsError } from "../../../../../domain/errors/users/EmailAlreadyExistsError";
 import { UserNotFoundError } from "../../../../../domain/errors/users/UserNotFoundError";
 import { InvalidCredentialsError } from "../../../../../domain/errors/users/InvalidCredentialsError";
@@ -32,9 +25,6 @@ export class UserController {
     private readonly queryBus: QueryBus
   ) {}
 
-  /**
-   * ✅ Connexion d'un utilisateur
-   */
   @Post("login")
   async login(@Res() res: Response, @Body() body: LoginUserDto) {
     try {
@@ -48,9 +38,6 @@ export class UserController {
     }
   }
 
-  /**
-   * ✅ Création d'un utilisateur (⚠️ PROTÉGÉ)
-   */
   @Post()
   @UseGuards(JwtAuthGuard, RolesAccessGuard)
   async createUser(@Req() req: Request, @Res() res: Response, @Body() body: CreateUserDto) {
@@ -75,9 +62,6 @@ export class UserController {
     }
   }
 
-  /**
-   * ✅ Mise à jour d'un utilisateur (⚠️ PROTÉGÉ)
-   */
   @Put(":id")
   @UseGuards(JwtAuthGuard, RolesAccessGuard)
   async updateUser(@Req() req: Request, @Res() res: Response, @Param("id") id: string, @Body() body: UpdateUserDto) {
@@ -97,9 +81,6 @@ export class UserController {
     }
   }
 
-  /**
-   * ✅ Suppression d'un utilisateur (⚠️ PROTÉGÉ)
-   */
   // @Delete(":id")
   // @UseGuards(JwtAuthGuard, RolesAccessGuard)
   // async deleteUser(@Req() req: Request, @Res() res: Response, @Param("id") id: string) {
@@ -114,9 +95,6 @@ export class UserController {
   //   }
   // }
 
-  /**
-   * ✅ Récupération de la liste des utilisateurs (⚠️ PROTÉGÉ)
-   */
   @Get()
   @UseGuards(JwtAuthGuard, RolesAccessGuard)
   async listUsers(@Req() req: Request, @Res() res: Response) {
@@ -129,9 +107,6 @@ export class UserController {
     }
   }
 
-  /**
-   * ✅ Récupération d'un utilisateur par ID (⚠️ PROTÉGÉ)
-   */
   @Get(":id")
   @UseGuards(JwtAuthGuard, RolesAccessGuard)
   async getUserById(@Res() res: Response, @Param("id") id: string) {
