@@ -1,0 +1,13 @@
+[
+    {
+      "type": "USER_CREATED",
+      "data": {
+        "id": "12345",
+        "username": "john_doe",
+        "email": "john@example.com",
+        "role": "client",
+        "createdAt": "2024-02-01T12:00:00Z"
+      }
+    }
+]
+  
