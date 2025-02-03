@@ -25,8 +25,8 @@ export class DeletePartUseCase {
       version: 1,
       data: {
         id: command.id,
-        deletedAt: new Date(),
-        deletedBy: command.deletedBy
+        // deletedAt: new Date(),
+        // deletedBy: command.deletedBy
       }
     };
 

@@ -8,7 +8,7 @@ import {
   import { v4 as uuidv4 } from "uuid";
   import { CreatePartCommand } from "../../../../../application/commands/definitions/CreatePartCommand";
   import { UpdatePartCommand } from "../../../../../application/commands/definitions/UpdatePartCommand";
-  //import { DeletePartCommand } from "../../../../../application/commands/definitions/DeletePartCommand";
+  import { DeletePartCommand } from "../../../../../application/commands/definitions/DeletePartCommand";
   import { GetPartByIdQuery } from "../../../../../application/queries/definitions/GetPartByIdQuery";
   import { ListPartsQuery } from "../../../../../application/queries/definitions/ListPartsQuery";
   import { CreatePartDto } from "../../dto/CreatePartDto";
@@ -64,22 +64,19 @@ import {
       }
     }
   
-    /**
-     * ✅ Suppression d'une pièce (Protégé)
-     */
-    // @Delete(":id")
-    // @UseGuards(JwtAuthGuard, PartsAccessGuard)
-    // async deletePart(@Req() req: Request, @Res() res: Response, @Param("id") id: string) {
-    //   try {
-    //     await this.commandBus.execute(new DeletePartCommand(id));
-    //     return res.status(HttpStatus.NO_CONTENT).send();
-    //   } catch (error) {
-    //     if (error instanceof PartNotFoundError) {
-    //       return res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-    //     }
-    //     return res.status(HttpStatus.BAD_REQUEST).json({ message: "Une erreur inconnue est survenue." });
-    //   }
-    // }
+    @Delete(":id")
+    @UseGuards(JwtAuthGuard, PartsAccessGuard)
+    async deletePart(@Req() req: Request, @Res() res: Response, @Param("id") id: string) {
+      try {
+        await this.commandBus.execute(new DeletePartCommand(id));
+        return res.status(HttpStatus.NO_CONTENT).send();
+      } catch (error) {
+        if (error instanceof PartNotFoundError) {
+          return res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+        }
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Une erreur inconnue est survenue." });
+      }
+    }
   
     @Get()
     @UseGuards(JwtAuthGuard, PartsAccessGuard)
