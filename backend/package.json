@@ -26,6 +26,8 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.4.13",
     "@prisma/client": "^6.3.0",
+    "@sendinblue/client": "^3.3.1",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "class-transformer": "^0.5.1",

@@ -78,14 +78,6 @@ export class PrismaUserRepository implements IUserRepository {
     await this.prisma.user.delete({ where: { user_id: id } });
   }
 
-  async updateUserRole(id: string, newRole: "manager" | "client" | "admin"): Promise<User> {
-    const updatedUser = await this.prisma.user.update({
-      where: { user_id: id },
-      data: { role: newRole, updated_at: new Date() },
-    });
-
-    return this.mapToDomain(updatedUser);
-  }
 
   async getUserRoleById(id: string): Promise<string | null> {
     const user = await this.prisma.user.findUnique({
