@@ -1,4 +1,4 @@
-export class CreateMotorcycleDto {
+export class UpdateMotorcycleDto {
     brand: string;
     model: string;
     year: number;

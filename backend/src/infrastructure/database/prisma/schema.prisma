@@ -47,3 +47,18 @@ model Part {
   creator         User @relation("CreatedParts", fields: [created_by], references: [user_id])
   updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
 }
+  
+
+model Motorcycle {
+  id           String @id @default(uuid())
+  brand        String
+  model        String
+  purchaseDate DateTime 
+  licensePlate String @unique
+  kilometers   Int
+  warrantyDate DateTime 
+  maintenanceInterval Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
