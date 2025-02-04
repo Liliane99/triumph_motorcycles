@@ -28,32 +28,27 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   async save(motorcycle: Motorcycle): Promise<Motorcycle> {
     console.log("Motorcycle to save:", motorcycle);
   
-    
-    const existingMotorcycleByPlate = await prisma.motorcycle.findUnique({
+    const existingMotorcycle = await prisma.motorcycle.findUnique({
       where: { licensePlate: motorcycle.licensePlate.get() },
     });
   
-    
-    if (existingMotorcycleByPlate && existingMotorcycleByPlate.id !== motorcycle.id) {
+    if (existingMotorcycle && existingMotorcycle.id !== motorcycle.id) {
       throw new MotorWithSimilarLicensePlateError(motorcycle.licensePlate.get());
     }
   
-    
-    const existingMotorcycleById = await prisma.motorcycle.findUnique({
-      where: { id: motorcycle.id },
-    });
+    const formattedPurchaseDate = new Date(motorcycle.purchaseDate);
+    const formattedWarrantyDate = new Date(motorcycle.warrantyDate);
   
-    
-    if (existingMotorcycleById) {
+    if (existingMotorcycle) {
       const updatedMotorcycle = await prisma.motorcycle.update({
         where: { id: motorcycle.id },
         data: {
           brand: motorcycle.brand.get(),
           model: motorcycle.model.get(),
-          purchaseDate: motorcycle.purchaseDate,
+          purchaseDate: formattedPurchaseDate,  
           licensePlate: motorcycle.licensePlate.get(),
           kilometers: motorcycle.kilometers.get(),
-          warrantyDate: motorcycle.warrantyDate,
+          warrantyDate: formattedWarrantyDate, 
           maintenanceInterval: motorcycle.maintenanceInterval.get(),
         },
       });
@@ -61,15 +56,15 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
       return this.mapToMotorcycle(updatedMotorcycle);
     }
   
-    
     const newMotorcycle = await prisma.motorcycle.create({
       data: {
+        id: motorcycle.id,
         brand: motorcycle.brand.get(),
         model: motorcycle.model.get(),
-        purchaseDate: motorcycle.purchaseDate,
+        purchaseDate: formattedPurchaseDate,  
         licensePlate: motorcycle.licensePlate.get(),
         kilometers: motorcycle.kilometers.get(),
-        warrantyDate: motorcycle.warrantyDate,
+        warrantyDate: formattedWarrantyDate, 
         maintenanceInterval: motorcycle.maintenanceInterval.get(),
       },
     });
