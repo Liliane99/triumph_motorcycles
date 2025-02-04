@@ -3,6 +3,7 @@ import { Model } from "../values/Motorcycle/motorcycleModel";
 import { LicensePlate } from "../values/Motorcycle/motorcycleLicensePlate";
 import { Kilometers } from "../values/Motorcycle/motorcycleKilometers";
 import { MaintenanceInterval } from "../values/Motorcycle/motorcycleMaintenanceInterval";
+import { MotorWithSimilarLicensePlateError } from "../errors/Motorcycle/motorWithSimilarLicensePlate";
 
 export class Motorcycle {
   public brand: Brand;
@@ -23,27 +24,23 @@ export class Motorcycle {
     warrantyDate: Date,
     maintenanceInterval: number
   ) {
-    
     this.brand = new Brand(brand);
     this.model = new Model(model);
     this.licensePlate = new LicensePlate(licensePlate);
     this.kilometers = new Kilometers(kilometers);
     this.maintenanceInterval = new MaintenanceInterval(maintenanceInterval);
 
-    
     this.purchaseDate = purchaseDate;
     this.warrantyDate = warrantyDate;
     this.validateDates();
   }
 
   private validateDates(): void {
-    
     if (this.warrantyDate <= this.purchaseDate) {
       throw new Error("Warranty date must be after the purchase date.");
     }
   }
 
-  
   updateBrand(brand: string) {
     this.brand = new Brand(brand);
   }
@@ -57,9 +54,18 @@ export class Motorcycle {
     this.validateDates(); 
   }
 
-  updateLicensePlate(licensePlate: string) {
+  updateLicensePlate(licensePlate: string, existingPlates: string[] = []) {
+    if (!Array.isArray(existingPlates)) {
+      throw new Error("existingPlates must be an array");
+    }
+  
+    if (existingPlates.includes(licensePlate)) {
+      throw new MotorWithSimilarLicensePlateError(licensePlate);
+    }
+    
     this.licensePlate = new LicensePlate(licensePlate);
   }
+  
 
   updateKilometers(kilometers: number) {
     this.kilometers = new Kilometers(kilometers);

@@ -1,4 +1,4 @@
-import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { MotorcycleRepository } from "../../ports/repositories/MotorcycleRepository";
 import { GetAllMotorcyclesQuery } from "../../queries/definitions/Motorcycle/GetMotorcycleQuery";
 
 export class GetAllMotorcyclesUseCase {

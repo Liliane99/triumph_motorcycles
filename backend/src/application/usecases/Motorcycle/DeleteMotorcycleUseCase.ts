@@ -1,4 +1,4 @@
-import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { MotorcycleRepository } from "../../ports/repositories/MotorcycleRepository";
 import { DeleteMotorcycleCommand } from "../../commands/definitions/Motorcycle/DeleteMotorcycleCommand";
 
 export class DeleteMotorcycleUseCase {

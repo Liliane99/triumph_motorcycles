@@ -1,4 +1,4 @@
-import { MotorcycleRepository } from "../../../domain/repositories/MotorcycleRepository";
+import { MotorcycleRepository } from "../../ports/repositories/MotorcycleRepository";
 import { CreateMotorcycleCommand } from "../../commands/definitions/Motorcycle/AddMotorcycleCommand";
 import { Motorcycle } from "../../../domain/entities/Motorcycle";
 
