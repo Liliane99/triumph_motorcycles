@@ -4,6 +4,7 @@ import { LicensePlate } from "../values/Motorcycle/motorcycleLicensePlate";
 import { Kilometers } from "../values/Motorcycle/motorcycleKilometers";
 import { MaintenanceInterval } from "../values/Motorcycle/motorcycleMaintenanceInterval";
 import { MotorWithSimilarLicensePlateError } from "../errors/Motorcycle/motorWithSimilarLicensePlate";
+import { v4 as uuidv4 } from 'uuid';
 
 export class Motorcycle {
   public brand: Brand;
@@ -15,7 +16,7 @@ export class Motorcycle {
   public maintenanceInterval: MaintenanceInterval;
 
   constructor(
-    public readonly id: string,
+    public readonly id: string = uuidv4(),
     brand: string,
     model: string,
     purchaseDate: Date,
