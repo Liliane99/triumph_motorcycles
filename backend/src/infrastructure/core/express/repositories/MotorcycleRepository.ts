@@ -58,7 +58,6 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   
     const newMotorcycle = await prisma.motorcycle.create({
       data: {
-        id: motorcycle.id,
         brand: motorcycle.brand.get(),
         model: motorcycle.model.get(),
         purchaseDate: formattedPurchaseDate,  
