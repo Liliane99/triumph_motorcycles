@@ -8,11 +8,46 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  user_id          String   @id @default(uuid()) 
+  user_name        String
+  email            String   @unique
+  password         String
+  role             String
+  phone_number     String?
+  license_number   String?
+  experience_level String?
+  created_by       String?  
+  updated_by       String? 
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  creator         User? @relation("CreatedUsers", fields: [created_by], references: [user_id])
+  createdUsers    User[] @relation("CreatedUsers")
+
+  updater         User? @relation("UpdatedUsers", fields: [updated_by], references: [user_id]) 
+  updatedUsers    User[] @relation("UpdatedUsers")
+
+  createdParts    Part[] @relation("CreatedParts")
+  updatedParts    Part[] @relation("UpdatedParts")
 }
+
+model Part {
+  part_id          String    @id @default(uuid())
+  part_reference   String    @unique
+  part_type        String
+  part_name        String
+  quantity_in_stock Int
+  part_threshold   Int
+  unit_price       Decimal
+  created_by       String
+  updated_by       String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  creator         User @relation("CreatedParts", fields: [created_by], references: [user_id])
+  updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
+}
+  
 
 model Motorcycle {
   id           String @id @default(uuid())
