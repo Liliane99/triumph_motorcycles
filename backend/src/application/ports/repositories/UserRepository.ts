@@ -7,6 +7,5 @@ export interface IUserRepository {
   getUserById(id: string): Promise<User | null>;
   getUserByEmail(email: string): Promise<User | null>;
   listUsers(): Promise<User[]>;
-  updateUserRole(id: string, newRole: "manager" | "client" | "admin"): Promise<User>;
   getUserRoleById(id: string): Promise<string | null>;
 }
