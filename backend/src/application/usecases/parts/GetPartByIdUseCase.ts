@@ -1,5 +1,5 @@
 import { IPartRepository } from "../../ports/repositories/PartRepository";
-import { GetPartByIdQuery } from "../../queries/definitions/GetPartByIdQuery";
+import { GetPartByIdQuery } from "../../queries/definitions/parts/GetPartByIdQuery";
 import { PartNotFoundError } from "../../../domain/errors/parts/PartNotFoundError";
 
 export class GetPartByIdUseCase {

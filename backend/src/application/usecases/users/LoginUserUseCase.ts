@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../ports/repositories/UserRepository";
 import { IPasswordService, ITokenService } from "../../ports/services/AuthenticationService";
-import { LoginUserCommand } from "../../commands/definitions/LoginUserCommand";
+import { LoginUserCommand } from "../../commands/definitions/users/LoginUserCommand";
 import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";
 import { InvalidCredentialsError } from "../../../domain/errors/users/InvalidCredentialsError";
 

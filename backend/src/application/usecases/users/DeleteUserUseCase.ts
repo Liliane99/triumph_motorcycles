@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../ports/repositories/UserRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { DeleteUserCommand } from "../../commands/definitions/DeleteUserCommand";
+import { DeleteUserCommand } from "../../commands/definitions/users/DeleteUserCommand";
 import { UserDeletedEvent } from "../../../domain/events/users/UserDeletedEvent";
 import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";
 

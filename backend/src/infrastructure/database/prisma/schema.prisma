@@ -30,6 +30,9 @@ model User {
   createdParts    Part[] @relation("CreatedParts")
   updatedParts    Part[] @relation("UpdatedParts")
 
+  createdOrders   Order[] @relation("CreatedOrders")
+  updatedOrders   Order[] @relation("UpdatedOrders")
+
   rentals         Rental[] @relation("UserRentals")
 }
 
@@ -48,8 +51,36 @@ model Part {
 
   creator         User @relation("CreatedParts", fields: [created_by], references: [user_id])
   updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
+
+  orders          OrderPart[]
 }
-  
+
+model Order {
+  order_id         String   @id @default(uuid())
+  order_reference  String    @unique
+  order_date       DateTime 
+  delivery_date    DateTime?
+  created_by       String
+  updated_by       String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  creator         User @relation("CreatedOrders", fields: [created_by], references: [user_id])
+  updater         User? @relation("UpdatedOrders", fields: [updated_by], references: [user_id])
+
+  parts           OrderPart[]
+}
+
+model OrderPart {
+  order_id        String
+  part_id         String
+  quantity_ordered Int
+
+  order          Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  part           Part @relation(fields: [part_id], references: [part_id], onDelete: Cascade)
+
+  @@id([order_id, part_id]) 
+}
 
 model Motorcycle {
   id           String @id @default(uuid())
@@ -83,4 +114,3 @@ model Rental {
 
   @@index([clientId, motorcycleId]) 
 }
-

@@ -1,6 +1,6 @@
 import { IPartRepository } from "../../ports/repositories/PartRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { DeletePartCommand } from "../../commands/definitions/DeletePartCommand";
+import { DeletePartCommand } from "../../commands/definitions/parts/DeletePartCommand";
 import { PartDeletedEvent } from "../../../domain/events/parts/PartDeletedEvent";
 import { PartNotFoundError } from "../../../domain/errors/parts/PartNotFoundError";
 
