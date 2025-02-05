@@ -1,6 +1,6 @@
 import { IOrderRepository } from "../../ports/repositories/OrderRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { CreateOrderCommand } from "../../commands/definitions/CreateOrderCommand";
+import { CreateOrderCommand } from "../../commands/definitions/orders/CreateOrderCommand";
 import { OrderCreatedEvent } from "../../../domain/events/orders/OrderCreatedEvent";
 import { Order } from "../../../domain/entities/Order";
 import { OrderAlreadyExistsError } from "../../../domain/errors/orders/OrderAlreadyExistsError";

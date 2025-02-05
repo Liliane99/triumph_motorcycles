@@ -15,12 +15,12 @@ import { DeleteUserUseCase } from "../../../../../application/usecases/users/Del
 import { GetUserByIdUseCase } from "../../../../../application/usecases/users/GetUserByIdUseCase";
 import { ListUsersUseCase } from "../../../../../application/usecases/users/ListUsersUseCase";
 import { LoginUserUseCase } from "../../../../../application/usecases/users/LoginUserUseCase";
-import { CreateUserCommandHandler } from "../../../../../application/commands/handlers/CreateUserCommandHandler";
-import { UpdateUserCommandHandler } from "../../../../../application/commands/handlers/UpdateUserCommandHandler";
-import { DeleteUserCommandHandler } from "../../../../../application/commands/handlers/DeleteUserCommandHandler";
-import { LoginUserCommandHandler } from "../../../../../application/commands/handlers/LoginUserCommandHandler";
-import { GetUserByIdQueryHandler } from "../../../../../application/queries/handlers/GetUserByIdQueryHandler";
-import { ListUsersQueryHandler } from "../../../../../application/queries/handlers/ListUsersQueryHandler";
+import { CreateUserCommandHandler } from "../../../../../application/commands/handlers/users/CreateUserCommandHandler";
+import { UpdateUserCommandHandler } from "../../../../../application/commands/handlers/users/UpdateUserCommandHandler";
+import { DeleteUserCommandHandler } from "../../../../../application/commands/handlers/users/DeleteUserCommandHandler";
+import { LoginUserCommandHandler } from "../../../../../application/commands/handlers/users/LoginUserCommandHandler";
+import { GetUserByIdQueryHandler } from "../../../../../application/queries/handlers/users/GetUserByIdQueryHandler";
+import { ListUsersQueryHandler } from "../../../../../application/queries/handlers/users/ListUsersQueryHandler";
 
 @Module({
   imports: [CqrsModule],

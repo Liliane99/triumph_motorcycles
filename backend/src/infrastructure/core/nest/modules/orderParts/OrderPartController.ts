@@ -3,10 +3,10 @@ import { Request, Response } from "express";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { JwtAuthGuard } from "../../guards/JwtAuthGuard";
 import { OrdersPartsAccessGuard } from "../../guards/OrdersPartsAccessGuard";
-import { AddPartToOrderCommand } from "../../../../../application/commands/definitions/AddPartToOrderCommand";
-import { UpdatePartInOrderCommand } from "../../../../../application/commands/definitions/UpdatePartInOrderCommand";
-import { RemovePartFromOrderCommand } from "../../../../../application/commands/definitions/RemovePartFromOrderCommand";
-import { GetOrderPartsQuery } from "../../../../../application/queries/definitions/GetOrderPartsQuery";
+import { AddPartToOrderCommand } from "../../../../../application/commands/definitions/orderParts/AddPartToOrderCommand";
+import { UpdatePartInOrderCommand } from "../../../../../application/commands/definitions/orderParts/UpdatePartInOrderCommand";
+import { RemovePartFromOrderCommand } from "../../../../../application/commands/definitions/orderParts/RemovePartFromOrderCommand";
+import { GetOrderPartsQuery } from "../../../../../application/queries/definitions/orderParts/GetOrderPartsQuery";
 
 @Controller("order-parts")
 export class OrderPartController {

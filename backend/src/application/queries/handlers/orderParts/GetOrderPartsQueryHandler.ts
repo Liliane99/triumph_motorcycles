@@ -1,6 +1,6 @@
 import { QueryHandler, IQueryHandler } from "@nestjs/cqrs";
-import { GetOrderPartsQuery } from "../definitions/GetOrderPartsQuery";
-import { GetOrderPartsUseCase } from "../../usecases/orderParts/GetOrderPartsUseCase";
+import { GetOrderPartsQuery } from "../../definitions/orderParts/GetOrderPartsQuery";
+import { GetOrderPartsUseCase } from "../../../usecases/orderParts/GetOrderPartsUseCase";
 
 @QueryHandler(GetOrderPartsQuery)
 export class GetOrderPartsQueryHandler implements IQueryHandler<GetOrderPartsQuery> {

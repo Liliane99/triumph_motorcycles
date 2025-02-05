@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeleteOrderCommand } from "../definitions/DeleteOrderCommand";
-import { DeleteOrderUseCase } from "../../usecases/orders/DeleteOrderUseCase";
+import { DeleteOrderCommand } from "../../definitions/orders/DeleteOrderCommand";
+import { DeleteOrderUseCase } from "../../../usecases/orders/DeleteOrderUseCase";
 
 @CommandHandler(DeleteOrderCommand)
 export class DeleteOrderCommandHandler implements ICommandHandler<DeleteOrderCommand> {

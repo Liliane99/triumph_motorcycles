@@ -1,6 +1,6 @@
 import { QueryHandler, IQueryHandler } from "@nestjs/cqrs";
-import { GetOrderByIdQuery } from "../definitions/GetOrderByIdQuery";
-import { GetOrderByIdUseCase } from "../../usecases/orders/GetOrderByIdUseCase";
+import { GetOrderByIdQuery } from "../../definitions/orders/GetOrderByIdQuery";
+import { GetOrderByIdUseCase } from "../../../usecases/orders/GetOrderByIdUseCase";
 
 @QueryHandler(GetOrderByIdQuery)
 export class GetOrderByIdQueryHandler implements IQueryHandler<GetOrderByIdQuery> {

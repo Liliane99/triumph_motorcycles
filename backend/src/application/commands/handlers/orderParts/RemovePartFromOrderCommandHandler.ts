@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { RemovePartFromOrderCommand } from "../definitions/RemovePartFromOrderCommand";
-import { RemovePartFromOrderUseCase } from "../../usecases/orderParts/RemovePartFromOrderUseCase";
+import { RemovePartFromOrderCommand } from "../../definitions/orderParts/RemovePartFromOrderCommand";
+import { RemovePartFromOrderUseCase } from "../../../usecases/orderParts/RemovePartFromOrderUseCase";
 
 @CommandHandler(RemovePartFromOrderCommand)
 export class RemovePartFromOrderCommandHandler implements ICommandHandler<RemovePartFromOrderCommand> {

@@ -1,6 +1,6 @@
 import { QueryHandler, IQueryHandler } from "@nestjs/cqrs";
-import { GetPartByIdQuery } from "../definitions/GetPartByIdQuery";
-import { GetPartByIdUseCase } from "../../../application/usecases/parts/GetPartByIdUseCase";
+import { GetPartByIdQuery } from "../../definitions/parts/GetPartByIdQuery";
+import { GetPartByIdUseCase } from "../../../../application/usecases/parts/GetPartByIdUseCase";
 
 @QueryHandler(GetPartByIdQuery)
 export class GetPartByIdQueryHandler implements IQueryHandler<GetPartByIdQuery> {

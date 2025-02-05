@@ -1,5 +1,5 @@
 import { IOrderRepository } from "../../ports/repositories/OrderRepository";
-import { UpdateOrderCommand } from "../../commands/definitions/UpdateOrderCommand";
+import { UpdateOrderCommand } from "../../commands/definitions/orders/UpdateOrderCommand";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
 import { OrderUpdatedEvent } from "../../../domain/events/orders/OrderUpdatedEvent";
 import { OrderNotFoundError } from "../../../domain/errors/orders/OrderNotFoundError";

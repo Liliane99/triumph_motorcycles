@@ -12,13 +12,11 @@ import { UpdateOrderUseCase } from "../../../../../application/usecases/orders/U
 import { DeleteOrderUseCase } from "../../../../../application/usecases/orders/DeleteOrderUseCase";
 import { GetOrderByIdUseCase } from "../../../../../application/usecases/orders/GetOrderByIdUseCase";
 import { ListOrdersUseCase } from "../../../../../application/usecases/orders/ListOrdersUseCase";
-
-import { CreateOrderCommandHandler } from "../../../../../application/commands/handlers/CreateOrderCommandHandler";
-import { UpdateOrderCommandHandler } from "../../../../../application/commands/handlers/UpdateOrderCommandHandler";
-import { DeleteOrderCommandHandler } from "../../../../../application/commands/handlers/DeleteOrderCommandHandler";
-
-import { GetOrderByIdQueryHandler } from "../../../../../application/queries/handlers/GetOrderByIdQueryHandler";
-import { ListOrdersQueryHandler } from "../../../../../application/queries/handlers/ListOrdersQueryHandler";
+import { CreateOrderCommandHandler } from "../../../../../application/commands/handlers/orders/CreateOrderCommandHandler";
+import { UpdateOrderCommandHandler } from "../../../../../application/commands/handlers/orders/UpdateOrderCommandHandler";
+import { DeleteOrderCommandHandler } from "../../../../../application/commands/handlers/orders/DeleteOrderCommandHandler";
+import { GetOrderByIdQueryHandler } from "../../../../../application/queries/handlers/orders/GetOrderByIdQueryHandler";
+import { ListOrdersQueryHandler } from "../../../../../application/queries/handlers/orders/ListOrdersQueryHandler";
 import { OrdersAccessGuard } from "../../guards/OrdersAccessGuard";
 
 @Module({

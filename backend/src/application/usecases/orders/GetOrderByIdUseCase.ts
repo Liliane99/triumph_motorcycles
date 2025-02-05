@@ -1,5 +1,5 @@
 import { IOrderRepository } from "../../ports/repositories/OrderRepository";
-import { GetOrderByIdQuery } from "../../queries/definitions/GetOrderByIdQuery";
+import { GetOrderByIdQuery } from "../../queries/definitions/orders/GetOrderByIdQuery";
 import { OrderNotFoundError } from "../../../domain/errors/orders/OrderNotFoundError";
 
 export class GetOrderByIdUseCase {

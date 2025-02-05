@@ -6,16 +6,13 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { JwtAuthGuard } from "../../guards/JwtAuthGuard";
 import { OrdersAccessGuard } from "../../guards/OrdersAccessGuard";
 import { v4 as uuidv4 } from "uuid";
-
-import { CreateOrderCommand } from "../../../../../application/commands/definitions/CreateOrderCommand";
-import { UpdateOrderCommand } from "../../../../../application/commands/definitions/UpdateOrderCommand";
-import { DeleteOrderCommand } from "../../../../../application/commands/definitions/DeleteOrderCommand";
-import { GetOrderByIdQuery } from "../../../../../application/queries/definitions/GetOrderByIdQuery";
-import { ListOrdersQuery } from "../../../../../application/queries/definitions/ListOrdersQuery";
-
+import { CreateOrderCommand } from "../../../../../application/commands/definitions/orders/CreateOrderCommand";
+import { UpdateOrderCommand } from "../../../../../application/commands/definitions/orders/UpdateOrderCommand";
+import { DeleteOrderCommand } from "../../../../../application/commands/definitions/orders/DeleteOrderCommand";
+import { GetOrderByIdQuery } from "../../../../../application/queries/definitions/orders/GetOrderByIdQuery";
+import { ListOrdersQuery } from "../../../../../application/queries/definitions/orders/ListOrdersQuery";
 import { CreateOrderDto } from "../../dto/CreateOrderDto";
 import { UpdateOrderDto } from "../../dto/UpdateOrderDto";
-
 import { OrderNotFoundError } from "../../../../../domain/errors/orders/OrderNotFoundError";
 import { InvalidOrderDateError } from "../../../../../domain/errors/orders/InvalidOrderDateError";
 import { InvalidDeliveryDateError } from "../../../../../domain/errors/orders/InvalidDeliveryDateError";

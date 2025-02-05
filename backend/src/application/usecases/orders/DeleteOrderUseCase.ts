@@ -1,6 +1,6 @@
 import { IOrderRepository } from "../../ports/repositories/OrderRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { DeleteOrderCommand } from "../../commands/definitions/DeleteOrderCommand";
+import { DeleteOrderCommand } from "../../commands/definitions/orders/DeleteOrderCommand";
 import { OrderDeletedEvent } from "../../../domain/events/orders/OrderDeletedEvent";
 import { OrderNotFoundError } from "../../../domain/errors/orders/OrderNotFoundError";
 

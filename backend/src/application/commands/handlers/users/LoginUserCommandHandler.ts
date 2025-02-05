@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { LoginUserCommand } from "../definitions/LoginUserCommand";
-import { LoginUserUseCase } from "../../../application/usecases/users/LoginUserUseCase";
-import { InvalidCredentialsError } from "../../../domain/errors/users/InvalidCredentialsError";
-import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";
+import { LoginUserCommand } from "../../definitions/users/LoginUserCommand";
+import { LoginUserUseCase } from "../../../../application/usecases/users/LoginUserUseCase";
+import { InvalidCredentialsError } from "../../../../domain/errors/users/InvalidCredentialsError";
+import { UserNotFoundError } from "../../../../domain/errors/users/UserNotFoundError";
 
 @CommandHandler(LoginUserCommand)
 export class LoginUserCommandHandler implements ICommandHandler<LoginUserCommand> {

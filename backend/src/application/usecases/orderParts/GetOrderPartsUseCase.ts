@@ -1,5 +1,5 @@
 import { IOrderPartRepository } from "../../ports/repositories/OrderPartRepository";
-import { GetOrderPartsQuery } from "../../queries/definitions/GetOrderPartsQuery";
+import { GetOrderPartsQuery } from "../../queries/definitions/orderParts/GetOrderPartsQuery";
 import { OrderNotFoundError } from "../../../domain/errors/orders/OrderNotFoundError";
 
 export class GetOrderPartsUseCase {

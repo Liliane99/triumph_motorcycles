@@ -2,7 +2,7 @@ import { IPartRepository } from "../../ports/repositories/PartRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
 import { IEmailService } from "../../ports/services/IEmailService";
 import { IUserRepository } from "../../ports/repositories/UserRepository";
-import { UpdatePartCommand } from "../../commands/definitions/UpdatePartCommand";
+import { UpdatePartCommand } from "../../commands/definitions/parts/UpdatePartCommand";
 import { PartUpdatedEvent } from "../../../domain/events/parts/PartUpdatedEvent";
 import { PartNotFoundError } from "../../../domain/errors/parts/PartNotFoundError";
 import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";

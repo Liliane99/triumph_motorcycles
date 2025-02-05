@@ -8,19 +8,16 @@ import { IPartRepository } from "../../../../../application/ports/repositories/P
 import { IEventPublisherService } from "../../../../../application/ports/services/EventPublisherService";
 import { IEmailService } from "../../../../../application/ports/services/IEmailService";
 import { BrevoEmailService } from "../../adapters/services/BrevoEmailService";
-
 import { CreatePartUseCase } from "../../../../../application/usecases/parts/CreatePartUseCase";
 import { UpdatePartUseCase } from "../../../../../application/usecases/parts/UpdatePartUseCase";
 import { DeletePartUseCase } from "../../../../../application/usecases/parts/DeletePartUseCase";
 import { GetPartByIdUseCase } from "../../../../../application/usecases/parts/GetPartByIdUseCase";
 import { ListPartsUseCase } from "../../../../../application/usecases/parts/ListPartsUseCase";
-
-import { CreatePartCommandHandler } from "../../../../../application/commands/handlers/CreatePartCommandHandler";
-import { UpdatePartCommandHandler } from "../../../../../application/commands/handlers/UpdatePartCommandHandler";
-import { DeletePartCommandHandler } from "../../../../../application/commands/handlers/DeletePartCommandHandler";
-
-import { GetPartByIdQueryHandler } from "../../../../../application/queries/handlers/GetPartByIdQueryHandler";
-import { ListPartsQueryHandler } from "../../../../../application/queries/handlers/ListPartsQueryHandler";
+import { CreatePartCommandHandler } from "../../../../../application/commands/handlers/parts/CreatePartCommandHandler";
+import { UpdatePartCommandHandler } from "../../../../../application/commands/handlers/parts/UpdatePartCommandHandler";
+import { DeletePartCommandHandler } from "../../../../../application/commands/handlers/parts/DeletePartCommandHandler";
+import { GetPartByIdQueryHandler } from "../../../../../application/queries/handlers/parts/GetPartByIdQueryHandler";
+import { ListPartsQueryHandler } from "../../../../../application/queries/handlers/parts/ListPartsQueryHandler";
 import { IUserRepository } from "../../../../../application/ports/repositories/UserRepository";
 import { PrismaUserRepository } from "../../adapters/repositories/PrismaUserRepository";
 

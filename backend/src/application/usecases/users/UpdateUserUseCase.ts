@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../ports/repositories/UserRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { UpdateUserCommand } from "../../commands/definitions/UpdateUserCommand";
+import { UpdateUserCommand } from "../../commands/definitions/users/UpdateUserCommand";
 import { UserUpdatedEvent } from "../../../domain/events/users/UserUpdatedEvent";
 import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";
 import { EmailAlreadyExistsError } from "../../../domain/errors/users/EmailAlreadyExistsError";

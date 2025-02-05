@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeletePartCommand } from "../definitions/DeletePartCommand";
-import { DeletePartUseCase } from "../../../application/usecases/parts/DeletePartUseCase";
+import { DeletePartCommand } from "../../definitions/parts/DeletePartCommand";
+import { DeletePartUseCase } from "../../../../application/usecases/parts/DeletePartUseCase";
 
 @CommandHandler(DeletePartCommand)
 export class DeletePartCommandHandler implements ICommandHandler<DeletePartCommand> {

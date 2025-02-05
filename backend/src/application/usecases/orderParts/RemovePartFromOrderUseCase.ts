@@ -2,7 +2,7 @@ import { IOrderRepository } from "../../ports/repositories/OrderRepository";
 import { IOrderPartRepository } from "../../ports/repositories/OrderPartRepository";
 import { IPartRepository } from "../../ports/repositories/PartRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { RemovePartFromOrderCommand } from "../../commands/definitions/RemovePartFromOrderCommand";
+import { RemovePartFromOrderCommand } from "../../commands/definitions/orderParts/RemovePartFromOrderCommand";
 import { OrderPartRemovedEvent } from "../../../domain/events/orderParts/OrderPartRemovedEvent";
 import { PartNotFoundError } from "../../../domain/errors/parts/PartNotFoundError";
 import { OrderNotFoundError } from "../../../domain/errors/orders/OrderNotFoundError";

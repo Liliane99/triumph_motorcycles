@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../ports/repositories/UserRepository";
-import { GetUserByIdQuery } from "../../queries/definitions/GetUserByIdQuery";
+import { GetUserByIdQuery } from "../../queries/definitions/users/GetUserByIdQuery";
 import { UserNotFoundError } from "../../../domain/errors/users/UserNotFoundError";
 
 export class GetUserByIdUseCase {

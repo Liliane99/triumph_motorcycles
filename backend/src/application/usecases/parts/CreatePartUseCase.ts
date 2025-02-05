@@ -1,6 +1,6 @@
 import { IPartRepository } from "../../ports/repositories/PartRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
-import { CreatePartCommand } from "../../commands/definitions/CreatePartCommand";
+import { CreatePartCommand } from "../../commands/definitions/parts/CreatePartCommand";
 import { PartCreatedEvent } from "../../../domain/events/parts/PartCreatedEvent";
 import { Part } from "../../../domain/entities/Part";
 import { PartAlreadyExistsError } from "../../../domain/errors/parts/PartAlreadyExistsError";

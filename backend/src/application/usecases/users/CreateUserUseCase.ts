@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../ports/repositories/UserRepository";
 import { IEventPublisherService } from "../../ports/services/EventPublisherService";
 import { IPasswordService } from "../../ports/services/AuthenticationService"; 
-import { CreateUserCommand } from "../../commands/definitions/CreateUserCommand";
+import { CreateUserCommand } from "../../commands/definitions/users/CreateUserCommand";
 import { UserCreatedEvent } from "../../../domain/events/users/UserCreatedEvent";
 import { User } from "../../../domain/entities/User";
 import { EmailAlreadyExistsError } from "../../../domain/errors/users/EmailAlreadyExistsError";

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UpdatePartInOrderCommand } from "../definitions/UpdatePartInOrderCommand";
-import { UpdatePartInOrderUseCase } from "../../usecases/orderParts/UpdatePartInOrderUseCase";
+import { UpdatePartInOrderCommand } from "../../definitions/orderParts/UpdatePartInOrderCommand";
+import { UpdatePartInOrderUseCase } from "../../../usecases/orderParts/UpdatePartInOrderUseCase";
 
 @CommandHandler(UpdatePartInOrderCommand)
 export class UpdatePartInOrderCommandHandler implements ICommandHandler<UpdatePartInOrderCommand> {

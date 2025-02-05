@@ -11,17 +11,14 @@ import { PrismaPartRepository } from "../../adapters/repositories/PrismaPartRepo
 import { IEventPublisherService } from "../../../../../application/ports/services/EventPublisherService";
 import { MongoEventRepository } from "../../adapters/repositories/MongoEventRepository";
 import { OrdersPartsAccessGuard } from "../../guards/OrdersPartsAccessGuard";
-
 import { AddPartToOrderUseCase } from "../../../../../application/usecases/orderParts/AddPartToOrderUseCase";
 import { UpdatePartInOrderUseCase } from "../../../../../application/usecases/orderParts/UpdatePartInOrderUseCase";
 import { RemovePartFromOrderUseCase } from "../../../../../application/usecases/orderParts/RemovePartFromOrderUseCase";
 import { GetOrderPartsUseCase } from "../../../../../application/usecases/orderParts/GetOrderPartsUseCase";
-
-import { AddPartToOrderCommandHandler } from "../../../../../application/commands/handlers/AddPartToOrderCommandHandler";
-import { UpdatePartInOrderCommandHandler } from "../../../../../application/commands/handlers/UpdatePartInOrderCommandHandler";
-import { RemovePartFromOrderCommandHandler } from "../../../../../application/commands/handlers/RemovePartFromOrderCommandHandler";
-
-import { GetOrderPartsQueryHandler } from "../../../../../application/queries/handlers/GetOrderPartsQueryHandler";
+import { AddPartToOrderCommandHandler } from "../../../../../application/commands/handlers/orderParts/AddPartToOrderCommandHandler";
+import { UpdatePartInOrderCommandHandler } from "../../../../../application/commands/handlers/orderParts/UpdatePartInOrderCommandHandler";
+import { RemovePartFromOrderCommandHandler } from "../../../../../application/commands/handlers/orderParts/RemovePartFromOrderCommandHandler";
+import { GetOrderPartsQueryHandler } from "../../../../../application/queries/handlers/orderParts/GetOrderPartsQueryHandler";
 
 @Module({
   imports: [CqrsModule],
