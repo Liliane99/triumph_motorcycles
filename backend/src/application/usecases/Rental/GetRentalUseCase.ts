@@ -1,4 +1,4 @@
-import { RentalRepository } from "../../ports/repositories/Rentalrepository";
+import { RentalRepository } from "../../ports/repositories/RentalRepository";
 import { GetRentalQuery } from "../../queries/definitions/Rental/GetRentalQuery";
 import { Rental } from "../../../domain/entities/Rental";
 

@@ -1,4 +1,4 @@
-import { RentalRepository } from "../../ports/repositories/Rentalrepository";
+import { RentalRepository } from "../../ports/repositories/RentalRepository";
 import { IUserRepository } from "../../ports/repositories/UserRepository";
 import { MotorcycleRepository } from "../../ports/repositories/MotorcycleRepository";
 import { CreateRentalCommand } from "../../commands/definitions/Rental/AddRentalCommand";
@@ -12,7 +12,7 @@ export class AddRentalUseCase {
   ) {}
 
   async execute(command: CreateRentalCommand): Promise<Rental> {
-    const { reference, price, rentalDate, clientId, motorcycleId } = command;
+    const { reference, rentalDate, price, clientId, motorcycleId } = command;
 
     
     const client = await this.userRepository.getUserById(clientId);
@@ -30,8 +30,8 @@ export class AddRentalUseCase {
     const rental = new Rental(
       `${Math.random()}`,
       reference,
-      price,
       rentalDate,
+      price,
       client,
       motorcycle
     );

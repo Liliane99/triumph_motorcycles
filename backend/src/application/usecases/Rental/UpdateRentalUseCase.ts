@@ -12,8 +12,9 @@ export class UpdateRentalUseCase {
     }
 
     if (command.reference) rental.updateReference(command.reference);
-    if (command.price) rental.updatePrice(command.price);
     if (command.rentalDate) rental.updateRentalDate(command.rentalDate);
+    if (command.price) rental.updatePrice(command.price);
+    
 
     return this.rentalRepository.save(rental);
   }

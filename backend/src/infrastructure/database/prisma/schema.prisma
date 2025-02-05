@@ -69,8 +69,8 @@ model Motorcycle {
 model Rental {
   id             String   @id @default(uuid())
   reference      String   @unique
-  price          Float
   rentalDate     DateTime
+  price          Int
   clientId       String
   motorcycleId   String
   

@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import motorcycleRoutes from './routes/motorcyclesRoutes'; 
+import rentalRoutes from './routes/rentalRoutes'; 
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api', motorcycleRoutes); 
+app.use('/api', motorcycleRoutes, rentalRoutes); 
 
 const PORT = process.env.PORT || 4002;
 app.listen(PORT, () => {

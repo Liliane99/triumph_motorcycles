@@ -6,47 +6,45 @@ import { RentalDateInPastError } from '../errors/Rental/RentalDateInPastError';
 
 export class Rental {
   public reference: RentalReference;
-  public price: number;
   public rentalDate: Date;
+  public price: number;
   public clientId: string; 
   public motorcycleId: string; 
-
-  
   public client: User; 
   public motorcycle: Motorcycle; 
 
   constructor(
     public readonly id: string = uuidv4(),
     reference: string,
-    price: number,
     rentalDate: Date,
+    price: number,
     client: User,
     motorcycle: Motorcycle
   ) {
     this.reference = new RentalReference(reference);
-    this.price = price;
-    this.validateRentalDate(rentalDate);
     this.rentalDate = rentalDate;
+    this.price = price;
     this.client = client;
     this.clientId = client.id; 
     this.motorcycle = motorcycle;
     this.motorcycleId = motorcycle.id; 
   }
 
-  private validateRentalDate(date: Date): void {
+  private validateRentalDate(rentalDate: Date): void {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-
-    if (date < today) {
+    today.setHours(0, 0, 0, 0);  
+  
+    if (rentalDate < today) {
       throw new RentalDateInPastError();
     }
   }
 
-  updateRentalDate(newDate: Date) {
-    this.validateRentalDate(newDate);
-    this.rentalDate = newDate;
+  updateRentalDate(newDate: Date | string) {
+    const parsedDate = newDate instanceof Date ? newDate : new Date(newDate);
+    this.validateRentalDate(parsedDate);
+    this.rentalDate = parsedDate;
   }
-  
+
   updateReference(newReference: string) {
     this.reference.updateReference(newReference);
   }
