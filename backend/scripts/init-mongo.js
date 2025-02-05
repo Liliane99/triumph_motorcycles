@@ -8,12 +8,12 @@ db.createUser({
 
 print("Admin user created successfully");
 
-db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE);
+db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE || "triumphmotor_eventstore");
 
 db.createUser({
-  user: process.env.MONGO_INITDB_USER,
-  pwd: process.env.MONGO_INITDB_PASSWORD,
-  roles: [{ role: "readWrite", db: process.env.MONGO_INITDB_DATABASE}]
+  user: process.env.MONGO_INITDB_USER || "triumph_user",
+  pwd: process.env.MONGO_INITDB_PASSWORD || "triumph_password",
+  roles: [{ role: "readWrite", db: process.env.MONGO_INITDB_DATABASE || "triumphmotor_eventstore" }]
 });
 
 print("Triumph user created successfully");
