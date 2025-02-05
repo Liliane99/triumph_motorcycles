@@ -36,13 +36,12 @@ export class RentalRepositoryImpl implements RentalRepository {
         prismaRental.motorcycle.kilometers,
         prismaRental.motorcycle.warrantyDate,
         prismaRental.motorcycle.maintenanceInterval
-      )
+      ), 
     );
   }
 
   async save(rental: Rental): Promise<Rental> {
     console.log("Attempting to save rental:", rental);
-    
     
     const rentalDateParsed = rental.rentalDate instanceof Date ? rental.rentalDate : new Date(rental.rentalDate);
     if (isNaN(rentalDateParsed.getTime())) {
@@ -74,6 +73,7 @@ export class RentalRepositoryImpl implements RentalRepository {
           price: priceParsed,
           clientId: rental.client.id,
           motorcycleId: rental.motorcycle.id,
+          updatedAt: new Date(), 
         },
         include: {
           client: true,
@@ -92,6 +92,8 @@ export class RentalRepositoryImpl implements RentalRepository {
         price: priceParsed,
         clientId: rental.client.id,
         motorcycleId: rental.motorcycle.id,
+        createdAt: new Date(), 
+        updatedAt: new Date(), 
       },
       include: {
         client: true,
