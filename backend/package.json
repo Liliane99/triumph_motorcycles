@@ -7,7 +7,8 @@
     "start:nest": "ts-node-dev src/infrastructure/core/nest/main.ts",
     "start:express": "ts-node-dev src/infrastructure/core/express/index.ts",
     "build": "tsc",
-    "start": "node dist/main-${SERVER_TYPE}.js"
+    "start": "node dist/main-${SERVER_TYPE}.js",
+    "seed": "ts-node src/infrastructure/database/prisma/seeders/seed.ts"
   },
   "prisma": {
     "seed": "ts-node src/infrastructure/database/prisma/seed.ts"
