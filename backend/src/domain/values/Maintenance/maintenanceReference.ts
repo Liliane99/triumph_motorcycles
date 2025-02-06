@@ -14,7 +14,7 @@ export class MaintenanceReference {
   
     private validate(reference: string): void {
       
-      const referenceRegex = /^Ent\d{3}$/;
+      const referenceRegex = /^ENT\d{3}$/;
       if (!referenceRegex.test(reference)) {
         throw new Error("The reference must start with 'ENT' followed by 3 digits.");
       }

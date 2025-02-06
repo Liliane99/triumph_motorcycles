@@ -53,6 +53,7 @@ model Part {
   updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
 
   orders          OrderPart[]
+  maintenances     Maintenance[] @relation("PartMaintenances")
 }
 
 model Order {
@@ -81,6 +82,8 @@ model OrderPart {
 
   @@id([order_id, part_id]) 
 }
+  
+  
 
 model Motorcycle {
   id           String @id @default(uuid())
@@ -95,6 +98,7 @@ model Motorcycle {
   updatedAt    DateTime @updatedAt
 
   rentals           Rental[] @relation("MotorcycleRentals")
+  maintenances      Maintenance[] @relation("MotorcycleMaintenances")
 }
 
 model Rental {
@@ -114,3 +118,25 @@ model Rental {
 
   @@index([clientId, motorcycleId]) 
 }
+
+model Maintenance {
+  id               String       @id @default(uuid())
+  reference        String       @unique
+  date             DateTime
+  technician       String
+  recommendation   String
+  pricePartTotal   Decimal
+  priceLabour      Decimal
+  priceTotal       Decimal
+  motorcycleId     String
+  partId           String
+
+  motorcycle       Motorcycle   @relation("MotorcycleMaintenances", fields: [motorcycleId], references: [id])
+  part             Part         @relation("PartMaintenances", fields: [partId], references: [part_id])
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([motorcycleId, partId])
+}
+

@@ -1,7 +1,9 @@
+import { QueryHandler } from "@nestjs/cqrs";
 import { GetMaintenanceQuery } from "../../definitions/Maintenance/GetMaintenanceQuery"; 
 import { GetMaintenanceUseCase } from "../../../usecases/Maintenance/GetMaintenanceUseCase";
 
-export class GetAllMaintenanceHandler {
+@QueryHandler(GetMaintenanceQuery)
+export class GetMaintenanceHandler {
   constructor(private readonly useCase: GetMaintenanceUseCase) {}
 
   async execute(query: GetMaintenanceQuery) {
