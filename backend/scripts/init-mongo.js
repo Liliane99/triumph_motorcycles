@@ -8,7 +8,6 @@ db.createUser({
 
 print("Admin user created successfully");
 
-db = db.getSiblingDB(process.env.MONGO_INITDB_DATABASE || "triumphmotor_eventstore");
 
 db.createUser({
   user: process.env.MONGO_INITDB_USER || "triumph_user",
