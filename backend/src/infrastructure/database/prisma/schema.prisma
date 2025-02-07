@@ -123,6 +123,9 @@ model Rental {
   client         User     @relation("UserRentals", fields: [clientId], references: [user_id])
   motorcycle     Motorcycle @relation("MotorcycleRentals", fields: [motorcycleId], references: [id])
 
+  createdBy    String?  
+  updatedBy    String? 
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

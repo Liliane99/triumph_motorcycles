@@ -9,7 +9,7 @@ export class CreateMotorcycleCommand {
     public readonly maintenanceInterval: number,
     public createdBy: string
   ) {
-    console.log("🛠️ [Motorcycle] Objet avant sauvegarde:", this);
+    console.log(" [Motorcycle] Objet avant sauvegarde:", this);
   }
 }
 

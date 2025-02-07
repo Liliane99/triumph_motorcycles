@@ -58,7 +58,7 @@ router.post('/', protectRoute, async (req: Request, res: Response) => {
     }
 
     const { reference, rentalDate, price, motorcycleId } = req.body;
-    const command = new CreateRentalCommand(reference, rentalDate, price, userId, motorcycleId);
+    const command = new CreateRentalCommand(reference, rentalDate, price, userId, motorcycleId, userId );
 
     console.log(" Commande envoyée au bus:", command);
     const result = await commandBus.execute(command);
@@ -84,7 +84,7 @@ router.put('/:id', protectRoute, async (req: Request, res: Response) => {
     }
 
     const { reference, rentalDate, price, motorcycleId } = req.body;
-    const command = new UpdateRentalCommand(id, reference, rentalDate, price, userId, motorcycleId);
+    const command = new UpdateRentalCommand(id, reference, rentalDate, price, userId, motorcycleId, userId );
 
     console.log(" Commande envoyée au bus:", command);
     const result = await commandBus.execute(command);

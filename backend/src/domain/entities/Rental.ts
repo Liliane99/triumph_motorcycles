@@ -12,6 +12,8 @@ export class Rental {
   public motorcycleId: string; 
   public client: User; 
   public motorcycle: Motorcycle; 
+  public createdBy: string;
+  public updatedBy?: string | null;
 
   constructor(
     public readonly id: string = uuidv4(),
@@ -19,7 +21,9 @@ export class Rental {
     rentalDate: Date,
     price: number,
     client: User,
-    motorcycle: Motorcycle
+    motorcycle: Motorcycle,
+    createdBy: string,
+    updateBy?: string | null
   ) {
     this.reference = new RentalReference(reference);
     this.rentalDate = rentalDate;
@@ -28,6 +32,8 @@ export class Rental {
     this.clientId = client.id; 
     this.motorcycle = motorcycle;
     this.motorcycleId = motorcycle.id; 
+    this.createdBy = createdBy;
+    this.updatedBy = updateBy;
   }
 
   private validateRentalDate(rentalDate: Date): void {
@@ -71,5 +77,9 @@ export class Rental {
       email: this.client.email,
       phoneNumber: this.client.phoneNumber,
     };
+  }
+
+  updateUserId(newUserId: string) {
+    this.updatedBy = newUserId;
   }
 }
