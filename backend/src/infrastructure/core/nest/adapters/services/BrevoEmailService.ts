@@ -1,6 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import axios from "axios";
 import { IEmailService } from "../../../../../application/ports/services/IEmailService";
+import dotenv from 'dotenv';
+
+
+dotenv.config();
+
+console.log("Brevo API Key:", process.env.BREVO_API_KEY);
 
 @Injectable()
 export class BrevoEmailService implements IEmailService {
@@ -8,6 +14,8 @@ export class BrevoEmailService implements IEmailService {
   private readonly apiKey = process.env.BREVO_API_KEY!;
   private readonly templateId = Number(process.env.BREVO_TEMPLATE_ID!);
   private readonly maintenanceTemplateId = Number(process.env.BREVO_TEMPLATE_ID_MAINTENANCE!);
+
+  
 
 
   async sendLowStockAlert(recipientEmail: string, partName: string, quantityInStock: number): Promise<void> {
