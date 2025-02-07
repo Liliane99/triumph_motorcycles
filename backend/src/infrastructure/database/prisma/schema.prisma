@@ -34,6 +34,7 @@ model User {
   updatedOrders   Order[] @relation("UpdatedOrders")
 
   rentals         Rental[] @relation("UserRentals")
+  drivers        Driver[] @relation("UserDrivers")
 }
 
 model Part {
@@ -95,6 +96,7 @@ model Motorcycle {
   updatedAt    DateTime @updatedAt
 
   rentals           Rental[] @relation("MotorcycleRentals")
+  drivers           Driver[] @relation("MotorcycleDrivers")
 }
 
 model Rental {
@@ -111,6 +113,22 @@ model Rental {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-
   @@index([clientId, motorcycleId]) 
+}
+
+model Driver {
+  driver_id       String   @id @default(uuid())
+  license_number  String
+  experience_level String?
+  date_of_birth   DateTime
+  client_id       String
+  motorcycle_id   String
+
+  client          User       @relation("UserDrivers", fields: [client_id], references: [user_id])
+  motorcycle      Motorcycle @relation("MotorcycleDrivers", fields: [motorcycle_id], references: [id])
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([client_id, motorcycle_id])
 }
