@@ -15,13 +15,15 @@ import { DeleteRentalUseCase } from "../../../../application/usecases/Rental/Del
 import { UpdateRentalUseCase } from "../../../../application/usecases/Rental/UpdateRentalUseCase";
 import { PrismaUserRepository } from '../../nest/adapters/repositories/PrismaUserRepository';
 import { PrismaService } from "../../../database/prisma/PrismaService"; 
+import { BrevoEmailService } from '../../nest/adapters/services/BrevoEmailService';
 
 export class CommandBus {
   private handlers: Map<string, any> = new Map();
 
   constructor() {
     const motorcycleRepository = new MotorcycleRepositoryImpl(); 
-    const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository);
+    const emailService = new BrevoEmailService();
+    const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository, emailService);
     const deleteMotorcycleUseCase = new DeleteMotorcycleUseCase(motorcycleRepository);
     const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository);
 

@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { Request } from "express";
 import * as jwt from "jsonwebtoken";
 
-interface JwtPayload {
+export interface JwtPayload {
   userId: string;
   role: "manager" | "client" | "admin";
 }

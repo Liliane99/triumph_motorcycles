@@ -1,8 +1,9 @@
 import { 
-    Controller, Post, Body, Get, Param, Put, Delete, Req, Res, HttpStatus 
+    Controller, Post, Body, Get, Param, Put, Delete, Req, Res, HttpStatus, UseGuards  
 } from "@nestjs/common";
 import { Request, Response } from "express";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { JwtAuthGuard } from "../../guards/JwtAuthGuard";
 import { v4 as uuidv4 } from "uuid";
 import { CreateMaintenanceCommand } from "../../../../../application/commands/definitions/Maintenance/AddMaintenanceCommand";
 import { UpdateMaintenanceCommand } from "../../../../../application/commands/definitions/Maintenance/UpdateMaintenanceCommand";
@@ -10,6 +11,7 @@ import { DeleteMaintenanceCommand } from "../../../../../application/commands/de
 import { GetMaintenanceQuery } from "../../../../../application/queries/definitions/Maintenance/GetMaintenanceQuery";
 import { GetAllMaintenanceQuery } from "../../../../../application/queries/definitions/Maintenance/GetMaintenanceQuery";
 
+@UseGuards(JwtAuthGuard)
 @Controller("maintenances")
 export class MaintenanceController {
     constructor(

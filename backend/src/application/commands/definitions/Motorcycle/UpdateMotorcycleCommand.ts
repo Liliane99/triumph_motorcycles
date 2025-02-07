@@ -7,6 +7,7 @@ export class UpdateMotorcycleCommand {
     public readonly licensePlate: string,
     public readonly kilometers: number,
     public readonly warrantyDate: Date,
-    public readonly maintenanceInterval: number
+    public readonly maintenanceInterval: number,
+    public userId: string
   ) {}
 }

@@ -1,14 +1,14 @@
 export class Model {
-    private readonly value: string;
-  
-    constructor(value: string) {
-      if (!value || value.trim().length < 1) {
-        throw new Error("Model can't be empty.");
-      }
-      this.value = value;
+  private value: string;
+
+  constructor(value: any) {
+    if (typeof value !== "string" || !value.trim()) {
+      throw new Error("Le modèle de la moto doit être une chaîne de caractères non vide.");
     }
-  
-    get(): string {
-      return this.value;
-    }
+    this.value = value;
   }
+
+  get(): string {
+    return this.value;
+  }
+}
