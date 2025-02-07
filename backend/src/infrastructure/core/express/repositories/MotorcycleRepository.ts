@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { MotorcycleRepository } from '../../../../application/ports/repositories/MotorcycleRepository';
 import { Motorcycle } from '../../../../domain/entities/Motorcycle';
 import { PrismaClient } from '@prisma/client';
@@ -10,6 +11,7 @@ import { MotorWithSimilarLicensePlateError } from "../../../../domain/errors/Mot
 
 const prisma = new PrismaClient();
 
+@Injectable()
 export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   
   private mapToMotorcycle(prismaMotorcycle: any): Motorcycle {
