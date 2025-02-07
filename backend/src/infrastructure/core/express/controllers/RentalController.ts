@@ -116,7 +116,7 @@ router.delete('/:id', protectRoute, async (req: Request, res: Response) => {
   }
 });
 
-// 📌 Récupérer une location par ID
+
 router.get('/:id', protectRoute, async (req: Request, res: Response) => {
   try {
     console.log("\n [GET] Récupération d'une location - ID:", req.params.id);
@@ -141,7 +141,7 @@ router.get('/:id', protectRoute, async (req: Request, res: Response) => {
   }
 });
 
-// 📌 Récupérer toutes les locations
+
 router.get('/', protectRoute, async (req: Request, res: Response) => {
   try {
     console.log("\n [GET] Récupération de toutes les locations");
