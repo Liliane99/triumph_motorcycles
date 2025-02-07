@@ -88,6 +88,16 @@ export class PrismaUserRepository implements IUserRepository {
     return user ? user.role : null;
   }
 
+  async updateUserPassword(userId: string, newPassword: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { user_id: userId },
+      data: {
+        password: newPassword, 
+        updated_at: new Date(),
+      },
+    });
+  }  
+
   private mapToDomain(user: PrismaUser): User {
     return new User(
       user.user_id,
