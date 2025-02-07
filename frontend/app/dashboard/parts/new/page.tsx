@@ -11,9 +11,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { AddUserForm } from "@/components/users/add-user-form";
+import { AddPartForm } from "@/components/parts/add-part-form";
 
-export default function NewUserPage() {
+export default function NewPartPage() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -29,11 +29,11 @@ export default function NewUserPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/users">Utilisateurs</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/parts">Pièces détachées</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Nouvel utilisateur</BreadcrumbPage>
+                  <BreadcrumbPage>Nouvelle pièce</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -41,8 +41,8 @@ export default function NewUserPage() {
         </header>
 
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-6">Ajouter un utilisateur</h1>
-          <AddUserForm />
+          <h1 className="text-2xl font-bold mb-6">Ajouter une pièce détachée</h1>
+          <AddPartForm />
         </div>
       </SidebarInset>
     </SidebarProvider>
