@@ -124,7 +124,7 @@ router.get('/:id', protectRoute, async (req: Request, res: Response) => {
     const { id } = req.params;
     const query = new GetRentalQuery(id);
 
-    console.log("🚀 Requête envoyée au bus:", query);
+    console.log(" Requête envoyée au bus:", query);
     const result = await queryBus.execute(query);
 
     if (!result) {
@@ -147,7 +147,7 @@ router.get('/', protectRoute, async (req: Request, res: Response) => {
     console.log("\n [GET] Récupération de toutes les locations");
 
     const query = new GetAllRentalQuery();
-    console.log("🚀 Requête envoyée au bus:", query);
+    console.log(" Requête envoyée au bus:", query);
 
     const result = await queryBus.execute(query);
 
