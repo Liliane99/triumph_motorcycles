@@ -37,6 +37,10 @@ model User {
   updatedOrders   Order[] @relation("UpdatedOrders")
 
   rentals         Rental[] @relation("UserRentals")
+
+  createdTrials   Trial[] @relation("CreatedTrials")
+  updatedTrials   Trial[] @relation("UpdatedTrials")
+  trialParticipations Trial[] @relation("UserTrials")
 }
 
 model Part {
@@ -110,6 +114,7 @@ model Motorcycle {
 
   rentals           Rental[] @relation("MotorcycleRentals")
   maintenances      Maintenance[] @relation("MotorcycleMaintenances")
+  trials            Trial[] @relation("MotorcycleTrials")
 }
 
 model Rental {
@@ -152,5 +157,24 @@ model Maintenance {
   updatedAt        DateTime     @updatedAt
 
   @@index([motorcycleId, partId])
+}
+
+model Trial {
+  userId       String
+  motorcycleId String
+  startDate    DateTime
+  endDate      DateTime
+  created_by   String
+  updated_by   String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  user         User        @relation("UserTrials", fields: [userId], references: [user_id])
+  motorcycle   Motorcycle  @relation("MotorcycleTrials", fields: [motorcycleId], references: [id])
+
+  creator      User        @relation("CreatedTrials", fields: [created_by], references: [user_id])
+  updater      User?       @relation("UpdatedTrials", fields: [updated_by], references: [user_id])
+
+  @@id([userId, motorcycleId]) 
 }
 

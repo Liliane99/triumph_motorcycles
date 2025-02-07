@@ -40,7 +40,7 @@ const data = {
     },
     {
       title: "Pièces détachées",
-      url: "#",
+      url: "/dashboard/parts",
       icon: Package,
     },
     {

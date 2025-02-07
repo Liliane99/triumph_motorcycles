@@ -11,12 +11,14 @@ import { UpdateUserCommand } from "../../../../../application/commands/definitio
 import { GetUserByIdQuery } from "../../../../../application/queries/definitions/users/GetUserByIdQuery";
 import { ListUsersQuery } from "../../../../../application/queries/definitions/users/ListUsersQuery";
 import { LoginUserCommand } from "../../../../../application/commands/definitions/users/LoginUserCommand";
+import { UpdateUserPasswordCommand } from "../../../../../application/commands/definitions/users/UpdateUserPasswordCommand";
 import { CreateUserDto } from "../../dto/CreateUserDto";
 import { UpdateUserDto } from "../../dto/UpdateUserDto";
 import { LoginUserDto } from "../../dto/LoginUserDto";
 import { EmailAlreadyExistsError } from "../../../../../domain/errors/users/EmailAlreadyExistsError";
 import { UserNotFoundError } from "../../../../../domain/errors/users/UserNotFoundError";
 import { InvalidCredentialsError } from "../../../../../domain/errors/users/InvalidCredentialsError";
+import { WeakPasswordError } from "../../../../../domain/errors/users/WeakPasswordError";
 
 @Controller("users")
 export class UserController {
@@ -116,6 +118,31 @@ export class UserController {
     } catch (error) {
       if (error instanceof UserNotFoundError) {
         return res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Une erreur inconnue est survenue." });
+    }
+  }
+
+  @Put(":id/password")
+  @UseGuards(JwtAuthGuard)
+  async updateUserPassword(@Req() req: Request,@Res() res: Response,@Param("id") id: string,@Body() body: { oldPassword: string; newPassword: string }) {
+    try {
+      const updatedBy = req.user?.userId ?? "system";
+
+      await this.commandBus.execute(
+        new UpdateUserPasswordCommand(id, body.oldPassword, body.newPassword, updatedBy)
+      );
+
+      return res.status(HttpStatus.OK).json({ message: "Mot de passe mis à jour avec succès !" });
+    } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        return res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      }
+      if (error instanceof InvalidCredentialsError) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({ message: "L'ancien mot de passe est incorrect." });
+      }
+      if (error instanceof WeakPasswordError) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Le nouveau mot de passe est trop faible." });
       }
       return res.status(HttpStatus.BAD_REQUEST).json({ message: "Une erreur inconnue est survenue." });
     }
