@@ -38,6 +38,8 @@ export default function Page() {
                   src="/images/suzuki-bandit-650.png"
                   alt="Suzuki Bandit 650"
                   className="w-full h-48 object-cover mb-4 rounded-lg"
+                  width={500}   
+                  height={300}  
                 />
                 <CardDescription>
                   Moto au caractère bien trempé, alliant puissance, confort et maniabilité. Ce modèle emblématique de la
