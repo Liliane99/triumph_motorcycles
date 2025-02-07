@@ -90,4 +90,6 @@ export class Motorcycle {
   updateUserId(newUserId: string) {
     this.updatedBy = newUserId;
   }
+
+  
 }
