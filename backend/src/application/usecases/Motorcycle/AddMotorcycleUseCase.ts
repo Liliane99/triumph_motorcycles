@@ -8,7 +8,7 @@ export class CreateMotorcycleUseCase {
   private readonly emailService: BrevoEmailService) {}
 
   async execute(command: CreateMotorcycleCommand): Promise<Motorcycle> {
-    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval, createdBy } = command;
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval, ownerId, createdBy } = command;
 
     
     const motorcycle = new Motorcycle(
@@ -20,6 +20,7 @@ export class CreateMotorcycleUseCase {
       kilometers,
       warrantyDate,
       maintenanceInterval,
+      ownerId,
       createdBy
     );
 

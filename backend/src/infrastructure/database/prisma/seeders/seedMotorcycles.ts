@@ -17,6 +17,7 @@ export async function seedMotorcycles() {
         kilometers: 5000,
         warrantyDate: new Date("2024-05-20"),
         maintenanceInterval: 10000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -27,6 +28,7 @@ export async function seedMotorcycles() {
         kilometers: 12000,
         warrantyDate: new Date("2023-08-15"),
         maintenanceInterval: 15000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -37,6 +39,7 @@ export async function seedMotorcycles() {
         kilometers: 3000,
         warrantyDate: new Date("2025-01-10"),
         maintenanceInterval: 12000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -47,6 +50,7 @@ export async function seedMotorcycles() {
         kilometers: 15000,
         warrantyDate: new Date("2022-06-25"),
         maintenanceInterval: 8000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -57,6 +61,7 @@ export async function seedMotorcycles() {
         kilometers: 18000,
         warrantyDate: new Date("2021-09-12"),
         maintenanceInterval: 10000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -67,6 +72,7 @@ export async function seedMotorcycles() {
         kilometers: 2500,
         warrantyDate: new Date("2025-04-05"),
         maintenanceInterval: 11000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -77,6 +83,7 @@ export async function seedMotorcycles() {
         kilometers: 9000,
         warrantyDate: new Date("2024-11-20"),
         maintenanceInterval: 7000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -87,6 +94,7 @@ export async function seedMotorcycles() {
         kilometers: 22000,
         warrantyDate: new Date("2020-07-15"),
         maintenanceInterval: 15000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -97,6 +105,7 @@ export async function seedMotorcycles() {
         kilometers: 8000,
         warrantyDate: new Date("2023-10-30"),
         maintenanceInterval: 9000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       },
       {
         id: uuidv4(),
@@ -107,6 +116,7 @@ export async function seedMotorcycles() {
         kilometers: 4000,
         warrantyDate: new Date("2025-06-01"),
         maintenanceInterval: 10000,
+        ownerId: "a2b94d74-2df6-4843-88f3-f84d9ffbf3bd",
       }
     ],
   });

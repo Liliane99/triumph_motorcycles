@@ -60,7 +60,7 @@ router.post('/', protectRoute, async (req: Request, res: Response): Promise<void
       return;
     }
 
-    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval } = req.body;
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval, ownerId } = req.body;
 
     const command = new CreateMotorcycleCommand(
       brand,
@@ -70,6 +70,7 @@ router.post('/', protectRoute, async (req: Request, res: Response): Promise<void
       kilometers,
       warrantyDate,
       maintenanceInterval,
+      ownerId,
       userId 
     );
 

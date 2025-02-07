@@ -23,6 +23,7 @@ model User {
 
   createdMotorcycles  Motorcycle[] @relation("CreatedMotorcycles")
   updatedMotorcycles  Motorcycle[] @relation("UpdatedMotorcycles")
+  MotorcycleOwner     Motorcycle[] @relation("MotorcycleOwner")
 
   creator         User? @relation("CreatedUsers", fields: [created_by], references: [user_id])
   createdUsers    User[] @relation("CreatedUsers")
@@ -101,6 +102,7 @@ model Motorcycle {
   kilometers   Int
   warrantyDate DateTime 
   maintenanceInterval Int
+  ownerId      String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -111,6 +113,7 @@ model Motorcycle {
   
   creator              User?    @relation("CreatedMotorcycles", fields: [createdBy], references: [user_id])
   updater              User?    @relation("UpdatedMotorcycles", fields: [updatedBy], references: [user_id])
+  owner                User     @relation("MotorcycleOwner", fields: [ownerId], references: [user_id]) 
 
   rentals           Rental[] @relation("MotorcycleRentals")
   maintenances      Maintenance[] @relation("MotorcycleMaintenances")

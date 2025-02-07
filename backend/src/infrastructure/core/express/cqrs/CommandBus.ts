@@ -23,29 +23,32 @@ export class CommandBus {
   constructor() {
     const motorcycleRepository = new MotorcycleRepositoryImpl(); 
     const emailService = new BrevoEmailService();
+
+    
+    const prismaService = new PrismaService(); 
+    const userRepository = new PrismaUserRepository(prismaService);
+
     const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository, emailService);
     const deleteMotorcycleUseCase = new DeleteMotorcycleUseCase(motorcycleRepository);
-    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository);
+    
+    
+    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository, emailService, userRepository);
 
     this.handlers.set("CreateMotorcycleCommand", new CreateMotorcycleHandler(createMotorcycleUseCase));
     this.handlers.set('UpdateMotorcycleCommand', new UpdateMotorcycleHandler(updateMotorcycleUseCase));
     this.handlers.set("DeleteMotorcycleCommand", new DeleteMotorcycleHandler(deleteMotorcycleUseCase));
 
-    
-    const prismaService = new PrismaService(); 
     const rentalRepository = new RentalRepositoryImpl(); 
-    const userRepository = new PrismaUserRepository(prismaService); 
 
-    
     const createRentalUseCase = new AddRentalUseCase(rentalRepository, userRepository, motorcycleRepository);
     const deleteRentalUseCase = new DeleteRentalUseCase(rentalRepository);
     const updateRentalUseCase = new UpdateRentalUseCase(rentalRepository);
 
-    
     this.handlers.set("CreateRentalCommand", new AddRentalHandler(createRentalUseCase));
     this.handlers.set('UpdateRentalCommand', new UpdateRentalHandler(updateRentalUseCase));
     this.handlers.set("DeleteRentalCommand", new DeleteRentalHandler(deleteRentalUseCase));
-  }
+}
+
 
   async execute(command: any): Promise<any> {
     const handler = this.handlers.get(command.constructor.name);
