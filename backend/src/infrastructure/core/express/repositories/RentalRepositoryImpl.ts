@@ -35,8 +35,10 @@ export class RentalRepositoryImpl implements RentalRepository {
         prismaRental.motorcycle.licensePlate,
         prismaRental.motorcycle.kilometers,
         prismaRental.motorcycle.warrantyDate,
-        prismaRental.motorcycle.maintenanceInterval
+        prismaRental.motorcycle.maintenanceInterval,
+        prismaRental.motorcycle.userId,
       ), 
+      prismaRental.userId,
     );
   }
 
@@ -74,6 +76,7 @@ export class RentalRepositoryImpl implements RentalRepository {
           clientId: rental.client.id,
           motorcycleId: rental.motorcycle.id,
           updatedAt: new Date(), 
+          updatedBy: rental.updatedBy,
         },
         include: {
           client: true,
@@ -94,6 +97,7 @@ export class RentalRepositoryImpl implements RentalRepository {
         motorcycleId: rental.motorcycle.id,
         createdAt: new Date(), 
         updatedAt: new Date(), 
+        createdBy: rental.createdBy,
       },
       include: {
         client: true,

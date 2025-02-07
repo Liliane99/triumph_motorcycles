@@ -21,7 +21,8 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
       new LicensePlate(prismaMotorcycle.licensePlate).get(),
       new Kilometers(prismaMotorcycle.kilometers).get(),
       prismaMotorcycle.warrantyDate,
-      new MaintenanceInterval(prismaMotorcycle.maintenanceInterval).get()
+      new MaintenanceInterval(prismaMotorcycle.maintenanceInterval).get(),
+      prismaMotorcycle.userId
     );
   }
 
@@ -50,6 +51,7 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
           kilometers: motorcycle.kilometers.get(),
           warrantyDate: formattedWarrantyDate, 
           maintenanceInterval: motorcycle.maintenanceInterval.get(),
+          updatedBy: motorcycle.updatedBy,
         },
       });
   
@@ -65,6 +67,7 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
         kilometers: motorcycle.kilometers.get(),
         warrantyDate: formattedWarrantyDate, 
         maintenanceInterval: motorcycle.maintenanceInterval.get(),
+        createdBy: motorcycle.createdBy,
       },
     });
   

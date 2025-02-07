@@ -14,6 +14,7 @@ export class UpdateRentalUseCase {
     if (command.reference) rental.updateReference(command.reference);
     if (command.rentalDate) rental.updateRentalDate(command.rentalDate);
     if (command.price) rental.updatePrice(command.price);
+    if (command.userId) rental.updateUserId(command.userId);
     
 
     return this.rentalRepository.save(rental);

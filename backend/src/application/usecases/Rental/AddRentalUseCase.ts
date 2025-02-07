@@ -12,7 +12,7 @@ export class AddRentalUseCase {
   ) {}
 
   async execute(command: CreateRentalCommand): Promise<Rental> {
-    const { reference, rentalDate, price, clientId, motorcycleId } = command;
+    const { reference, rentalDate, price, clientId, motorcycleId, createdBy } = command;
 
     
     const client = await this.userRepository.getUserById(clientId);
@@ -33,7 +33,8 @@ export class AddRentalUseCase {
       rentalDate,
       price,
       client,
-      motorcycle
+      motorcycle,
+      createdBy
     );
 
     return this.rentalRepository.save(rental);
