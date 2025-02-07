@@ -6,7 +6,7 @@ export class CreateMotorcycleUseCase {
   constructor(private readonly motorcycleRepository: MotorcycleRepository) {}
 
   async execute(command: CreateMotorcycleCommand): Promise<Motorcycle> {
-    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval } = command;
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval, createdBy } = command;
 
     
     const motorcycle = new Motorcycle(
@@ -17,7 +17,8 @@ export class CreateMotorcycleUseCase {
       licensePlate,
       kilometers,
       warrantyDate,
-      maintenanceInterval
+      maintenanceInterval,
+      createdBy
     );
 
     return this.motorcycleRepository.save(motorcycle);

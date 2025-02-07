@@ -14,6 +14,8 @@ export class Motorcycle {
   public kilometers: Kilometers;
   public warrantyDate: Date;
   public maintenanceInterval: MaintenanceInterval;
+  public createdBy: string;
+  public updatedBy?: string | null;
 
   constructor(
     public readonly id: string = uuidv4(),
@@ -23,13 +25,17 @@ export class Motorcycle {
     licensePlate: string,
     kilometers: number,
     warrantyDate: Date,
-    maintenanceInterval: number
+    maintenanceInterval: number,
+    createdBy: string,
+    updateBy?: string | null
   ) {
     this.brand = new Brand(brand);
     this.model = new Model(model);
     this.licensePlate = new LicensePlate(licensePlate);
     this.kilometers = new Kilometers(kilometers);
     this.maintenanceInterval = new MaintenanceInterval(maintenanceInterval);
+    this.createdBy = createdBy;
+    this.updatedBy = updateBy;
 
     this.purchaseDate = purchaseDate;
     this.warrantyDate = warrantyDate;
@@ -79,5 +85,9 @@ export class Motorcycle {
 
   updateMaintenanceInterval(maintenanceInterval: number) {
     this.maintenanceInterval = new MaintenanceInterval(maintenanceInterval);
+  }
+
+  updateUserId(newUserId: string) {
+    this.updatedBy = newUserId;
   }
 }

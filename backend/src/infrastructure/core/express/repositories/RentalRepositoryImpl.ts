@@ -35,7 +35,8 @@ export class RentalRepositoryImpl implements RentalRepository {
         prismaRental.motorcycle.licensePlate,
         prismaRental.motorcycle.kilometers,
         prismaRental.motorcycle.warrantyDate,
-        prismaRental.motorcycle.maintenanceInterval
+        prismaRental.motorcycle.maintenanceInterval,
+        prismaRental.motorcycle.userId,
       ), 
     );
   }

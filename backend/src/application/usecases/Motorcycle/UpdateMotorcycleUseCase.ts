@@ -10,7 +10,7 @@ export class UpdateMotorcycleUseCase {
       throw new Error("Motorcycle not found");
     }
 
-    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval } = command;
+    const { brand, model, purchaseDate, licensePlate, kilometers, warrantyDate, maintenanceInterval, userId } = command;
 
     
     if (brand) motorcycle.updateBrand(brand);
@@ -20,6 +20,9 @@ export class UpdateMotorcycleUseCase {
     if (kilometers) motorcycle.updateKilometers(kilometers);
     if (warrantyDate) motorcycle.updateWarrantyDate(warrantyDate);
     if (maintenanceInterval) motorcycle.updateMaintenanceInterval(maintenanceInterval);
+    if (userId) motorcycle.updateUserId(userId);
+
+    
 
     return this.motorcycleRepository.save(motorcycle);
   }
