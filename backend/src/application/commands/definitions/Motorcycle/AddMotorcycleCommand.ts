@@ -7,6 +7,7 @@ export class CreateMotorcycleCommand {
     public readonly kilometers: number,
     public readonly warrantyDate: Date,
     public readonly maintenanceInterval: number,
+    public readonly ownerId: string,
     public createdBy: string
   ) {
     console.log(" [Motorcycle] Objet avant sauvegarde:", this);

@@ -25,7 +25,7 @@ export class CommandBus {
     const emailService = new BrevoEmailService();
     const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository, emailService);
     const deleteMotorcycleUseCase = new DeleteMotorcycleUseCase(motorcycleRepository);
-    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository);
+    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository, emailService, new PrismaUserRepository(new PrismaService()));
 
     this.handlers.set("CreateMotorcycleCommand", new CreateMotorcycleHandler(createMotorcycleUseCase));
     this.handlers.set('UpdateMotorcycleCommand', new UpdateMotorcycleHandler(updateMotorcycleUseCase));

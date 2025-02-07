@@ -45,11 +45,11 @@ export class BrevoEmailService implements IEmailService {
   ): Promise<void> {
     const payload = {
       to: [{ email: recipientEmail }],
-      templateId: this.maintenanceTemplateId,
+      templateId: this.maintenanceTemplateId, 
       params: {
-        motorcycle_id: motorcycleId,
-        current_km: currentKm,
-        maintenance_interval: maintenanceInterval,
+        motorcycle_id: motorcycleId, 
+        current_km: currentKm, 
+        maintenance_interval: maintenanceInterval, 
       },
     };
 

@@ -7,8 +7,8 @@ export async function seedRentals() {
   await prisma.rental.deleteMany();
 
  
-  const userIds = ['080ba355-5373-407f-95b1-a2bf32ca6440', '1e6e40b2-8e8e-49d3-b10a-217114f9062d']; 
-  const motorcycleIds = ['386fe27b-c018-4190-bbbb-a71d59b1d391','14977e15-d7b1-4cb4-8efd-1e7c3ad2b1c6','9cf874b5-e427-4f2e-a5da-7d44c1e0a0e5']; 
+  const userIds = ['21563d60-5673-4d8f-9300-0c78858b42ff', 'a2b94d74-2df6-4843-88f3-f84d9ffbf3bd']; 
+  const motorcycleIds = ['1474dfa8-0318-4879-80ed-3a3d9cca447a','3cbdd777-46c0-4192-a7f9-67726b6adb6c','dfdff2d4-ad02-4f80-944f-c0b7c61df729']; 
 
   
   const rentals = [];
