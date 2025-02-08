@@ -15,10 +15,12 @@ import { DeleteUserUseCase } from "../../../../../application/usecases/users/Del
 import { GetUserByIdUseCase } from "../../../../../application/usecases/users/GetUserByIdUseCase";
 import { ListUsersUseCase } from "../../../../../application/usecases/users/ListUsersUseCase";
 import { LoginUserUseCase } from "../../../../../application/usecases/users/LoginUserUseCase";
+import { UpdateUserPasswordUseCase } from "../../../../../application/usecases/users/UpdateUserPasswordUseCase";
 import { CreateUserCommandHandler } from "../../../../../application/commands/handlers/users/CreateUserCommandHandler";
 import { UpdateUserCommandHandler } from "../../../../../application/commands/handlers/users/UpdateUserCommandHandler";
 import { DeleteUserCommandHandler } from "../../../../../application/commands/handlers/users/DeleteUserCommandHandler";
 import { LoginUserCommandHandler } from "../../../../../application/commands/handlers/users/LoginUserCommandHandler";
+import { UpdateUserPasswordCommandHandler } from "../../../../../application/commands/handlers/users/UpdateUserPasswordCommandHandler";
 import { GetUserByIdQueryHandler } from "../../../../../application/queries/handlers/users/GetUserByIdQueryHandler";
 import { ListUsersQueryHandler } from "../../../../../application/queries/handlers/users/ListUsersQueryHandler";
 
@@ -81,11 +83,22 @@ import { ListUsersQueryHandler } from "../../../../../application/queries/handle
         new LoginUserUseCase(userRepository, passwordService, tokenService),
       inject: ["IUserRepository", "IPasswordService", "ITokenService"], 
     },
+    {
+      provide: UpdateUserPasswordUseCase,
+      useFactory: (
+        userRepository: IUserRepository,
+        passwordService: IPasswordService,
+        eventStore: IEventPublisherService
+      ) => new UpdateUserPasswordUseCase(userRepository, passwordService, eventStore),
+      inject: ["IUserRepository", "IPasswordService", "IEventPublisherService"],
+    },
+    
 
     CreateUserCommandHandler,
     UpdateUserCommandHandler,
     DeleteUserCommandHandler,
     LoginUserCommandHandler,
+    UpdateUserPasswordCommandHandler,
     GetUserByIdQueryHandler,
     ListUsersQueryHandler,
   ],

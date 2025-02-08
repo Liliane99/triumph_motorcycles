@@ -14,6 +14,9 @@ export class Motorcycle {
   public kilometers: Kilometers;
   public warrantyDate: Date;
   public maintenanceInterval: MaintenanceInterval;
+  public ownerId: string;
+  public createdBy: string;
+  public updatedBy?: string | null;
 
   constructor(
     public readonly id: string = uuidv4(),
@@ -23,13 +26,19 @@ export class Motorcycle {
     licensePlate: string,
     kilometers: number,
     warrantyDate: Date,
-    maintenanceInterval: number
+    maintenanceInterval: number,
+    ownerId: string,
+    createdBy: string,
+    updateBy?: string | null
   ) {
     this.brand = new Brand(brand);
     this.model = new Model(model);
     this.licensePlate = new LicensePlate(licensePlate);
     this.kilometers = new Kilometers(kilometers);
     this.maintenanceInterval = new MaintenanceInterval(maintenanceInterval);
+    this.ownerId = ownerId;
+    this.createdBy = createdBy;
+    this.updatedBy = updateBy;
 
     this.purchaseDate = purchaseDate;
     this.warrantyDate = warrantyDate;
@@ -40,6 +49,18 @@ export class Motorcycle {
     if (this.warrantyDate <= this.purchaseDate) {
       throw new Error("Warranty date must be after the purchase date.");
     }
+  }
+
+  getMaintenanceInterval(): MaintenanceInterval {
+    return this.maintenanceInterval;
+  }
+
+  getKilometers(): Kilometers {
+    return this.kilometers;
+  }
+
+  getOwnerId(): string {
+    return this.ownerId;
   }
 
   updateBrand(brand: string) {
@@ -80,4 +101,18 @@ export class Motorcycle {
   updateMaintenanceInterval(maintenanceInterval: number) {
     this.maintenanceInterval = new MaintenanceInterval(maintenanceInterval);
   }
+
+  updateUserId(newUserId: string) {
+    this.updatedBy = newUserId;
+  }
+
+  setKilometers(km: Kilometers): void {
+    this.kilometers = km;
+  }
+
+  setMaintenanceInterval(interval: MaintenanceInterval): void {
+    this.maintenanceInterval = interval;
+  }
+
+  
 }

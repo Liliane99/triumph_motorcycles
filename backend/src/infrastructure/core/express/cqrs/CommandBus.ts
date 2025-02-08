@@ -24,6 +24,7 @@ import { UpdateDriverUseCase } from "../../../../application/usecases/Driver/Upd
 
 import { PrismaUserRepository } from '../../nest/adapters/repositories/PrismaUserRepository';
 import { PrismaService } from "../../../database/prisma/PrismaService"; 
+import { BrevoEmailService } from '../../nest/adapters/services/BrevoEmailService';
 
 export class CommandBus {
   private handlers: Map<string, any> = new Map();
@@ -31,18 +32,28 @@ export class CommandBus {
   constructor() {
     const prismaService = new PrismaService(); 
     const motorcycleRepository = new MotorcycleRepositoryImpl(); 
+    const emailService = new BrevoEmailService();
+
+    
+    const prismaService = new PrismaService(); 
+    const userRepository = new PrismaUserRepository(prismaService);
+
     const rentalRepository = new RentalRepositoryImpl(); 
     const driverRepository = new DriverRepositoryImpl(); 
     const userRepository = new PrismaUserRepository(prismaService); 
 
     // Use Cases pour Motorcycle
-    const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository);
+    const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository, emailService);
     const deleteMotorcycleUseCase = new DeleteMotorcycleUseCase(motorcycleRepository);
-    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository);
+    
+    
+    const updateMotorcycleUseCase = new UpdateMotorcycleUseCase(motorcycleRepository, emailService, userRepository);
 
     this.handlers.set("CreateMotorcycleCommand", new CreateMotorcycleHandler(createMotorcycleUseCase));
     this.handlers.set("UpdateMotorcycleCommand", new UpdateMotorcycleHandler(updateMotorcycleUseCase));
     this.handlers.set("DeleteMotorcycleCommand", new DeleteMotorcycleHandler(deleteMotorcycleUseCase));
+
+    const rentalRepository = new RentalRepositoryImpl(); 
 
     // Use Cases pour Rental
     const createRentalUseCase = new AddRentalUseCase(rentalRepository, userRepository, motorcycleRepository);
@@ -61,7 +72,8 @@ export class CommandBus {
     this.handlers.set("CreateDriverCommand", new AddDriverHandler(createDriverUseCase));
     this.handlers.set("UpdateDriverCommand", new UpdateDriverHandler(updateDriverUseCase));
     this.handlers.set("DeleteDriverCommand", new DeleteDriverHandler(deleteDriverUseCase));
-  }
+}
+
 
   async execute(command: any): Promise<any> {
     const handler = this.handlers.get(command.constructor.name);

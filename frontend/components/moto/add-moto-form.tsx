@@ -34,7 +34,7 @@ const motoSchema = z.object({
     date: z.date({ required_error: "La date est obligatoire." }).nullable(),
     warranty: z.date({ required_error: "La date est obligatoire." }).nullable(),
     maintenanceInterval: z.number({ required_error: "Intervalle dentretien obligatoire." }).positive(),
-    kilometer: z.number().positive().int().min(0, { message: "Kilométrage doit être positif" }), // Validation du kilométrage
+    kilometer: z.number().positive().int().min(0, { message: "Kilométrage doit être positif" }), 
     client: z.string().min(1, { message: "Client obligatoire." }),
 });
 
@@ -67,7 +67,7 @@ export function AddMotoForm({
             date: null,
             warranty: null,
             maintenanceInterval: 0,
-            kilometer: 0,  // Valeur par défaut pour kilometer
+            kilometer: 0,  
             client: "",
             ...defaultValues,
         },
@@ -216,7 +216,7 @@ export function AddMotoForm({
 
                 <FormField
                     control={form.control}
-                    name="kilometer"  // Nouveau champ pour le kilométrage
+                    name="kilometer"  
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Kilométrage (km)</FormLabel>

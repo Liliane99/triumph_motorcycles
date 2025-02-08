@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import { MotorcycleRepository } from '../../../../application/ports/repositories/MotorcycleRepository';
 import { Motorcycle } from '../../../../domain/entities/Motorcycle';
 import { PrismaClient } from '@prisma/client';
@@ -10,6 +11,7 @@ import { MotorWithSimilarLicensePlateError } from "../../../../domain/errors/Mot
 
 const prisma = new PrismaClient();
 
+@Injectable()
 export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   
   private mapToMotorcycle(prismaMotorcycle: any): Motorcycle {
@@ -21,7 +23,9 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
       new LicensePlate(prismaMotorcycle.licensePlate).get(),
       new Kilometers(prismaMotorcycle.kilometers).get(),
       prismaMotorcycle.warrantyDate,
-      new MaintenanceInterval(prismaMotorcycle.maintenanceInterval).get()
+      new MaintenanceInterval(prismaMotorcycle.maintenanceInterval).get(),
+      prismaMotorcycle.ownerId,
+      prismaMotorcycle.userId
     );
   }
 
@@ -50,6 +54,8 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
           kilometers: motorcycle.kilometers.get(),
           warrantyDate: formattedWarrantyDate, 
           maintenanceInterval: motorcycle.maintenanceInterval.get(),
+          ownerId: motorcycle.ownerId,
+          updatedBy: motorcycle.updatedBy,
         },
       });
   
@@ -65,6 +71,8 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
         kilometers: motorcycle.kilometers.get(),
         warrantyDate: formattedWarrantyDate, 
         maintenanceInterval: motorcycle.maintenanceInterval.get(),
+        ownerId: motorcycle.ownerId,
+        createdBy: motorcycle.createdBy,
       },
     });
   

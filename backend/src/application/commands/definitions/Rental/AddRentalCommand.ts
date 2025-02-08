@@ -4,7 +4,8 @@ export class CreateRentalCommand {
       public readonly rentalDate: Date,
       public readonly price: number,
       public readonly clientId: string,
-      public readonly motorcycleId: string
+      public readonly motorcycleId: string,
+      public createdBy: string
     ) {}
   }
   

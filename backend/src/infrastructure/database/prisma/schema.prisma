@@ -21,6 +21,10 @@ model User {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
+  createdMotorcycles  Motorcycle[] @relation("CreatedMotorcycles")
+  updatedMotorcycles  Motorcycle[] @relation("UpdatedMotorcycles")
+  MotorcycleOwner     Motorcycle[] @relation("MotorcycleOwner")
+
   creator         User? @relation("CreatedUsers", fields: [created_by], references: [user_id])
   createdUsers    User[] @relation("CreatedUsers")
 
@@ -34,6 +38,10 @@ model User {
   updatedOrders   Order[] @relation("UpdatedOrders")
 
   rentals         Rental[] @relation("UserRentals")
+
+  createdTrials   Trial[] @relation("CreatedTrials")
+  updatedTrials   Trial[] @relation("UpdatedTrials")
+  trialParticipations Trial[] @relation("UserTrials")
   drivers        Driver[] @relation("UserDrivers")
 }
 
@@ -54,6 +62,7 @@ model Part {
   updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
 
   orders          OrderPart[]
+  maintenances     Maintenance[] @relation("PartMaintenances")
 }
 
 model Order {
@@ -82,6 +91,8 @@ model OrderPart {
 
   @@id([order_id, part_id]) 
 }
+  
+  
 
 model Motorcycle {
   id           String @id @default(uuid())
@@ -92,10 +103,22 @@ model Motorcycle {
   kilometers   Int
   warrantyDate DateTime 
   maintenanceInterval Int
+  ownerId      String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  
+  createdBy    String?  
+  updatedBy    String?  
+
+  
+  creator              User?    @relation("CreatedMotorcycles", fields: [createdBy], references: [user_id])
+  updater              User?    @relation("UpdatedMotorcycles", fields: [updatedBy], references: [user_id])
+  owner                User     @relation("MotorcycleOwner", fields: [ownerId], references: [user_id]) 
+
   rentals           Rental[] @relation("MotorcycleRentals")
+  maintenances      Maintenance[] @relation("MotorcycleMaintenances")
+  trials            Trial[] @relation("MotorcycleTrials")
   drivers           Driver[] @relation("MotorcycleDrivers")
 }
 
@@ -110,11 +133,56 @@ model Rental {
   client         User     @relation("UserRentals", fields: [clientId], references: [user_id])
   motorcycle     Motorcycle @relation("MotorcycleRentals", fields: [motorcycleId], references: [id])
 
+  createdBy    String?  
+  updatedBy    String? 
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@index([clientId, motorcycleId]) 
 }
+
+model Maintenance {
+  id               String       @id @default(uuid())
+  reference        String       @unique
+  date             DateTime
+  technician       String
+  recommendation   String
+  pricePartTotal   Decimal
+  priceLabour      Decimal
+  priceTotal       Decimal
+  motorcycleId     String
+  partId           String
+
+  motorcycle       Motorcycle   @relation("MotorcycleMaintenances", fields: [motorcycleId], references: [id])
+  part             Part         @relation("PartMaintenances", fields: [partId], references: [part_id])
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([motorcycleId, partId])
+}
+
+model Trial {
+  userId       String
+  motorcycleId String
+  startDate    DateTime
+  endDate      DateTime
+  created_by   String
+  updated_by   String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  user         User        @relation("UserTrials", fields: [userId], references: [user_id])
+  motorcycle   Motorcycle  @relation("MotorcycleTrials", fields: [motorcycleId], references: [id])
+
+  creator      User        @relation("CreatedTrials", fields: [created_by], references: [user_id])
+  updater      User?       @relation("UpdatedTrials", fields: [updated_by], references: [user_id])
+
+  @@id([userId, motorcycleId]) 
+}
+
+
 
 model Driver {
   driver_id       String   @id @default(uuid())
