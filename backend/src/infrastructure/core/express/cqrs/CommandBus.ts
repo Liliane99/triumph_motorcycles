@@ -34,13 +34,9 @@ export class CommandBus {
     const motorcycleRepository = new MotorcycleRepositoryImpl(); 
     const emailService = new BrevoEmailService();
 
-    
-    const prismaService = new PrismaService(); 
     const userRepository = new PrismaUserRepository(prismaService);
-
     const rentalRepository = new RentalRepositoryImpl(); 
     const driverRepository = new DriverRepositoryImpl(); 
-    const userRepository = new PrismaUserRepository(prismaService); 
 
     // Use Cases pour Motorcycle
     const createMotorcycleUseCase = new CreateMotorcycleUseCase(motorcycleRepository, emailService);
@@ -52,8 +48,6 @@ export class CommandBus {
     this.handlers.set("CreateMotorcycleCommand", new CreateMotorcycleHandler(createMotorcycleUseCase));
     this.handlers.set("UpdateMotorcycleCommand", new UpdateMotorcycleHandler(updateMotorcycleUseCase));
     this.handlers.set("DeleteMotorcycleCommand", new DeleteMotorcycleHandler(deleteMotorcycleUseCase));
-
-    const rentalRepository = new RentalRepositoryImpl(); 
 
     // Use Cases pour Rental
     const createRentalUseCase = new AddRentalUseCase(rentalRepository, userRepository, motorcycleRepository);
