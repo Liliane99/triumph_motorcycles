@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -13,44 +15,57 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { getUserById, User } from "@/lib/api";
+import { toast } from "react-toastify";
 import { UserIcon, Mail, Phone, Calendar, Shield } from "lucide-react";
 
-type User = {
-  id: string;
-  raisonSociale: string;
-  email: string;
-  phone_number: string;
-  role: string;
-  createdAt: string;
-  createdBy: string;
-  updatedAt: string;
-  updatedBy: string;
-  license_number?: string;
-  experience_level?: string;
-};
-
 export default function UserDetailsPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [createdByName, setCreatedByName] = useState<string>("Inconnu");
+  const [updatedByName, setUpdatedByName] = useState<string>("Inconnu");
 
   useEffect(() => {
-    const mockUser: User = {
-      id: params.id,
-      raisonSociale: "Exemple Société",
-      email: "example@example.com",
-      phone_number: "0612345678",
-      role: "client",
-      createdAt: "2025-01-01T10:00:00Z",
-      createdBy: "Admin",
-      updatedAt: "2025-01-10T12:00:00Z",
-      updatedBy: "Manager",
-      license_number: "AA-123-BB",
-      experience_level: "Intermédiaire",
-    };
-    setUser(mockUser);
-  }, [params.id]);
+    async function fetchUserDetails() {
+      try {
+        const userData = await getUserById(params.id);
+        if (!userData) {
+          toast.error("Utilisateur introuvable.");
+          router.push("/dashboard/users");
+          return;
+        }
 
-  if (!user) return <p>Chargement...</p>;
+        const formattedUser: User = {
+          id: userData.id,
+          username: userData.username.value,
+          email: userData.email.value,
+          role: userData.role.value,
+          createdByName: "Inconnu",
+          updatedByName: "Inconnu",
+          createdAt: userData.createdAt,
+          updatedAt: userData.updatedAt,
+          phoneNumber: userData.phoneNumber?.value || undefined,
+          licenseNumber: userData.licenseNumber?.value || undefined,
+          experienceLevel: userData.experienceLevel?.value || undefined,
+        };
+
+        setUser(formattedUser);
+
+        if (userData.createdBy) {
+          const createdUser = await getUserById(userData.createdBy);
+          setCreatedByName(createdUser?.username?.value || "Inconnu");
+        }
+        if (userData.updatedBy) {
+          const updatedUser = await getUserById(userData.updatedBy);
+          setUpdatedByName(updatedUser?.username?.value || "Inconnu");
+        }
+      } catch (error) {
+        toast.error("Erreur lors du chargement des informations.");
+        router.push("/dashboard/users");
+      }
+    }
+    fetchUserDetails();
+  }, [params.id, router]);
 
   const roleColors: Record<string, string> = {
     admin: "bg-red-500 text-white",
@@ -77,7 +92,9 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{user.raisonSociale}</BreadcrumbPage>
+                  <BreadcrumbPage>
+                    {user ? user.username : "Chargement..."}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -85,61 +102,63 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
         </header>
 
         <div className="p-4 space-y-6">
-          <h1 className="text-3xl font-bold">Détails de utilisateur</h1>
+          <h1 className="text-3xl font-bold">
+            {user ? `Détails de ${user.username}` : "Chargement..."}
+          </h1>
 
-          <Card>
-            <CardHeader className="flex flex-col items-center">
-              <UserIcon className="h-16 w-16 rounded-full bg-muted p-3" />
-              <CardTitle className="mt-4 text-2xl font-bold">
-                {user.raisonSociale}
-              </CardTitle>
-              <Badge className={`mt-2 ${roleColors[user.role]}`}>{user.role}</Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <p className="flex items-center gap-2 text-lg">
-                    <Mail className="h-5 w-5 text-muted-foreground" />
-                    <strong>Email :</strong> {user.email}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Phone className="h-5 w-5 text-muted-foreground" />
-                    <strong>Téléphone :</strong> {user.phone_number}
-                  </p>
-                  {user.license_number && (
+          {user && (
+            <Card>
+              <CardHeader className="flex flex-col items-center">
+                <UserIcon className="h-16 w-16 rounded-full bg-muted p-3" />
+                <CardTitle className="mt-4 text-2xl font-bold">{user.username}</CardTitle>
+                <Badge className={`mt-2 ${roleColors[user.role]}`}>{user.role}</Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <p className="flex items-center gap-2 text-lg">
-                      <Shield className="h-5 w-5 text-muted-foreground" />
-                      <strong>Plaque immatriculation :</strong> {user.license_number}
+                      <Mail className="h-5 w-5 text-muted-foreground" />
+                      <strong>Email :</strong> {user.email}
                     </p>
-                  )}
-                  {user.experience_level && (
+                    {user.phoneNumber && (
+                      <p className="flex items-center gap-2 text-lg">
+                        <Phone className="h-5 w-5 text-muted-foreground" />
+                        <strong>Téléphone :</strong> {user.phoneNumber}
+                      </p>
+                    )}
+                    {user.licenseNumber && (
+                      <p className="flex items-center gap-2 text-lg">
+                        <Shield className="h-5 w-5 text-muted-foreground" />
+                        <strong>Plaque immatriculation :</strong> {user.licenseNumber}
+                      </p>
+                    )}
+                    {user.experienceLevel && (
+                      <p className="flex items-center gap-2 text-lg">
+                        <Shield className="h-5 w-5 text-muted-foreground" />
+                        <strong>Niveau expérience :</strong> {user.experienceLevel}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-4">
                     <p className="flex items-center gap-2 text-lg">
-                      <Shield className="h-5 w-5 text-muted-foreground" />
-                      <strong>Niveau expérience :</strong> {user.experience_level}
+                      <Calendar className="h-5 w-5 text-muted-foreground" />
+                      <strong>Créé le :</strong> {new Date(user.createdAt).toLocaleString()}
                     </p>
-                  )}
+                    <p className="flex items-center gap-2 text-lg">
+                      <strong>Créé par :</strong> {createdByName}
+                    </p>
+                    <p className="flex items-center gap-2 text-lg">
+                      <Calendar className="h-5 w-5 text-muted-foreground" />
+                      <strong>Modifié le :</strong> {new Date(user.updatedAt).toLocaleString()}
+                    </p>
+                    <p className="flex items-center gap-2 text-lg">
+                      <strong>Modifié par :</strong> {updatedByName}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <p className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Créé le :</strong>{" "}
-                    {new Date(user.createdAt).toLocaleString()}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <strong>Créé par :</strong> {user.createdBy}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Modifié le :</strong>{" "}
-                    {new Date(user.updatedAt).toLocaleString()}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <strong>Modifié par :</strong> {user.updatedBy}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>
