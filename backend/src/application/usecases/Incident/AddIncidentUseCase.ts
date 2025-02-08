@@ -10,7 +10,7 @@ export class CreateIncidentUseCase {
   ) {}
 
   async execute(command: CreateIncidentCommand): Promise<Incident> {
-    const { description, date, motorcycleId } = command;
+    const { reference, description, date, motorcycleId } = command;
 
     
     const motorcycle = await this.motorcycleRepository.findById(motorcycleId);
@@ -21,6 +21,7 @@ export class CreateIncidentUseCase {
     
     const incident = new Incident(
       `${Math.random()}`,
+      reference,
       description,
       date,
       motorcycle

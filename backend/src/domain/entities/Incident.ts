@@ -12,18 +12,25 @@ export class Incident {
 
     constructor(
         public readonly id: string = uuidv4(),
+        reference: string,
         description: string,
         date: Date,
         motorcycle: Motorcycle,
     ) {
         
-        if (date < new Date()) {
-            throw new InvalidDateError("La date de l'incident ne peut pas être dans le passé.");
+        const incidentDate = date instanceof Date ? date : new Date(date);
+
+        if (isNaN(incidentDate.getTime())) {
+        throw new Error("Format de date invalide.");
         }
 
-        this.reference = new IncidentReference();
+        if (incidentDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
+        throw new Error("La date de l'incident ne peut pas être dans le passé.");
+        }
+
+        this.reference = new IncidentReference(reference);
         this.description = description;
-        this.date = date;
+        this.date = incidentDate;
         this.motorcycle = motorcycle;
         this.motorcycleId = motorcycle.id;
     }

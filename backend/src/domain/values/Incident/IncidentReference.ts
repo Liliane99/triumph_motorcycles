@@ -1,19 +1,41 @@
 import { InvalidReferenceError } from "../../errors/Incident/InvalidReferenceError";
 
 export class IncidentReference {
-    private readonly value: string;
-    private static readonly REFERENCE_REGEX = /^INC-\d{3}$/;
 
-    constructor() {
-        this.value = `INC-${Math.floor(100 + Math.random() * 900)}`;
-
+    private reference: string;
+  
+    constructor(reference?: string) {
+      
+      if (reference) {
+        this.validate(reference);
+        this.reference = reference;
+      } else {
         
-        if (!IncidentReference.REFERENCE_REGEX.test(this.value)) {
-            throw new InvalidReferenceError(`Référence invalide : ${this.value}`);
-        }
+        this.reference = this.generateReference();
+      }
     }
-
-    toString(): string {
-        return this.value;
+  
+    private validate(reference: string): void {
+      
+      const referenceRegex = /^INC-\d{3}$/;
+      if (!referenceRegex.test(reference)) {
+        throw new Error("The reference must start with 'INC-' followed by 3 digits.");
+      }
+    }
+  
+    private generateReference(): string {
+      
+      const randomNumber = Math.floor(Math.random() * 900) + 100; 
+      return `INC-${randomNumber}`;
+    }
+  
+    getReference(): string {
+      return this.reference;
+    }
+  
+    
+    updateReference(newReference: string) {
+      this.validate(newReference);
+      this.reference = newReference;
     }
 }
