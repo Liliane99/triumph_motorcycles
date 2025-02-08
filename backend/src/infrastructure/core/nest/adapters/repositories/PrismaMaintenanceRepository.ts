@@ -29,8 +29,8 @@ export class MaintenanceRepositoryImpl implements MaintenanceRepository {
         new Date(prismaMaintenance.motorcycle.warrantyDate),
         prismaMaintenance.motorcycle.maintenanceInterval,
         prismaMaintenance.motorcycle.ownerId,
-        prismaMaintenance.motorcycle.created_by,
-        prismaMaintenance.motorcycle.updated_by,
+        prismaMaintenance.motorcycle.createdBy,
+        prismaMaintenance.motorcycle.updatedBy,
       ),
       new Part(
         prismaMaintenance.part.id,
