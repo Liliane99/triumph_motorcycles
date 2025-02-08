@@ -4,10 +4,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { createUser } from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -25,8 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { User } from "@/lib/api";
 
-const addUserSchema = z.object({
+// ✅ Schéma de validation
+const editUserSchema = z.object({
   username: z.string()
     .min(3, { message: "Le nom doit contenir au moins 3 caractères." })
     .max(30, { message: "Le nom ne doit pas dépasser 30 caractères." }),
@@ -43,10 +41,6 @@ const addUserSchema = z.object({
       { message: "Numéro de téléphone invalide (ex: +33612345678)." }
     ),
 
-  password: z.string()
-    .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères." })
-    .regex(/^(?=.*[A-Z])(?=.*\d).+$/, { message: "Le mot de passe doit contenir au moins une majuscule et un chiffre." }),
-
   role: z.enum(["manager", "client", "admin"], { required_error: "Le rôle est obligatoire." }),
 
   licenseNumber: z.string()
@@ -59,68 +53,43 @@ const addUserSchema = z.object({
   experienceLevel: z.string().optional(),
 });
 
-type AddUserFormValues = z.infer<typeof addUserSchema>;
+// ✅ Typage du formulaire
+type EditUserFormValues = z.infer<typeof editUserSchema>;
 
-export function AddUserForm() {
-  const { user } = useAuth();
-  const router = useRouter();
+// ✅ Props du composant
+interface EditUserFormProps {
+  defaultValues: Partial<User>;
+  onSubmit: (values: Partial<User>) => void;
+  disableRole?: boolean;
+}
+
+export function EditUserForm({ defaultValues, onSubmit, disableRole = false }: EditUserFormProps) {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<AddUserFormValues>({
-    resolver: zodResolver(addUserSchema),
+  const form = useForm<EditUserFormValues>({
+    resolver: zodResolver(editUserSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      phoneNumber: "",
-      password: generatePassword(12),
-      role: "client",
-      licenseNumber: "",
-      experienceLevel: "",
+      username: defaultValues.username || "",
+      email: defaultValues.email || "",
+      phoneNumber: defaultValues.phoneNumber || "",
+      role: defaultValues.role || "client",
+      licenseNumber: defaultValues.licenseNumber || "",
+      experienceLevel: defaultValues.experienceLevel || "",
     },
   });
 
-  function generatePassword(length: number) {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  }
-
-  const onSubmit = async (values: AddUserFormValues) => {
-    if (!user || !user.role) {
-      toast.error("Vous devez être connecté pour effectuer cette action.");
-      return;
-    }
-
-    if (user.role !== "admin" && user.role !== "manager") {
-      toast.error("Vous n'êtes pas autorisé à ajouter un utilisateur.");
-      return;
-    }
-
+  const handleSubmit = async (values: EditUserFormValues) => {
     setLoading(true);
     try {
-      await createUser(values, localStorage.getItem("token") || "");
-      toast.success("Utilisateur ajouté avec succès !");
-      router.push("/dashboard/users");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Une erreur inconnue est survenue.");
-      }      
+      await onSubmit(values);
     } finally {
       setLoading(false);
     }
   };
 
-  const availableRoles =
-    user?.role === "admin"
-      ? ["admin", "manager", "client"]
-      : user?.role === "manager"
-      ? ["manager", "client"]
-      : [];
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="username"
@@ -163,44 +132,30 @@ export function AddUserForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <Input type="text" readOnly {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Rôle</FormLabel>
-              <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choisissez un rôle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableRoles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!disableRole && (
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Rôle</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisissez un rôle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="client">Client</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -231,7 +186,7 @@ export function AddUserForm() {
         />
 
         <Button type="submit" disabled={loading}>
-          {loading ? "Ajout en cours..." : "Ajouter utilisateur"}
+          {loading ? "Mise à jour..." : "Mettre à jour"}
         </Button>
       </form>
     </Form>

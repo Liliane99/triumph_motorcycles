@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AuthProvider } from "@/hooks/useAuth"; 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,8 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased, "h-full"`}>
-        {children} 
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
+        <AuthProvider>
+          {children}
+          <ToastContainer position="top-right" autoClose={3000} />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -16,14 +16,47 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { changePassword } from "@/lib/api";
 
 export default function ChangePasswordPage() {
-  const handleSubmit = async (values: {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async ({
+    currentPassword,
+    newPassword,
+  }: {
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
   }) => {
-    console.log("Changement de mot de passe :", values);
+    if (!user) {
+      toast.error("Vous devez être connecté.");
+      router.push("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("token") || "";
+    if (!token) {
+      toast.error("Authentification requise.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await changePassword(user.userId, currentPassword, newPassword, token);
+      toast.success("Mot de passe changé avec succès !");
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Une erreur inconnue est survenue.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

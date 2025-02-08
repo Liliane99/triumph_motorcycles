@@ -4,7 +4,11 @@ import { Value } from "../Value";
 export class PartName implements Value<string> {
   private constructor(public readonly value: string) {}
 
-  public static from(value: string): PartName | InvalidPartNameError {
+  public static from(value: unknown): PartName | InvalidPartNameError {
+    if (typeof value !== "string") {
+      return new InvalidPartNameError(String(value)); 
+    }
+
     const normalizedPartName = value.trim();
 
     if (normalizedPartName.length < 3) {

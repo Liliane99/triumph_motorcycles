@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -12,49 +14,85 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { AddPartForm } from "@/components/parts/add-part-form";
-import { useEffect, useState } from "react";
-
-type Part = {
-  id: string;
-  reference: string;
-  type: string;
-  name: string;
-  quantity_in_stock: number;
-  part_threshold: number;
-  unit_price: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-};
-
-type AddPartFormValues = Omit<Part, "id" | "created_at" | "updated_at" | "created_by" | "updated_by">;
+import { getPartById, updatePart, Part } from "@/lib/api";
+import { toast } from "react-toastify";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function EditPartPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const { user } = useAuth();
   const [part, setPart] = useState<Part | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const mockPart: Part = {
-      id: params.id,
-      reference: "P12345",
-      type: "brake",
-      name: "Disque de frein",
-      quantity_in_stock: 10,
-      part_threshold: 5,
-      unit_price: 50.99,
-      created_at: "2025-01-01T10:00:00Z",
-      updated_at: "2025-01-10T12:00:00Z",
-      created_by: "Admin",
-      updated_by: "Manager",
-    };
-    setPart(mockPart);
-  }, [params.id]);
+    async function fetchPartDetails() {
+      try {
+        const fetchedPart = await getPartById(params.id);
+        if (!fetchedPart) {
+          toast.error("Pièce non trouvée.");
+          router.push("/dashboard/parts");
+          return;
+        }
 
-  if (!part) return <p>Chargement...</p>;
+        const formattedPart: Part = {
+          id: fetchedPart.id,
+          reference: fetchedPart.reference.value, 
+          type: fetchedPart.type.value as Part["type"], 
+          name: fetchedPart.name.value, 
+          quantityInStock: fetchedPart.quantityInStock.value, 
+          partThreshold: fetchedPart.partThreshold.value, 
+          unitPrice: fetchedPart.unitPrice.value, 
+          createdByName: "Inconnu",
+          updatedByName: "Inconnu",
+          createdAt: new Date(fetchedPart.createdAt).toLocaleString(),
+          updatedAt: new Date(fetchedPart.updatedAt).toLocaleString(),
+        };
 
-  const handleSubmit = (values: AddPartFormValues) => {
-    const updatedPart: Part = { ...values, id: part.id, created_at: part.created_at, updated_at: new Date().toISOString(), created_by: part.created_by, updated_by: "Admin" };
-    console.log("Pièce mise à jour :", updatedPart);
+        setPart(formattedPart);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Erreur lors du chargement de la pièce.");
+        router.push("/dashboard/parts");
+      }
+    }
+
+    fetchPartDetails();
+  }, [params.id, router]);
+
+  if (loading) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+  if (!part) return <p className="text-center text-lg font-semibold">Pièce non trouvée.</p>;
+
+  const handleSubmit = async (values: Omit<Part, "id" | "createdAt" | "updatedAt" | "createdByName" | "updatedByName">) => {
+    if (!user) {
+      toast.error("Vous devez être connecté.");
+      return;
+    }
+
+    const token = localStorage.getItem("token") || "";
+    if (!token) {
+      toast.error("Authentification requise.");
+      return;
+    }
+
+    try {
+      await updatePart(
+        part.id,
+        {
+          reference: values.reference,
+          type: values.type,
+          name: values.name,
+          quantityInStock: values.quantityInStock,
+          partThreshold: values.partThreshold,
+          unitPrice: values.unitPrice,
+        },
+        token
+      );
+
+      toast.success("Pièce mise à jour avec succès !");
+      router.push("/dashboard/parts");
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour de la pièce.");
+    }
   };
 
   return (

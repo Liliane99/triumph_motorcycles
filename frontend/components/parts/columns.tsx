@@ -4,20 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
-
-export type Part = {
-  id: string;
-  reference: string;
-  type: string;
-  name: string;
-  quantityInStock: number;
-  partThreshold: number;
-  unitPrice: number;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-};
+import { Part } from "@/lib/api"; 
 
 export const columns: ColumnDef<Part>[] = [
   {
@@ -45,9 +32,22 @@ export const columns: ColumnDef<Part>[] = [
     header: "Prix unitaire (€)",
   },
   {
+    accessorKey: "createdByName",
+    header: "Créé par",
+  },
+  {
+    accessorKey: "updatedByName",
+    header: "Modifié par",
+  },
+  {
     accessorKey: "createdAt",
     header: "Créé le",
-    cell: ({ row }) => <span>{new Date(row.getValue("createdAt")).toLocaleString()}</span>,
+    cell: ({ row }) => <span>{row.getValue("createdAt")}</span>,
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Modifié le",
+    cell: ({ row }) => <span>{row.getValue("updatedAt")}</span>,
   },
   {
     id: "actions",
@@ -74,34 +74,5 @@ export const columns: ColumnDef<Part>[] = [
         </div>
       );
     },
-  },
-];
-
-export const mockParts: Part[] = [
-  {
-    id: "1",
-    reference: "P12345",
-    type: "brake",
-    name: "Disque de frein",
-    quantityInStock: 10,
-    partThreshold: 5,
-    unitPrice: 50.99,
-    createdAt: "2025-01-01T10:00:00Z",
-    updatedAt: "2025-01-10T12:00:00Z",
-    createdBy: "Admin",
-    updatedBy: "Manager",
-  },
-  {
-    id: "2",
-    reference: "P67890",
-    type: "tire",
-    name: "Pneu avant",
-    quantityInStock: 20,
-    partThreshold: 8,
-    unitPrice: 75.99,
-    createdAt: "2025-01-02T11:00:00Z",
-    updatedAt: "2025-01-12T14:00:00Z",
-    createdBy: "Admin",
-    updatedBy: "Manager",
   },
 ];

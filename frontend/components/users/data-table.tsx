@@ -72,9 +72,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <div className="flex gap-4">
           <Input
             placeholder="Rechercher..."
-            value={(table.getColumn("raisonSociale")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn("username")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("raisonSociale")?.setFilterValue(event.target.value)
+              table.getColumn("username")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
