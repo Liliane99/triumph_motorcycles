@@ -33,7 +33,7 @@ export class AddDriverUseCase {
       throw validLicenseNumber;
     }
 
-    const validDateOfBirth = DateOfBirth.from(dateOfBirth.toISOString());
+    const validDateOfBirth = DateOfBirth.from(dateOfBirth.toString());
     if (validDateOfBirth instanceof InvalidDateOfBirthError) {
       throw validDateOfBirth;
     }
