@@ -32,15 +32,18 @@ export class DriverRepositoryImpl implements DriverRepository {
   
     const motorcycle = prismaDriver.motorcycle
       ? new Motorcycle(
-          prismaDriver.motorcycle.id,
-          prismaDriver.motorcycle.brand,
-          prismaDriver.motorcycle.model,
-          prismaDriver.motorcycle.purchaseDate,
-          prismaDriver.motorcycle.licensePlate,
-          prismaDriver.motorcycle.kilometers,
-          prismaDriver.motorcycle.warrantyDate,
-          prismaDriver.motorcycle.maintenanceInterval
-        )
+        prismaDriver.motorcycle.id,
+        prismaDriver.motorcycle.brand,
+        prismaDriver.motorcycle.model,
+        prismaDriver.motorcycle.purchaseDate,
+        prismaDriver.motorcycle.licensePlate,
+        prismaDriver.motorcycle.kilometers,
+        prismaDriver.motorcycle.warrantyDate,
+        prismaDriver.motorcycle.maintenanceInterval,
+        prismaDriver.motorcycle.ownerId,
+        prismaDriver.motorcycle.createdAt,
+        prismaDriver.motorcycle.updatedAt,
+      )
       : null;
       
     return new Driver(
