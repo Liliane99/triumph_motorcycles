@@ -23,14 +23,26 @@ import {
 import { useEffect } from "react";
 
 const partSchema = z.object({
-  reference: z.string().min(1, { message: "La référence est requise." }),
-  type: z.enum(["oil", "tire", "brake", "chain", "battery", "spark_plug", "air_filter", "clutch"], {
+  reference: z.string()
+    .regex(/^PART\d{3}$/, { message: "La référence doit suivre le format PARTXXX." }),
+
+  type: z.enum(["oil", "tire", "brake", "filter", "chain", "battery"], {
     required_error: "Le type est requis.",
   }),
-  name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
-  quantityInStock: z.number().int().min(0, { message: "La quantité doit être positive." }),
-  partThreshold: z.number().int().min(0, { message: "Le seuil doit être positif." }),
-  unitPrice: z.number().min(0, { message: "Le prix doit être positif." }),
+
+  name: z.string()
+    .min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
+
+  quantityInStock: z.coerce.number()
+    .int()
+    .min(0, { message: "La quantité doit être positive." }),
+
+  partThreshold: z.coerce.number()
+    .int()
+    .min(0, { message: "Le seuil doit être positif." }),
+
+  unitPrice: z.coerce.number()
+    .min(0, { message: "Le prix doit être positif." }),
 });
 
 type PartFormValues = z.infer<typeof partSchema>;
@@ -41,7 +53,7 @@ type AddPartFormProps = {
   mode?: "create" | "edit";
 };
 
-export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPartFormProps) {
+export function AddPartForm({ onSubmit, defaultValues }: AddPartFormProps) {
   const form = useForm<PartFormValues>({
     resolver: zodResolver(partSchema),
     defaultValues: {
@@ -56,10 +68,10 @@ export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPar
   });
 
   useEffect(() => {
-    if (mode === "edit" && defaultValues) {
+    if (defaultValues) {
       form.reset(defaultValues);
     }
-  }, [defaultValues, mode, form]);
+  }, [defaultValues, form]);
 
   return (
     <Form {...form}>
@@ -71,7 +83,7 @@ export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPar
             <FormItem>
               <FormLabel>Référence</FormLabel>
               <FormControl>
-                <Input placeholder="Référence unique" {...field} />
+                <Input {...field} readOnly />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -109,9 +121,7 @@ export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPar
                     <SelectItem value="brake">Frein</SelectItem>
                     <SelectItem value="chain">Chaîne</SelectItem>
                     <SelectItem value="battery">Batterie</SelectItem>
-                    <SelectItem value="spark_plug">Bougie</SelectItem>
-                    <SelectItem value="air_filter">Filtre à air</SelectItem>
-                    <SelectItem value="clutch">Embrayage</SelectItem>
+                    <SelectItem value="filter">Filtre</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -139,7 +149,7 @@ export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPar
           name="partThreshold"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Seuil dalerte</FormLabel>
+              <FormLabel>Seuil d'alerte</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
               </FormControl>
@@ -162,9 +172,7 @@ export function AddPartForm({ onSubmit, defaultValues, mode = "create" }: AddPar
           )}
         />
 
-        <Button type="submit">
-          {mode === "create" ? "Ajouter la pièce" : "Mettre à jour"}
-        </Button>
+        <Button type="submit">Ajouter la pièce</Button>
       </form>
     </Form>
   );

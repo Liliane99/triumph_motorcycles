@@ -12,20 +12,13 @@ import {
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+import { useAuth } from "@/hooks/useAuth";
 
-const data = {
-  user: {
-    name: "Ines",
-    email: "ines@example.com",
-    avatar: "/avatars/user.jpg", 
-  },
-  navMain: [
-    {
-      title: "Accueil",
-      url: "/dashboard",
-      icon: Home,
-      isActive: true,
-    },
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
+  const navMain = [
+    { title: "Accueil", url: "/dashboard", icon: Home },
     {
       title: "Gestion des motos",
       url: "#",
@@ -38,37 +31,22 @@ const data = {
         { title: "Incidents", url: "/dashboard/incidents" },
       ],
     },
-    {
-      title: "Pièces détachées",
-      url: "/dashboard/parts",
-      icon: Package,
-    },
-    {
-      title: "Commandes",
-      url: "/dashboard/orders",
-      icon: ShoppingBag,
-    },
-    {
-      title: "Clients",
-      url: "/dashboard/clients",
-      icon: User,
-    },
-    {
-      title: "Utilisateurs",
-      url: "/dashboard/users",
-      icon: User,
-    },
-  ],
-};
+    { title: "Pièces détachées", url: "/dashboard/parts", icon: Package },
+    { title: "Commandes", url: "/dashboard/orders", icon: ShoppingBag },
+    { title: "Clients", url: "/dashboard/clients", icon: User },
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  if (user?.role === "admin" || user?.role === "manager") {
+    navMain.push({ title: "Utilisateurs", url: "/dashboard/users", icon: User });
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#dashboard">
+              <a href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <User className="size-4" />
                 </div>
@@ -81,11 +59,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
+
       <SidebarFooter>
-        <NavUser user={data.user} /> 
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

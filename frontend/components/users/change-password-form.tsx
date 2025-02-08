@@ -1,46 +1,34 @@
 "use client";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(8, { message: "Mot de passe actuel requis." }),
-    newPassword: z
-      .string()
-      .min(12, { message: "Le nouveau mot de passe doit contenir au moins 12 caractères." })
-      .regex(/[A-Z]/, { message: "Le mot de passe doit contenir une lettre majuscule." })
-      .regex(/[a-z]/, { message: "Le mot de passe doit contenir une lettre minuscule." })
-      .regex(/[0-9]/, { message: "Le mot de passe doit contenir un chiffre." })
-      .regex(/[^a-zA-Z0-9]/, { message: "Le mot de passe doit contenir un caractère spécial." }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas.",
-    path: ["confirmPassword"],
-  });
+const passwordSchema = z.object({
+  currentPassword: z.string().min(8, { message: "Le mot de passe doit contenir au moins 8 caractères." }),
+  newPassword: z.string()
+    .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères." })
+    .regex(/^(?=.*[A-Z])(?=.*\d).+$/, { message: "Le mot de passe doit contenir au moins une majuscule et un chiffre." }),
+  confirmPassword: z.string(),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Les nouveaux mots de passe ne correspondent pas.",
+  path: ["confirmPassword"],
+});
 
-type PasswordFormValues = z.infer<typeof passwordSchema>;
+type ChangePasswordFormValues = z.infer<typeof passwordSchema>;
 
-type ChangePasswordFormProps = {
-  onSubmit: (values: PasswordFormValues) => void;
-};
+interface ChangePasswordFormProps {
+  onSubmit: (values: ChangePasswordFormValues) => Promise<void>;
+}
 
 export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
   const [loading, setLoading] = useState(false);
-  const form = useForm<PasswordFormValues>({
+
+  const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
       currentPassword: "",
@@ -49,13 +37,10 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
     },
   });
 
-  const handleSubmit = async (values: PasswordFormValues) => {
+  const handleSubmit = async (values: ChangePasswordFormValues) => {
     setLoading(true);
     try {
       await onSubmit(values);
-      form.reset();
-    } catch (error) {
-      console.error("Erreur lors du changement de mot de passe :", error);
     } finally {
       setLoading(false);
     }
@@ -63,7 +48,7 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="currentPassword"
@@ -71,7 +56,7 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>Mot de passe actuel</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Votre mot de passe actuel" {...field} />
+                <Input type="password" placeholder="Mot de passe actuel" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,7 +70,7 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>Nouveau mot de passe</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Votre nouveau mot de passe" {...field} />
+                <Input type="password" placeholder="Nouveau mot de passe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -99,19 +84,15 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
             <FormItem>
               <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Confirmez votre nouveau mot de passe"
-                  {...field}
-                />
+                <Input type="password" placeholder="Confirmez votre mot de passe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Chargement..." : "Changer le mot de passe"}
+        <Button type="submit" disabled={loading}>
+          {loading ? "Changement en cours..." : "Changer le mot de passe"}
         </Button>
       </form>
     </Form>
