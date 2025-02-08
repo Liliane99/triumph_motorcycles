@@ -25,7 +25,7 @@ export class Incident {
         }
 
         if (incidentDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
-        throw new Error("La date de l'incident ne peut pas être dans le passé.");
+        throw new Error("La date de l'incident ne peut pas être dans le passé merci.");
         }
 
         this.reference = new IncidentReference(reference);
