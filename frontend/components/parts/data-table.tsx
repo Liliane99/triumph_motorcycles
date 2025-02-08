@@ -84,15 +84,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               <SelectValue placeholder="Filtrer par type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les types</SelectItem>
-              <SelectItem value="oil">Huile</SelectItem>
-              <SelectItem value="tire">Pneu</SelectItem>
-              <SelectItem value="brake">Frein</SelectItem>
-              <SelectItem value="chain">Chaîne</SelectItem>
-              <SelectItem value="battery">Batterie</SelectItem>
-              <SelectItem value="spark_plug">Bougie</SelectItem>
-              <SelectItem value="air_filter">Filtre à air</SelectItem>
-              <SelectItem value="clutch">Embrayage</SelectItem>
+            <SelectItem value="all">Tous les types</SelectItem>
+            <SelectItem value="oil">Huile</SelectItem>
+            <SelectItem value="tire">Pneu</SelectItem>
+            <SelectItem value="brake">Frein</SelectItem>
+            <SelectItem value="filter">Filtre</SelectItem>
+            <SelectItem value="chain">Chaîne</SelectItem>
+            <SelectItem value="battery">Batterie</SelectItem>
             </SelectContent>
           </Select>
         </div>

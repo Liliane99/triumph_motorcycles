@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -13,44 +15,70 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
 import { Wrench, Tag, Package, DollarSign, Calendar, Shield } from "lucide-react";
-
-type Part = {
-  id: string;
-  reference: string;
-  type: string;
-  name: string;
-  quantity_in_stock: number;
-  part_threshold: number;
-  unit_price: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-};
+import { getPartById, getUserById, Part } from "@/lib/api";
+import { toast } from "react-toastify";
 
 export default function PartDetailsPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [part, setPart] = useState<Part | null>(null);
+  const [createdByName, setCreatedByName] = useState<string>("Chargement...");
+  const [updatedByName, setUpdatedByName] = useState<string>("Chargement...");
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const mockPart: Part = {
-      id: params.id,
-      reference: "P12345",
-      type: "brake",
-      name: "Disque de frein",
-      quantity_in_stock: 10,
-      part_threshold: 5,
-      unit_price: 50.99,
-      created_at: "2025-01-01T10:00:00Z",
-      updated_at: "2025-01-10T12:00:00Z",
-      created_by: "Admin",
-      updated_by: "Manager",
-    };
-    setPart(mockPart);
-  }, [params.id]);
+    async function fetchPartDetails() {
+      try {
+        const fetchedPart = await getPartById(params.id);
+        if (!fetchedPart) {
+          toast.error("Pièce non trouvée.");
+          router.push("/dashboard/parts");
+          return;
+        }
 
-  if (!part) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+        const formattedPart: Part = {
+          id: fetchedPart.id,
+          reference: fetchedPart.reference.value,
+          type: fetchedPart.type.value as Part["type"],
+          name: fetchedPart.name.value,
+          quantityInStock: fetchedPart.quantityInStock.value,
+          partThreshold: fetchedPart.partThreshold.value,
+          unitPrice: fetchedPart.unitPrice.value,
+          createdByName: "Chargement...",
+          updatedByName: "Chargement...",
+          createdAt: new Date(fetchedPart.createdAt).toLocaleString(),
+          updatedAt: new Date(fetchedPart.updatedAt).toLocaleString(),
+        };
+
+        setPart(formattedPart);
+
+        // Récupérer les noms des utilisateurs pour createdBy et updatedBy
+        if (fetchedPart.createdBy) {
+          const createdByUser = await getUserById(fetchedPart.createdBy);
+          setCreatedByName(createdByUser?.username.value || "Inconnu");
+        } else {
+          setCreatedByName("Système");
+        }
+
+        if (fetchedPart.updatedBy) {
+          const updatedByUser = await getUserById(fetchedPart.updatedBy);
+          setUpdatedByName(updatedByUser?.username.value || "Inconnu");
+        } else {
+          setUpdatedByName("Système");
+        }
+
+        setLoading(false);
+      } catch (error) {
+        toast.error("Erreur lors du chargement de la pièce.");
+        router.push("/dashboard/parts");
+      }
+    }
+
+    fetchPartDetails();
+  }, [params.id, router]);
+
+  if (loading) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+  if (!part) return <p className="text-center text-lg font-semibold">Pièce non trouvée.</p>;
 
   const typeColors: Record<string, string> = {
     oil: "bg-yellow-500 text-white",
@@ -58,9 +86,7 @@ export default function PartDetailsPage({ params }: { params: { id: string } }) 
     brake: "bg-red-500 text-white",
     chain: "bg-gray-600 text-white",
     battery: "bg-purple-500 text-white",
-    spark_plug: "bg-orange-500 text-white",
-    air_filter: "bg-green-500 text-white",
-    clutch: "bg-pink-500 text-white",
+    filter: "bg-green-500 text-white",
   };
 
   return (
@@ -109,31 +135,31 @@ export default function PartDetailsPage({ params }: { params: { id: string } }) 
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <Package className="h-5 w-5 text-muted-foreground" />
-                    <strong>Stock :</strong> {part.quantity_in_stock} unités
+                    <strong>Stock :</strong> {part.quantityInStock} unités
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <Shield className="h-5 w-5 text-muted-foreground" />
-                    <strong>Seuil dalerte :</strong> {part.part_threshold} unités
+                    <strong>Seuil d'alerte :</strong> {part.partThreshold} unités
                   </p>
                 </div>
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <strong>Prix unitaire :</strong> {part.unit_price.toFixed(2)} €
+                    <strong>Prix unitaire :</strong> {part.unitPrice.toFixed(2)} €
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Créé le :</strong> {new Date(part.created_at).toLocaleString()}
+                    <strong>Créé le :</strong> {part.createdAt}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Créé par :</strong> {part.created_by}
+                    <strong>Créé par :</strong> {createdByName}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Modifié le :</strong> {new Date(part.updated_at).toLocaleString()}
+                    <strong>Modifié le :</strong> {part.updatedAt}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Modifié par :</strong> {part.updated_by}
+                    <strong>Modifié par :</strong> {updatedByName}
                   </p>
                 </div>
               </div>
