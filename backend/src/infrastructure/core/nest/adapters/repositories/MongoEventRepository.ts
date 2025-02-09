@@ -33,13 +33,10 @@ export class MongoEventRepository implements IEventPublisherService {
       let attempts = 5;
       while (attempts > 0) {
         try {
-          console.log(`Connexion à MongoDB... (${6 - attempts}/5)`);
           await this.client.connect();
           this.isConnected = true;
-          console.log("Connexion réussie à MongoDB !");
           return;
         } catch (error) {
-          console.error(`Échec de la connexion MongoDB : ${(error as Error).message}`);
           attempts--;
           await new Promise(res => setTimeout(res, 5000));
         }

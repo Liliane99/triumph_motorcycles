@@ -571,7 +571,7 @@ export type ApiIncident = {
   reference: { value: string };
   description: { value: string };
   status: { value: "opened" | "resolved" };
-  date: { value: string };  // Correction ici, la date est un objet avec une propriété value
+  date: { value: string };  
   motorcycleId: string;
   createdBy: string;
   updatedBy?: string;
@@ -605,18 +605,11 @@ export const getIncidents = async (): Promise<Incident[]> => {
             getMotorcycleById(incident.motorcycleId)
           ]);
 
-          // Pour le debug
-          console.log('Raw incident:', incident);
-          console.log('CreatedByUser:', createdByUser);
-          console.log('UpdatedByUser:', updatedByUser);
-          console.log('Motorcycle:', motorcycle);
-
           const enrichedIncident: Incident = {
             id: incident.id,
             reference: incident.reference.value,
             description: incident.description.value,
             status: incident.status.value,
-            // La date est dans l'objet value
             date: typeof incident.date === 'object' && incident.date.value 
               ? new Date(incident.date.value).toISOString() 
               : new Date(incident.date).toISOString(),
@@ -753,12 +746,8 @@ export type Maintenance = {
 export const getMaintenances = async (): Promise<Maintenance[]> => {
   try {
     const response = await api.get<ApiMaintenance[]>("/maintenances");
-    
-    console.log("Données brutes des maintenances :", response.data);
-    
     const enrichedMaintenances = await Promise.all(
-      response.data.map(async (maintenance) => {
-        console.log("Vérification des IDs :", maintenance.createdBy, maintenance.updatedBy); 
+      response.data.map(async (maintenance) => { 
         
         const [createdByUser, updatedByUser, motorcycle] = await Promise.all([
           maintenance.createdBy ? getUserById(maintenance.createdBy) : Promise.resolve(null),
@@ -791,7 +780,6 @@ export const getMaintenances = async (): Promise<Maintenance[]> => {
 
 export const getMaintenanceById = async (id: string): Promise<Maintenance | null> => {
   try {
-    console.log("Fetching maintenance with ID:", id);
     const [maintenance, maintenanceParts] = await Promise.all([
       api.get<ApiMaintenance>(`/maintenances/${id}`),
       getMaintenanceParts(id)
@@ -803,7 +791,6 @@ export const getMaintenanceById = async (id: string): Promise<Maintenance | null
       getMotorcycleById(maintenance.data.motorcycleId)
     ]);
 
-    // Récupérer les détails des pièces
     const partsDetails = await Promise.all(
       maintenanceParts.map(async (part) => {
         const partDetails = await getPartById(part.partId);

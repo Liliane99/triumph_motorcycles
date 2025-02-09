@@ -58,12 +58,10 @@ const trialSchema = z.object({
 const formatDate = (dateValue: any) => {
   if (!dateValue) return null;
   
-  // Si c'est déjà un objet Date valide, on le retourne
   if (dateValue instanceof Date && isValid(dateValue)) {
     return dateValue;
   }
   
-  // Si c'est une string, on essaie de la parser
   const dateStr = typeof dateValue === "string" ? dateValue : dateValue?.value;
   if (!dateStr) return null;
   
@@ -87,7 +85,6 @@ export function AddTrialForm({
   const [loading, setLoading] = useState(true);
   const [availableMotorcycles, setAvailableMotorcycles] = useState<Array<{ id: string; label: string }>>([]);
 
-  // Transformer les defaultValues pour s'assurer que les dates sont correctement formatées
   const formattedDefaultValues = defaultValues ? {
     ...defaultValues,
     start_date: formatDate(defaultValues.start_date),
@@ -113,7 +110,6 @@ export function AddTrialForm({
           getTrials()
         ]);
 
-        // Filtrer les clients
         const filteredClients = usersData
           .filter(user => user.role.value === 'client')
           .map(user => ({
@@ -121,7 +117,6 @@ export function AddTrialForm({
             label: user.username.value
           }));
 
-        // Stocker toutes les motos
         const allMotorcycles = motorcyclesData.map(moto => ({
           id: moto.id,
           label: moto.brand.value
@@ -131,8 +126,6 @@ export function AddTrialForm({
         setClients(filteredClients);
         setTrials(trialsData);
 
-        // En mode édition, on veut inclure la moto actuellement sélectionnée
-        // dans la liste des motos disponibles
         if (mode === 'edit' && defaultValues) {
           const currentMotorcycle = allMotorcycles.find(
             m => m.id === defaultValues.motorcycle_id
@@ -154,7 +147,6 @@ export function AddTrialForm({
   }, [mode, defaultValues]);
 
   const isMotorcycleAvailable = (motoId: string, startDate: Date, endDate: Date) => {
-    // En mode édition, la moto actuelle est toujours disponible
     if (mode === 'edit' && motoId === defaultValues?.motorcycle_id) {
       return true;
     }
@@ -164,7 +156,6 @@ export function AddTrialForm({
         return false;
       }
 
-      // En mode édition, ignorer le trial actuel
       if (mode === 'edit' && 
           trial.userId === defaultValues?.user_id && 
           trial.motorcycleId === defaultValues?.motorcycle_id) {
@@ -179,7 +170,6 @@ export function AddTrialForm({
     });
   };
 
-  // Mise à jour des motos disponibles quand les dates changent
   useEffect(() => {
     const startDate = form.getValues('start_date');
     const endDate = form.getValues('end_date');
