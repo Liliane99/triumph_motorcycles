@@ -35,7 +35,7 @@ const protectRoute = (req: Request, res: Response, next: NextFunction): void => 
     
 
     if (!decoded.userId || !decoded.role) {
-      
+      console.error(" Erreur: Structure du token invalide", decoded);
       res.status(403).json({ error: "Unauthorized: Invalid token structure" });
       return;
     }
@@ -123,7 +123,7 @@ router.put('/:id', protectRoute, async (req: Request, res: Response): Promise<vo
    
     res.status(200).json(result);
   } catch (err) {
-    
+    console.error(" Erreur lors de la mise à jour d'une moto:", err);
     res.status(500).json({ error: (err as Error).message });
   }
 });
@@ -141,7 +141,7 @@ router.delete('/:id', protectRoute, async (req: Request, res: Response): Promise
     
     res.status(204).send();
   } catch (err) {
-    
+    console.error(" Erreur lors de la suppression d'une moto:", err);
     res.status(500).json({ error: (err as Error).message });
   }
 });
@@ -166,7 +166,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     
     res.status(200).json(result);
   } catch (err) {
-    
+    console.error(" Erreur lors de la récupération d'une moto:", err);
     res.status(500).json({ error: (err as Error).message });
   }
 });
@@ -182,6 +182,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     const result = await queryBus.execute(query);
     res.status(200).json(result);
   } catch (err) {
+    console.error(" Erreur lors de la récupération des motos:", err);
     res.status(500).json({ error: (err as Error).message });
   }
 });
