@@ -116,13 +116,21 @@ export function RentalDataTable({
               </Popover>
             </div>
 
-            <Button asChild className="flex gap-2" variant="default">
-              <Link href="/dashboard/rental/new">
-                <Plus className="w-4 h-4" />
-                Ajouter une location
-              </Link>
-            </Button>
-          </div>
+        <div className="flex gap-2">
+          <Button asChild className="flex gap-2" variant="outline">
+            <Link href="/dashboard/rental/drivers">
+              <Plus className="w-4 h-4" />
+                Voir les conducteurs
+            </Link>
+          </Button>
+          <Button asChild className="flex gap-2" variant="default">
+            <Link href="/dashboard/rental/new">
+              <Plus className="w-4 h-4" />
+              Ajouter une location
+            </Link>
+          </Button>
+        </div>
+      </div>
 
           <div className="rounded-md border">
             <Table>
