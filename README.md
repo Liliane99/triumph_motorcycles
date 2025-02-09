@@ -1,4 +1,15 @@
 # triumph_motorcycles
+Cette application est un site de gestion de flotte pour les gestionnaires/concessionnaires (gestion des motos, locations, entretiens, incidents, etc).
+Il a été conçu avec une structure qui respecte la clean architecture  + cqrs et event sourcing.
+L'application tourne sous 2 technologie Backend (NestJs + Epress) et une technologie Frontend (react avec Next.Js).
+
+L'application n'a pas été mise en production. 
+Pour l'allumer en local, il faut : 
+- Allumer les 2 Backend : 
+```npm run start:nest``` & ```npm run start:express``` 
+- Allumer le Frontend : 
+```npm run dev```
+
 
 ## Login 
 
