@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -13,10 +14,36 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { AddMotoForm } from "@/components/moto/add-moto-form";
 import { MotoFormValues } from "@/components/moto/add-moto-form";
+import { createMotorcycle } from "@/lib/apiExpress"; // Assure-toi d'importer la fonction
 
 export default function NewMotoPage() {
-  const handleSubmit = (values: MotoFormValues) => {
-    console.log("Nouvel moto :", values);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+
+  // Fonction de soumission
+  const handleSubmit = async (values: MotoFormValues) => {
+    setLoading(true);   // Afficher le chargement
+    setError(null);     // Réinitialiser l'erreur
+    setSuccess(false);  // Réinitialiser le succès
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token d'authentification manquant.");
+      }
+
+      // Appeler l'API pour créer la moto
+      await createMotorcycle(values, token);
+
+      setSuccess(true);  // Afficher succès
+      console.log("Moto ajoutée avec succès :", values);
+    } catch (error: any) {
+      setError(error.message || "Une erreur est survenue.");
+      console.error("Erreur lors de la création de la moto :", error);
+    } finally {
+      setLoading(false); // Masquer le chargement une fois terminé
+    }
   };
 
   return (
@@ -38,7 +65,7 @@ export default function NewMotoPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Nouvel moto</BreadcrumbPage>
+                  <BreadcrumbPage>Nouvelle Moto</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -47,7 +74,16 @@ export default function NewMotoPage() {
 
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-6">Ajouter une moto</h1>
+
+          {/* Affichage des messages de succès ou d'erreur */}
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {success && <div className="text-green-500 mb-4">Moto ajoutée avec succès !</div>}
+
+          {/* Formulaire pour ajouter une moto */}
           <AddMotoForm onSubmit={handleSubmit} mode="create" />
+
+          {/* Affichage du message de chargement */}
+          {loading && <div>Chargement...</div>}
         </div>
       </SidebarInset>
     </SidebarProvider>

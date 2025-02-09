@@ -50,14 +50,6 @@ export default function MotosPage() {
             </Card>
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total motos clients</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">5</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
                 <CardTitle>Total motos enregistrées</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">

@@ -6,31 +6,73 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbL
 import { Separator } from "@/components/ui/separator";
 import { AddMotoForm, MotoFormValues } from "@/components/moto/add-moto-form";
 import { useEffect, useState } from "react";
+import { getMotorcycleById, updateMotorcycle } from "@/lib/apiExpress";
+import { getUsers } from "@/lib/api";
 
 export default function EditMaintenancePage({ params }: { params: { id: string } }) {
   const [defaultValues, setDefaultValues] = useState<MotoFormValues | null>(null);
+  const [users, setUsers] = useState<any[]>([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const mockMoto: MotoFormValues = {
-      id: "1",
-      model: "Bandit 650",
-      brand: "Suzuki",
-      licensePlate: "AX-840-XC",
-      price: "4560",
-      date: new Date("2025-01-01"),
-      warranty: new Date("2027-01-01"),
-      maintenanceInterval: 10000,
-      kilometer: 8000,
-      client: "Liam Macquaire",
+    const fetchData = async () => {
+      try {
+        
+        const motorcycle = await getMotorcycleById(params.id);
+        if (motorcycle) {
+          setDefaultValues({
+            id: motorcycle.id,
+            model: motorcycle.model,
+            brand: motorcycle.brand,
+            licensePlate: motorcycle.licensePlate,
+            price: motorcycle.kilometers.toString(),
+            date: new Date(motorcycle.purchaseDate),
+            warranty: new Date(motorcycle.warrantyDate),
+            maintenanceInterval: motorcycle.maintenanceInterval,
+            kilometer: motorcycle.kilometers,
+            client: motorcycle.ownerId, 
+          });
+        }
+        
+        
+        const userList = await getUsers();
+        setUsers(userList);
+      } catch (err) {
+        setError("Une erreur est survenue lors de la récupération des données.");
+      } finally {
+        setLoading(false);
+      }
     };
-    setDefaultValues(mockMoto);
+
+    fetchData();
   }, [params.id]);
 
-  const handleSubmit = (values: MotoFormValues) => {
-    console.log("Moto mis à jour :", values);
+  const handleSubmit = async (values: MotoFormValues) => {
+    try {
+      const token = localStorage.getItem("token"); 
+      if (!token) throw new Error("Token introuvable");
+
+      await updateMotorcycle(params.id, {
+        model: values.model,
+        brand: values.brand,
+        licensePlate: values.licensePlate,
+        maintenanceInterval: values.maintenanceInterval,
+        kilometers: values.kilometer,
+        purchaseDate: values.date.toISOString(),
+        warrantyDate: values.warranty.toISOString(),
+        ownerId: values.client, 
+      }, token);
+
+      alert("La moto a été mise à jour avec succès !");
+    } catch (err) {
+      setError("Une erreur est survenue lors de la mise à jour de la moto.");
+      console.error(err);
+    }
   };
 
-  if (!defaultValues) return <p>Chargement...</p>;
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <SidebarProvider>
@@ -51,7 +93,7 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{defaultValues.licensePlate}</BreadcrumbPage>
+                  <BreadcrumbPage>{defaultValues?.licensePlate}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -60,7 +102,12 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
 
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-6">Modifier la moto</h1>
-          <AddMotoForm onSubmit={handleSubmit} defaultValues={defaultValues} mode="edit" />
+          <AddMotoForm 
+            onSubmit={handleSubmit} 
+            defaultValues={defaultValues} 
+            mode="edit" 
+            users={users} 
+          />
         </div>
       </SidebarInset>
     </SidebarProvider>

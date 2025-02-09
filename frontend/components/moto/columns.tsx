@@ -1,124 +1,214 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash2, Eye } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { getMotorcycles, deleteMotorcycle } from "@/lib/apiExpress";
+import { getUserById } from "@/lib/api";
+
+// Types
+export type User = {
+  user_id: string;
+  user_name: string;
+  role: string;
+};
 
 export type Moto = {
   id: string;
-  brand: string;
-  model: string;
-  licensePlate: string;
-  price: string;
-  date: string;
-  warranty: string;
-  kilometer: number; 
-  maintenanceInterval: number;
-  client: string;
+  brand: { value: string } | string;
+  model: { value: string } | string;
+  licensePlate: { value: string } | string;
+  purchaseDate: { value: string } | string;
+  warrantyDate: { value: string } | string;
+  kilometers: { value: number } | number;
+  maintenanceInterval: { value: number } | number;
+  ownerId: string;
+  ownerName: { value: string } | string;
+  ownerRole?: string;
 };
+
+
+export const useMotos = () => {
+  const [motos, setMotos] = useState<Moto[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const chargerMotos = async () => {
+      try {
+        const data = await getMotorcycles();
+        
+        const motosFormatees: Moto[] = await Promise.all(
+          data.map(async (moto: any) => {
+            const utilisateur = await getUserById(moto.ownerId);
+            
+            
+            const role = utilisateur?.role?.value; 
+            
+            
+            const nomAffiche = role === 'admin' || role === 'manager' 
+              ? "Triumph Motorcycles"
+              : utilisateur?.username || "Utilisateur inconnu";
+            
+            return {
+              id: moto.id,
+              brand: moto.brand,
+              model: moto.model,
+              licensePlate: moto.licensePlate,
+              purchaseDate: moto.purchaseDate || "",
+              warrantyDate: moto.warrantyDate || "",
+              kilometers: moto.kilometers,
+              maintenanceInterval: moto.maintenanceInterval,
+              ownerId: moto.ownerId,
+              ownerName: nomAffiche,
+              ownerRole: utilisateur?.role
+            };
+          })
+        );
+
+        setMotos(motosFormatees);
+      } catch (error) {
+        console.error("Erreur lors du chargement des motos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    chargerMotos();
+  }, []);
+
+  return { motos, setMotos, loading };
+};
+
+
+const extraireValeur = (valeur: any): string => {
+  if (valeur === null || valeur === undefined) return "Non renseigné";
+  if (typeof valeur === "object" && "value" in valeur) {
+    return valeur.value?.toString() || "Non renseigné";
+  }
+  return String(valeur);
+};
+
+
+const formaterDate = (date: any): string => {
+  if (!date) return "Non renseigné";
+  try {
+    const valeurDate = typeof date === "object" && "value" in date ? date.value : date;
+    return format(new Date(valeurDate), "dd/MM/yyyy");
+  } catch (error) {
+    console.error("Erreur de formatage de date:", error);
+    return "Date invalide";
+  }
+};
+
+
+const supprimerMoto = async (id: string, setMotos: React.Dispatch<React.SetStateAction<Moto[]>>) => {
+  if (confirm("Voulez-vous vraiment supprimer cette moto ?")) {
+    try {
+      const token = localStorage.getItem("token") || "";
+      await deleteMotorcycle(id, token);
+      
+      setMotos((motosActuelles) => 
+        motosActuelles.filter((moto) => moto.id !== id)
+      );
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+    }
+  }
+};
+
 
 export const columns: ColumnDef<Moto>[] = [
   {
     accessorKey: "brand",
     header: ({ column }) => (
       <div className="text-center">
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Marque <ArrowUpDown />
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Marque <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       </div>
     ),
-    cell: ({ row }) => <div className="text-center">{row.getValue("brand")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center">
+        {extraireValeur(row.getValue("brand"))}
+      </div>
+    ),
   },
   {
     accessorKey: "model",
-    header: ({ column }) => (
+    header: () => <div className="text-center">Modèle</div>,
+    cell: ({ row }) => (
       <div className="text-center">
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Modèle <ArrowUpDown />
-        </Button>
+        {extraireValeur(row.getValue("model"))}
       </div>
     ),
-    cell: ({ row }) => <div className="text-center">{row.getValue("model")}</div>,
   },
   {
     accessorKey: "licensePlate",
-    header: ({ }) => (<div className="text-center">Plaque dimmatriculation</div>),
-    cell: ({ row }) => <div className="text-center">{row.getValue("licensePlate")}</div>,
-  },
-  {
-    accessorKey: "price",
-    header: ({ }) =>(<div className="text-center">Prix (€)</div>),
-    cell: ({ row }) => <div className="text-center">{row.getValue("price")}</div>,
-  },
-  {
-    accessorKey: "date",
-    header: ({ column }) => (
+    header: () => <div className="text-center">Plaque d'immatriculation</div>,
+    cell: ({ row }) => (
       <div className="text-center">
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date dachat <ArrowUpDown />
-        </Button>
+        {extraireValeur(row.getValue("licensePlate"))}
       </div>
     ),
-    cell: ({ row }) => (
-      <div className="text-center">{format(new Date(row.getValue("date")), "dd/MM/yyyy")}</div>
-    ),
   },
   {
-    accessorKey: "warranty",
-    header: ({ column }) => (
+    accessorKey: "purchaseDate",
+    header: () => <div className="text-center">Date d'achat</div>,
+    cell: ({ row }) => (
       <div className="text-center">
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Garantie <ArrowUpDown />
-        </Button>
+        {formaterDate(row.getValue("purchaseDate"))}
       </div>
     ),
+  },
+  {
+    accessorKey: "warrantyDate",
+    header: () => <div className="text-center">Date de garantie</div>,
     cell: ({ row }) => (
-      <div className="text-center">{format(new Date(row.getValue("warranty")), "dd/MM/yyyy")}</div>
+      <div className="text-center">
+        {formaterDate(row.getValue("warrantyDate"))}
+      </div>
     ),
   },
   {
-    accessorKey: "kilometer",
-    header: ({ }) => (<div className="text-center">Kilométrage (km)</div>),
-    cell: ({ row }) => <div className="text-center">{row.getValue("kilometer")}</div>,
+    accessorKey: "kilometers",
+    header: () => <div className="text-center">Kilométrage</div>,
+    cell: ({ row }) => {
+      const km = extraireValeur(row.getValue("kilometers"));
+      return (
+        <div className="text-center">
+          {km !== "Non renseigné" ? `${km} km` : "Non renseigné"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "maintenanceInterval",
-    header: ({ }) =>(<div className="text-center">Intervalle de maintenance (km)</div>),
-    cell: ({ row }) => <div className="text-center">{row.getValue("maintenanceInterval")}</div>,
+    header: () => <div className="text-center">Intervalle maintenance</div>,
+    cell: ({ row }) => {
+      const intervalle = extraireValeur(row.getValue("maintenanceInterval"));
+      return (
+        <div className="text-center">
+          {intervalle !== "Non renseigné" ? `${intervalle} km` : "Non renseigné"}
+        </div>
+      );
+    },
   },
-  
   {
-    accessorKey: "client",
-    header: ({ column }) => (
+    accessorKey: "ownerName",
+    header: () => <div className="text-center">Appartenance</div>,
+    cell: ({ row }) => (
       <div className="text-center">
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Client <ArrowUpDown />
-        </Button>
+        {extraireValeur(row.getValue("ownerName"))}
       </div>
     ),
-    cell: ({ row }) => <div className="text-center">{row.getValue("client")}</div>,
   },
   {
     id: "actions",
-    header: ({ }) =>(<div className="text-center">Actions</div>),
-    cell: ({ row }) => {
+    header: () => <div className="text-center">Actions</div>,
+    cell: ({ row, table }) => {
       const moto = row.original;
       return (
         <div className="flex justify-center gap-2">
@@ -131,7 +221,7 @@ export const columns: ColumnDef<Moto>[] = [
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleDelete(moto.id)}
+            onClick={() => supprimerMoto(moto.id, table.options.meta?.setMotos)}
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -144,44 +234,5 @@ export const columns: ColumnDef<Moto>[] = [
         </div>
       );
     },
-  },
-];
-
-export const motos: Moto[] = [
-  {
-    id: "1",
-    model: "Bandit 650",
-    brand: "Suzuki",
-    licensePlate: "AX-840-XC",
-    price: "4560",
-    date: "2025-01-01",
-    warranty: "2027-01-01",
-    kilometer: 12000, 
-    maintenanceInterval: 10000,
-    client: "Liam Macquaire",
-  },
-  {
-    id: "2",
-    model: "MT-07",
-    brand: "Yamaha",
-    licensePlate: "BZ-123-YN",
-    price: "5200",
-    date: "2025-01-15",
-    warranty: "2027-01-15",
-    kilometer: 8000, 
-    maintenanceInterval: 12000,
-    client: "Emma Durand",
-  },
-  {
-    id: "3",
-    model: "CB650R",
-    brand: "Honda",
-    licensePlate: "CD-456-WQ",
-    price: "6200",
-    date: "2025-02-01",
-    warranty: "2027-02-01",
-    kilometer: 15000, 
-    maintenanceInterval: 15000,
-    client: "Noah Lefebvre",
   },
 ];
