@@ -37,6 +37,7 @@ export class MongoEventRepository implements IEventPublisherService {
           this.isConnected = true;
           return;
         } catch (error) {
+          console.error("Échec de la connexion MongoDB : ${(error as Error).message}");
           attempts--;
           await new Promise(res => setTimeout(res, 5000));
         }
