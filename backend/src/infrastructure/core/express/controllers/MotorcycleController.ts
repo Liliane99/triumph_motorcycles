@@ -27,7 +27,7 @@ const protectRoute = (req: Request, res: Response, next: NextFunction): void => 
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "jwt_secret_key") as JwtPayload;
     console.log(" Token décodé avec succès:", decoded);
 
     if (!decoded.userId || !decoded.role) {

@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { format, parseISO, isValid } from "date-fns";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,64 +25,98 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardList, Calendar, User, DollarSign } from "lucide-react";
-
-type Order = {
-  id: string;
-  reference: string;
-  orderDate: string;
-  deliveryDate: string;
-  manager: string;
-  totalPrice: number;
-  createdAt: string;
-  updatedAt: string;
-  updatedBy?: string;
-  parts: OrderPart[];
-};
-
-type OrderPart = {
-  name: string;
-  reference: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-};
+import { getOrderById, getOrderParts, getPartById, getUserById, Order, OrderPart } from "@/lib/api";
+import { toast } from "react-toastify";
 
 export default function OrderDetailsPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
+  const [orderParts, setOrderParts] = useState<
+    { name: string; reference: string; quantity: number; unitPrice: number; totalPrice: number }[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const mockOrder: Order = {
-      id: params.id,
-      reference: "CMD-001",
-      orderDate: "2025-01-01",
-      deliveryDate: "2025-01-05",
-      manager: "Manager A",
-      totalPrice: 500,
-      createdAt: "2025-01-01T10:00:00Z",
-      updatedAt: "2025-01-03T14:00:00Z",
-      updatedBy: "Admin",
-      parts: [
-        {
-          name: "Filtre à huile",
-          reference: "FO-1234",
-          quantity: 2,
-          unitPrice: 25,
-          totalPrice: 50,
-        },
-        {
-          name: "Huile moteur",
-          reference: "HM-5678",
-          quantity: 5,
-          unitPrice: 15,
-          totalPrice: 75,
-        },
-      ],
-    };
+    async function fetchOrderDetails() {
+      try {
+        const fetchedOrder = await getOrderById(params.id);
 
-    setOrder(mockOrder);
-  }, [params.id]);
+        if (!fetchedOrder) {
+          toast.error("Commande introuvable.");
+          router.push("/dashboard/orders");
+          return;
+        }
 
-  if (!order) return <p>Chargement...</p>;
+        const createdByUser = await getUserById(fetchedOrder.createdBy);
+        const updatedByUser = fetchedOrder.updatedBy ? await getUserById(fetchedOrder.updatedBy) : null;
+
+        const orderDateStr = fetchedOrder.orderDate?.value;
+        const deliveryDateStr = fetchedOrder.deliveryDate?.value;
+        
+        const formattedOrderDate = orderDateStr ? 
+          isValid(parseISO(orderDateStr)) ? 
+            format(parseISO(orderDateStr), "dd/MM/yyyy HH:mm") : 
+            "Date invalide" : 
+          "Non spécifiée";
+
+        const formattedDeliveryDate = deliveryDateStr ? 
+          isValid(parseISO(deliveryDateStr)) ? 
+            format(parseISO(deliveryDateStr), "dd/MM/yyyy HH:mm") : 
+            "Date invalide" : 
+          "Non spécifiée";
+
+        setOrder({
+          id: fetchedOrder.id,
+          reference: fetchedOrder.reference.value,
+          orderDate: formattedOrderDate,
+          deliveryDate: formattedDeliveryDate,
+          createdByName: createdByUser?.username.value || "Inconnu",
+          updatedByName: updatedByUser?.username.value || "N/A",
+          createdAt: new Date(fetchedOrder.createdAt).toLocaleString(),
+          updatedAt: new Date(fetchedOrder.updatedAt).toLocaleString(),
+        });
+
+        let fetchedOrderParts: OrderPart[] = [];
+        try {
+          fetchedOrderParts = await getOrderParts(params.id);
+        } catch (error) {
+          console.warn("⚠️ Aucune pièce trouvée pour cette commande. Chargement sans erreur.");
+        }
+
+        if (fetchedOrderParts.length === 0) {
+          setOrderParts([]);
+          setLoading(false);
+          return;
+        }
+
+        const partsData = await Promise.all(
+          fetchedOrderParts.map(async (orderPart) => {
+            const partDetails = await getPartById(orderPart.partId);
+            return {
+              name: partDetails?.name.value || "Inconnu",
+              reference: partDetails?.reference.value || "N/A",
+              quantity: orderPart.quantityOrdered.value,
+              unitPrice: partDetails?.unitPrice.value || 0,
+              totalPrice: (partDetails?.unitPrice.value || 0) * orderPart.quantityOrdered.value,
+            };
+          })
+        );
+
+        setOrderParts(partsData);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Erreur lors du chargement des détails de la commande.");
+        router.push("/dashboard/orders");
+      }
+    }
+
+    fetchOrderDetails();
+  }, [params.id, router]);
+
+  if (loading) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+  if (!order) return <p className="text-center text-lg font-semibold">Commande introuvable.</p>;
+
+  const totalOrderPrice = orderParts.reduce((total, part) => total + part.totalPrice, 0);
 
   return (
     <SidebarProvider>
@@ -113,7 +145,6 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
         </header>
 
         <div className="p-4 space-y-8">
-          {/* Section principale des détails de la commande */}
           <Card>
             <CardHeader className="flex flex-col items-center">
               <ClipboardList className="h-16 w-16 rounded-full bg-muted p-3" />
@@ -121,7 +152,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
                 Référence : {order.reference}
               </CardTitle>
               <Badge className="mt-2 bg-blue-500 text-white">
-                {new Date(order.orderDate).toLocaleDateString()}
+                {order.orderDate}
               </Badge>
             </CardHeader>
             <CardContent>
@@ -129,68 +160,67 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Date de livraison :</strong>{" "}
-                    {new Date(order.deliveryDate).toLocaleDateString()}
+                    <strong>Date de livraison :</strong> {order.deliveryDate}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <User className="h-5 w-5 text-muted-foreground" />
-                    <strong>Manager :</strong> {order.manager}
+                    <strong>Créé par :</strong> {order.createdByName}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <strong>Prix total :</strong> {order.totalPrice.toFixed(2)} €
+                    <strong>Prix total :</strong> {totalOrderPrice.toFixed(2)} €
                   </p>
                 </div>
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Créé le :</strong>{" "}
-                    {new Date(order.createdAt).toLocaleString()}
+                    <strong>Créé le :</strong> {order.createdAt}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Modifié le :</strong>{" "}
-                    {new Date(order.updatedAt).toLocaleString()}
+                    <strong>Modifié le :</strong> {order.updatedAt}
                   </p>
-                  {order.updatedBy && (
+                  {order.updatedByName && (
                     <p className="flex items-center gap-2 text-lg">
-                      <strong>Modifié par :</strong> {order.updatedBy}
+                      <strong>Modifié par :</strong> {order.updatedByName}
                     </p>
                   )}
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          {/* Section des pièces commandées */}
           <Card>
             <CardHeader>
               <CardTitle>Pièces commandées</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nom</TableHead>
-                      <TableHead>Référence</TableHead>
-                      <TableHead>Quantité</TableHead>
-                      <TableHead>Prix unitaire (€)</TableHead>
-                      <TableHead>Prix total (€)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {order.parts.map((part, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{part.name}</TableCell>
-                        <TableCell>{part.reference}</TableCell>
-                        <TableCell>{part.quantity}</TableCell>
-                        <TableCell>{part.unitPrice.toFixed(2)}</TableCell>
-                        <TableCell>{part.totalPrice.toFixed(2)}</TableCell>
+              {orderParts.length > 0 ? (
+                <div className="rounded-md border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Référence</TableHead>
+                        <TableHead>Quantité</TableHead>
+                        <TableHead>Prix unitaire (€)</TableHead>
+                        <TableHead>Prix total (€)</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {orderParts.map((part, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{part.name}</TableCell>
+                          <TableCell>{part.reference}</TableCell>
+                          <TableCell>{part.quantity}</TableCell>
+                          <TableCell>{part.unitPrice.toFixed(2)}</TableCell>
+                          <TableCell>{part.totalPrice.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <p className="text-center text-lg font-semibold">Aucune pièce associée à cette commande.</p>
+              )}
             </CardContent>
           </Card>
         </div>

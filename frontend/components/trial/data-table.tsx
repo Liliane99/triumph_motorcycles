@@ -21,19 +21,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, CalendarIcon } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]; 
-  data: TData[]; 
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
 export function DataTable<TData extends object, TValue>({
@@ -42,7 +35,6 @@ export function DataTable<TData extends object, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState<string>("");
-  const [dateFilter, setDateFilter] = React.useState<Date | undefined>();
 
   const table = useReactTable({
     data,
@@ -57,54 +49,24 @@ export function DataTable<TData extends object, TValue>({
       globalFilter,
     },
     globalFilterFn: (row, columnId, filterValue) => {
-      const userId = row.getValue<string>("user_id")?.toLowerCase();
-      const motorcycleId = row.getValue<string>("motorcycle_id")?.toLowerCase();
+      const username = row.getValue<string>("username")?.toLowerCase();
+      const motorcycleBrand = row.getValue<string>("motorcycleBrand")?.toLowerCase();
       return (
-        userId?.includes(filterValue.toLowerCase()) ||
-        motorcycleId?.includes(filterValue.toLowerCase())
+        username?.includes(filterValue.toLowerCase()) ||
+        motorcycleBrand?.includes(filterValue.toLowerCase())
       );
     },
   });
 
-  React.useEffect(() => {
-    if (dateFilter) {
-      table.getColumn("start_date")?.setFilterValue(format(dateFilter, "yyyy-MM-dd"));
-    } else {
-      table.getColumn("start_date")?.setFilterValue(undefined);
-    }
-  }, [dateFilter]);
-
   return (
     <div>
       <div className="flex justify-between items-center py-4">
-        <div className="flex gap-4">
-          <Input
-            placeholder="Rechercher un essai"
-            value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm"
-          />
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[250px] justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtrer par date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={dateFilter}
-                onSelect={setDateFilter}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <Input
+          placeholder="Rechercher un essai par client ou moto"
+          value={globalFilter}
+          onChange={(event) => setGlobalFilter(event.target.value)}
+          className="max-w-sm"
+        />
 
         <Button asChild className="flex gap-2" variant="default">
           <Link href="/dashboard/trials/new">

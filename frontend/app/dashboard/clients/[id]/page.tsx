@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import {
   SidebarProvider,
@@ -16,88 +18,56 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { ClientDetails } from "@/components/clients/client-details";
-import { useEffect, useState } from "react";
-
-type Client = {
-  id: string;
-  raisonSociale: string;
-  email: string;
-  phone: string;
-  experience: string;
-  motos?: Moto[];
-  locations?: Moto[];
-  conducteurs?: Conducteur[];
-};
-
-type Moto = {
-  id: string;
-  plaque: string;
-  modele: string;
-  annee: number;
-  dernierKilometrage: number;
-  image: string;
-};
-
-type Conducteur = {
-  id: string;
-  raisonSociale: string;
-  experience: string;
-  dateNaissance: string;
-  moto: string; 
-};
+import { getUserById, User } from "@/lib/api";
+import { toast } from "react-toastify";
 
 export default function ClientDetailsPage({ params }: { params: { id: string } }) {
-  const [client, setClient] = useState<Client | null>(null);
+  const router = useRouter();
+  const [client, setClient] = useState<User | null>(null);
+  const [createdByName, setCreatedByName] = useState<string>("Inconnu");
+  const [updatedByName, setUpdatedByName] = useState<string>("Inconnu");
 
   useEffect(() => {
-    const mockClient: Client = {
-      id: params.id,
-      raisonSociale: "Ines HADIDI",
-      email: "ineshadidi@example.com",
-      phone: "123456789",
-      experience: "Avancé",
-      motos: [
-        {
-          id: "1",
-          plaque: "AA-123-BB",
-          modele: "Yamaha MT-07",
-          annee: 2020,
-          dernierKilometrage: 15000,
-          image: "/images/moto3.jpg",
-        },
-        {
-          id: "2",
-          plaque: "AA-123-BB",
-          modele: "Yamaha MT-07",
-          annee: 2020,
-          dernierKilometrage: 15000,
-          image: "/images/moto3.jpg",
-        },
-      ],
-      locations: [
-        {
-          id: "2",
-          plaque: "CC-345-DD",
-          modele: "Kawasaki Z650",
-          annee: 2018,
-          dernierKilometrage: 20000,
-          image: "/images/moto2.jpg",
-        },
-      ],
-      conducteurs: [
-        {
-          id: "1",
-          raisonSociale: "Hamid Amchich",
-          experience: "Intermédiaire",
-          dateNaissance: "1995-06-15",
-          moto: "AA-123-BB",
-        },
-      ],
-    };
-    setClient(mockClient);
-  }, [params.id]);
+    async function fetchClientDetails() {
+      try {
+        const clientData = await getUserById(params.id);
+        if (!clientData || clientData.role.value !== "client") {
+          toast.error("Client introuvable.");
+          router.push("/dashboard/clients");
+          return;
+        }
 
-  if (!client) return <p>Chargement...</p>;
+        const formattedClient: User = {
+          id: clientData.id,
+          username: clientData.username.value,
+          email: clientData.email.value,
+          role: clientData.role.value,
+          createdByName: "Inconnu",
+          updatedByName: "Inconnu",
+          createdAt: clientData.createdAt,
+          updatedAt: clientData.updatedAt,
+          phoneNumber: clientData.phoneNumber?.value || undefined,
+          licenseNumber: clientData.licenseNumber?.value || undefined,
+          experienceLevel: clientData.experienceLevel?.value || undefined,
+        };
+
+        setClient(formattedClient);
+
+        if (clientData.createdBy) {
+          const createdUser = await getUserById(clientData.createdBy);
+          setCreatedByName(createdUser?.username?.value || "Inconnu");
+        }
+        if (clientData.updatedBy) {
+          const updatedUser = await getUserById(clientData.updatedBy);
+          setUpdatedByName(updatedUser?.username?.value || "Inconnu");
+        }
+      } catch (error) {
+        toast.error("Erreur lors du chargement des informations.");
+        router.push("/dashboard/clients");
+      }
+    }
+    fetchClientDetails();
+  }, [params.id, router]);
 
   return (
     <SidebarProvider>
@@ -118,14 +88,18 @@ export default function ClientDetailsPage({ params }: { params: { id: string } }
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{client.raisonSociale}</BreadcrumbPage>
+                  <BreadcrumbPage>{client ? client.username : "Chargement..."}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <div className="p-4">
-          <ClientDetails client={client} />
+          {client ? (
+            <ClientDetails client={client} createdByName={createdByName} updatedByName={updatedByName} />
+          ) : (
+            <p className="text-center text-lg font-semibold">Chargement des informations...</p>
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>
