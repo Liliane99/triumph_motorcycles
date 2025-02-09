@@ -1,185 +1,59 @@
-"use client";
+import { useState } from 'react';
+import { createRental } from '@/lib/apiExpress'; 
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
-import { format } from "date-fns";
+const RentalForm = () => {
+  const [reference, setReference] = useState('');
+  const [rentalDate, setRentalDate] = useState('');
+  const [price, setPrice] = useState(0);
+  const [motorcycleId, setMotorcycleId] = useState('');
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
 
-export type LocationFormValues = {
-    id: string;
-    reference: string;
-    brand: string;
-    model: string;
-    licensePlate: string;
-    startDate: Date | null;
-    endDate: Date | null;
-    client: string;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const rentalData = {
+      reference,
+      rentalDate,
+      price,
+      motorcycleId,
+      ownerId: 'userId_from_token', // Remplace cette valeur par l'ID de l'utilisateur
+    };
+
+    try {
+      await createRental(rentalData, token);
+      alert('Location créée avec succès!');
+    } catch (error) {
+      alert('Erreur lors de la création de la location.');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Référence"
+        value={reference}
+        onChange={(e) => setReference(e.target.value)}
+      />
+      <input
+        type="date"
+        value={rentalDate}
+        onChange={(e) => setRentalDate(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Prix"
+        value={price}
+        onChange={(e) => setPrice(Number(e.target.value))}
+      />
+      <input
+        type="text"
+        placeholder="ID Moto"
+        value={motorcycleId}
+        onChange={(e) => setMotorcycleId(e.target.value)}
+      />
+      <button type="submit">Créer une Location</button>
+    </form>
+  );
 };
 
-const locationSchema = z.object({
-    id: z.string().optional(),
-    reference: z.string().min(1, { message: "Référence obligatoire." }),
-    brand: z.string().min(1, { message: "Marque obligatoire." }),
-    model: z.string().min(1, { message: "Modèle obligatoire." }),
-    licensePlate: z.string().min(1, { message: "Plaque dimmatriculation obligatoire." }),
-    startDate: z.date({ required_error: "La date est obligatoire." }).nullable(),
-    endDate: z.date({ required_error: "La date est obligatoire." }).nullable(),
-    client: z.string().min(1, { message: "Client obligatoire." }),
-});
-
-type AddLocationFormProps = {
-    onSubmit: (values: LocationFormValues) => void;
-    defaultValues?: Partial<LocationFormValues>;
-    mode?: "create" | "edit";
-};
-
-export function AddLocationForm({
-    onSubmit,
-    defaultValues,
-    mode = "create",
-}: AddLocationFormProps) {
-    const [startDate, setStartDate] = useState<Date | undefined>(defaultValues?.startDate || undefined);
-    //const [endDate, setEndDate] = useState<Date | undefined>(defaultValues?.endDate || undefined);
-
-    const form = useForm<LocationFormValues>({
-        resolver: zodResolver(locationSchema),
-        defaultValues: {
-            id: "",
-            reference: "",
-            brand: "",
-            model: "",
-            licensePlate: "",
-            startDate: null,
-            endDate: null,
-            client: "",
-            ...defaultValues,
-        },
-    });
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                    control={form.control}
-                    name="reference"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Référence</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Référence" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="brand"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Marque</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Marque" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="model"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Modèle</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Modèle" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="licensePlate"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Plaque dimmatriculation</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Plaque dimmatriculation" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={() => (
-                        <FormItem>
-                            <FormLabel>Date début location</FormLabel>
-                            <FormControl>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full">
-                                            {startDate ? format(startDate, "dd/MM/yyyy") : "Choisir une date"}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        <Calendar
-                                            mode="single"
-                                            selected={startDate}
-                                            onSelect={(selectedDate) => {
-                                                setStartDate(selectedDate || undefined);
-                                                form.setValue("startDate", selectedDate || null);
-                                            }}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="client"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Choisir un client</FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionner un client" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Liliane">Liliane</SelectItem>
-                                        <SelectItem value="Cheick">Cheick</SelectItem>
-                                        <SelectItem value="Ines">Ines</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <Button type="submit" className="w-full">
-                    {mode === "create" ? "Ajouter une location" : "Mettre à jour"}
-                </Button>
-            </form>
-        </Form>
-    );
-}
+export default RentalForm;

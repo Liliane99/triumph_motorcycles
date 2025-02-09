@@ -1,21 +1,21 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
+  Breadcrumb, BreadcrumbItem, BreadcrumbList,
+  BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { DataTable } from "../../../components/rental/data-table"; 
-import { columns, locations } from "@/components/rental/columns"; 
+import { RentalDataTable } from "@/components/rental/data-table"; 
+import { columns } from "@/components/rental/columns"; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useRentals } from "@/components/rental/columns"; // Utilisation du hook personnalisé
 
-export default function LocationsPage() {
+export default function RentalsPage() {
+  const { rentals, setRentals, loading, error } = useRentals(); // Utilisation du hook pour récupérer les locations
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -39,35 +39,27 @@ export default function LocationsPage() {
         </header>
 
         <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total des locations</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">{locations.length}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total des locations récentes</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">5</p> {/* Adapte selon les données réelles */}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total des montants</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">470</p> {/* Adapte selon les données réelles */}
-              </CardContent>
-            </Card>
-          </div>
-          <div className="mt-8">
-            <DataTable columns={columns} data={locations} />
-          </div>
+          {loading && <p className="text-center text-gray-500">Chargement des locations...</p>}
+          {error && <p className="text-center text-red-500">{error}</p>}
+
+          {!loading && !error && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardHeader className="flex items-center justify-center">
+                    <CardTitle>Total locations enregistrées</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center justify-center">
+                    <p className="text-3xl font-bold">{rentals.length}</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="mt-8">
+                <RentalDataTable columns={columns} data={rentals} />
+              </div>
+            </>
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>
