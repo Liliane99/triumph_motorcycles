@@ -16,7 +16,8 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Wrench, Tag, Package, DollarSign, Calendar, Shield } from "lucide-react";
-import { getMotorcycleById, Motorcycle, getUserById } from "@/lib/api";
+import { getMotorcycleById, Motorcycle } from "@/lib/apiExpress";
+import { getUserById } from "@/lib/api";
 import { toast } from "react-toastify";
 
 export default function MotoDetailsPage({ params }: { params: { id: string } }) {

@@ -18,7 +18,7 @@ export default function MotosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 📡 Récupération des motos via Axios
+ 
   useEffect(() => {
     async function fetchMotos() {
       try {
@@ -56,7 +56,7 @@ export default function MotosPage() {
         </header>
 
         <div className="p-4">
-          {/* 🔴 Gestion du chargement et des erreurs */}
+          {}
           {loading && <p className="text-center text-gray-500">Chargement des motos...</p>}
           {error && <p className="text-center text-red-500">{error}</p>}
 
