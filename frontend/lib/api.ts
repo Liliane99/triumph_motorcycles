@@ -1,4 +1,5 @@
 import axios from "axios";
+import { format, parseISO, isValid } from "date-fns";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_NEST;
 const API_URL_EXPRESS = process.env.NEXT_PUBLIC_API_URL_EXPRESS;
@@ -503,7 +504,7 @@ export type Motorcycle = {
 
 export const getMotorcycleById = async (id: string): Promise<{ brand: string } | null> => {
   try {
-    const response = await apiExpress.get(`/motorcycles/${id}`);
+    const response = await apiExpress.get(`/api/motorcycles/${id}`);
     const brand = response.data?.brand?.value || response.data?.brand || "Moto inconnue";
     return { brand };
   } catch (error: any) {
@@ -514,7 +515,7 @@ export const getMotorcycleById = async (id: string): Promise<{ brand: string } |
 
 export const getMotorcycles = async (): Promise<ApiMotorcycle[]> => {
   try {
-    const response = await apiExpress.get<ApiMotorcycle[]>("/motorcycles");
+    const response = await apiExpress.get<ApiMotorcycle[]>("/api/motorcycles");
 
     return response.data;
   } catch (error: any) {
@@ -562,6 +563,166 @@ export const getEnrichedTrials = async (): Promise<EnrichedTrial[]> => {
     return enrichedTrials;
   } catch (error) {
     throw error.response?.data?.message || "Erreur inconnue lors de la récupération des essais enrichis.";
+  }
+};
+
+export type ApiIncident = {
+  id: string;
+  reference: { value: string };
+  description: { value: string };
+  status: { value: "opened" | "resolved" };
+  date: { value: string };  // Correction ici, la date est un objet avec une propriété value
+  motorcycleId: string;
+  createdBy: string;
+  updatedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Incident = {
+  id: string;
+  reference: string;
+  description: string;
+  status: "opened" | "resolved";
+  date: string;
+  motorcycleLicensePlate: string;
+  createdByName: string;
+  updatedByName?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const getIncidents = async (): Promise<Incident[]> => {
+  try {
+    const response = await api.get<ApiIncident[]>("/incidents");
+    
+    const enrichedIncidents = await Promise.all(
+      response.data.map(async (incident) => {
+        try {
+          const [createdByUser, updatedByUser, motorcycle] = await Promise.all([
+            getUserById(incident.createdBy),
+            incident.updatedBy ? getUserById(incident.updatedBy) : Promise.resolve(null),
+            getMotorcycleById(incident.motorcycleId)
+          ]);
+
+          // Pour le debug
+          console.log('Raw incident:', incident);
+          console.log('CreatedByUser:', createdByUser);
+          console.log('UpdatedByUser:', updatedByUser);
+          console.log('Motorcycle:', motorcycle);
+
+          const enrichedIncident: Incident = {
+            id: incident.id,
+            reference: incident.reference.value,
+            description: incident.description.value,
+            status: incident.status.value,
+            // La date est dans l'objet value
+            date: typeof incident.date === 'object' && incident.date.value 
+              ? new Date(incident.date.value).toISOString() 
+              : new Date(incident.date).toISOString(),
+            motorcycleLicensePlate: motorcycle?.brand || "Moto inconnue",
+            createdByName: createdByUser?.username?.value || "Inconnu",
+            updatedByName: updatedByUser?.username?.value || "N/A",
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt
+          };
+
+          return enrichedIncident;
+        } catch (error) {
+          console.error(`Erreur lors de l'enrichissement de l'incident ${incident.id}:`, error);
+          return {
+            id: incident.id,
+            reference: incident.reference.value || "",
+            description: incident.description.value || "",
+            status: incident.status.value || "opened",
+            date: typeof incident.date === 'object' && incident.date.value 
+              ? new Date(incident.date.value).toISOString() 
+              : new Date(incident.date).toISOString(),
+            motorcycleLicensePlate: "Moto inconnue",
+            createdByName: "Inconnu",
+            updatedByName: "N/A",
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt
+          };
+        }
+      })
+    );
+
+    return enrichedIncidents;
+  } catch (error) {
+    console.error("Erreur dans getIncidents:", error);
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la récupération des incidents.";
+    }
+    throw "Erreur lors de la récupération des incidents.";
+  }
+};
+
+export const getIncidentById = async (id: string): Promise<Incident | null> => {
+  try {
+    const response = await api.get<ApiIncident>(`/incidents/${id}`);
+
+    const createdByUser = await getUserById(response.data.createdBy);
+    const updatedByUser = response.data.updatedBy ? await getUserById(response.data.updatedBy) : null;
+    const motorcycle = await getMotorcycleById(response.data.motorcycleId);
+
+    const incidentDateStr = response.data.date.value;
+    const formattedIncidentDate = incidentDateStr ? 
+      isValid(parseISO(incidentDateStr)) ? 
+        format(parseISO(incidentDateStr), "dd/MM/yyyy HH:mm") : 
+        "Date invalide" : 
+        "Non spécifiée";
+
+    return {
+      id: response.data.id,
+      reference: response.data.reference.value,
+      description: response.data.description.value,
+      status: response.data.status.value,
+      date: formattedIncidentDate,
+      motorcycleLicensePlate: motorcycle?.brand || "Moto inconnue",
+      createdByName: createdByUser?.username.value || "Inconnu",
+      updatedByName: updatedByUser?.username.value || "N/A",
+      createdAt: new Date(response.data.createdAt).toLocaleString(),
+      updatedAt: new Date(response.data.updatedAt).toLocaleString()
+    };
+  } catch {
+    return null;
+  }
+};
+export const createIncident = async (
+  incidentData: Omit<ApiIncident, "id" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt">,
+  token: string
+): Promise<void> => {
+  try {
+    await api.post("/incidents", incidentData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la création de l'incident.";
+  }
+};
+
+export const updateIncident = async (
+  id: string,
+  incidentData: Partial<Omit<ApiIncident, "id" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt">>,
+  token: string
+): Promise<void> => {
+  try {
+    await api.put(`/incidents/${id}`, incidentData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la mise à jour de l'incident.";
+  }
+};
+
+export const deleteIncident = async (id: string, token: string): Promise<void> => {
+  try {
+    await api.delete(`/incidents/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la suppression de l'incident.";
   }
 };
 

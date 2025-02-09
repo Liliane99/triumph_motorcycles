@@ -73,10 +73,28 @@ export const updateMotorcycle = async (
   token: string
 ): Promise<void> => {
   try {
-    await apiExpress.put(`/api/motorcycles/${id}`, motorcycleData, {
+    console.log("1. Données reçues dans updateMotorcycle:", motorcycleData);
+    
+    const formattedData = {
+      brand: motorcycleData.brand,
+      model: motorcycleData.model,
+      date: motorcycleData.purchaseDate,
+      licensePlate: motorcycleData.licensePlate,
+      kilometers: motorcycleData.kilometers,
+      warranty: motorcycleData.warrantyDate,
+      maintenanceInterval: motorcycleData.maintenanceInterval,
+      ownerId: motorcycleData.ownerId
+    };
+
+    console.log("2. Données formatées pour l'API:", formattedData);
+    
+    const response = await apiExpress.put(`/api/motorcycles/${id}`, formattedData, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    
+    console.log("3. Réponse de l'API:", response.data);
   } catch (error: any) {
+    console.error("4. Erreur dans updateMotorcycle:", error.response?.data || error);
     throw error.response?.data?.message || "Erreur inconnue lors de la mise à jour de la moto.";
   }
 };

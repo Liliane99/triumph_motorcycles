@@ -42,6 +42,9 @@ model User {
   createdTrials   Trial[] @relation("CreatedTrials")
   updatedTrials   Trial[] @relation("UpdatedTrials")
   trialParticipations Trial[] @relation("UserTrials")
+
+  createdIncidents   Incident[] @relation("CreatedIncidents")
+  updatedIncidents   Incident[] @relation("UpdatedIncidents")
  
 }
 
@@ -188,12 +191,17 @@ model Incident {
   reference      String   @unique
   description    String
   date           DateTime
+  status         String   @default("opened")
   motorcycleId   String
+  created_by     String
+  updated_by     String?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
   motorcycle     Motorcycle @relation("MotorcycleIncidents", fields: [motorcycleId], references: [id])
- 
+
+  creator        User @relation("CreatedIncidents", fields: [created_by], references: [user_id])
+  updater        User? @relation("UpdatedIncidents", fields: [updated_by], references: [user_id])
 
   @@index([motorcycleId])
 }

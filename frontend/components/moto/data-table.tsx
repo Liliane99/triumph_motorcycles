@@ -31,16 +31,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import Link from "next/link";
 import { useMotos } from "@/components/moto/columns";
-import { Moto } from "@/models/Moto"; 
+import { Motorcycle } from "@/lib/apiExpress"; 
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
 }
 
-export function DataTable({
-  columns,
-}: DataTableProps<Moto>) {
-  const { motos, setMotos, loading } = useMotos(); 
+export function DataTable({ columns }: DataTableProps<Motorcycle>) { 
+  const { motos, loading } = useMotos(); 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState<string>("");
   const [dateFilter, setDateFilter] = React.useState<Date | undefined>(undefined);
@@ -164,34 +162,22 @@ export function DataTable({
             </Table>
           </div>
 
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-end space-x-2 py-4">
             <Button
-              variant="ghost"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Première
-            </Button>
-            <Button
-              variant="ghost"
+              variant="outline"
+              size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Précédente
+              Précédent
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
+              size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Suivante
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              Dernière
+              Suivant
             </Button>
           </div>
         </>
