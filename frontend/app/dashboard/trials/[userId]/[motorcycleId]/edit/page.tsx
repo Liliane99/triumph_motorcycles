@@ -7,7 +7,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbL
 import { Separator } from "@/components/ui/separator";
 import { AddTrialForm } from "@/components/trial/add-trial-form";
 import { useRouter } from "next/navigation";
-import { getTrialById, updateTrial, getUserById, getMotorcycleById } from "@/lib/api";
+import { getTrialById, updateTrial } from "@/lib/api";
 import { toast } from "react-toastify";
 
 export default function EditTrialPage({ params }: { params: { userId: string; motorcycleId: string } }) {

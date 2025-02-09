@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/select";
 import { User } from "@/lib/api";
 
-// ✅ Schéma de validation
 const editUserSchema = z.object({
   username: z.string()
     .min(3, { message: "Le nom doit contenir au moins 3 caractères." })
@@ -53,10 +52,8 @@ const editUserSchema = z.object({
   experienceLevel: z.string().optional(),
 });
 
-// ✅ Typage du formulaire
 type EditUserFormValues = z.infer<typeof editUserSchema>;
 
-// ✅ Props du composant
 interface EditUserFormProps {
   defaultValues: Partial<User>;
   onSubmit: (values: Partial<User>) => void;
