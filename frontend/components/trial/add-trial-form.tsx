@@ -58,12 +58,12 @@ const trialSchema = z.object({
 const formatDate = (dateValue: any) => {
   if (!dateValue) return null;
   
-  
+
   if (dateValue instanceof Date && isValid(dateValue)) {
     return dateValue;
   }
   
-  
+
   const dateStr = typeof dateValue === "string" ? dateValue : dateValue?.value;
   if (!dateStr) return null;
   
@@ -87,7 +87,7 @@ export function AddTrialForm({
   const [loading, setLoading] = useState(true);
   const [availableMotorcycles, setAvailableMotorcycles] = useState<Array<{ id: string; label: string }>>([]);
 
-  
+
   const formattedDefaultValues = defaultValues ? {
     ...defaultValues,
     start_date: formatDate(defaultValues.start_date),
@@ -113,7 +113,7 @@ export function AddTrialForm({
           getTrials()
         ]);
 
-       
+
         const filteredClients = usersData
           .filter(user => user.role.value === 'client')
           .map(user => ({
@@ -121,7 +121,6 @@ export function AddTrialForm({
             label: user.username.value
           }));
 
-        
         const allMotorcycles = motorcyclesData.map(moto => ({
           id: moto.id,
           label: moto.brand.value
@@ -131,7 +130,7 @@ export function AddTrialForm({
         setClients(filteredClients);
         setTrials(trialsData);
 
-        
+
         if (mode === 'edit' && defaultValues) {
           const currentMotorcycle = allMotorcycles.find(
             m => m.id === defaultValues.motorcycle_id
@@ -153,7 +152,7 @@ export function AddTrialForm({
   }, [mode, defaultValues]);
 
   const isMotorcycleAvailable = (motoId: string, startDate: Date, endDate: Date) => {
-    
+
     if (mode === 'edit' && motoId === defaultValues?.motorcycle_id) {
       return true;
     }
@@ -163,7 +162,7 @@ export function AddTrialForm({
         return false;
       }
 
-      
+
       if (mode === 'edit' && 
           trial.userId === defaultValues?.user_id && 
           trial.motorcycleId === defaultValues?.motorcycle_id) {
@@ -178,7 +177,7 @@ export function AddTrialForm({
     });
   };
 
-  
+
   useEffect(() => {
     const startDate = form.getValues('start_date');
     const endDate = form.getValues('end_date');
