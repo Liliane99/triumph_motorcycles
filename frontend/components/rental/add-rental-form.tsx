@@ -15,7 +15,7 @@ const RentalForm = () => {
       rentalDate,
       price,
       motorcycleId,
-      ownerId: 'userId_from_token', // Remplace cette valeur par l'ID de l'utilisateur
+      ownerId: 'userId_from_token', 
     };
 
     try {

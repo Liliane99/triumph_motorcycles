@@ -40,13 +40,13 @@ interface DataTableProps<TData> {
 export function RentalDataTable({
   columns,
 }: DataTableProps<Rental>) {
-  const { rentals, setRentals, loading } = useRentals(); // Utilisation d'un hook pour récupérer les locations
+  const { rentals, setRentals, loading } = useRentals(); 
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState<string>("");
   const [dateFilter, setDateFilter] = React.useState<Date | undefined>(undefined);
 
-  // Initialisation du tableau avec les données et les colonnes
+  
   const table = useReactTable({
     data: rentals,
     columns,
@@ -72,7 +72,7 @@ export function RentalDataTable({
   });
 
   React.useEffect(() => {
-    // Gestion du filtre de date
+    
     if (dateFilter) {
       table.getColumn("rentalDate")?.setFilterValue(format(dateFilter, "yyyy-MM-dd"));
     } else {
@@ -157,7 +157,7 @@ export function RentalDataTable({
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {typeof cell.getValue() === "object"
-                            ? JSON.stringify(cell.getValue()) // Si la valeur est un objet, on le transforme en chaîne
+                            ? JSON.stringify(cell.getValue()) 
                             : flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
