@@ -6,31 +6,89 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbL
 import { Separator } from "@/components/ui/separator";
 import { AddMotoForm, MotoFormValues } from "@/components/moto/add-moto-form";
 import { useEffect, useState } from "react";
+import { getMotorcycleById, updateMotorcycle } from "@/lib/apiexpress";
+import { getUsers } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export default function EditMaintenancePage({ params }: { params: { id: string } }) {
   const [defaultValues, setDefaultValues] = useState<MotoFormValues | null>(null);
+  const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const mockMoto: MotoFormValues = {
-      id: "1",
-      model: "Bandit 650",
-      brand: "Suzuki",
-      licensePlate: "AX-840-XC",
-      price: "4560",
-      date: new Date("2025-01-01"),
-      warranty: new Date("2027-01-01"),
-      maintenanceInterval: 10000,
-      kilometer: 8000,
-      client: "Liam Macquaire",
+    const fetchData = async () => {
+      try {
+        const motorcycle = await getMotorcycleById(params.id);
+        console.log("Moto récupérée :", motorcycle); // Debug
+
+        if (motorcycle) {
+          setDefaultValues({
+            id: motorcycle.id,
+            brand: motorcycle.brand?.value ?? "",
+            model: motorcycle.model?.value ?? "",
+            licensePlate: motorcycle.licensePlate?.value ?? "",
+            kilometers: motorcycle.kilometers?.value ?? 0,
+            maintenanceInterval: motorcycle.maintenanceInterval?.value ?? 0,
+            purchaseDate: motorcycle.purchaseDate?.value ? new Date(motorcycle.purchaseDate.value) : null,
+            warrantyDate: motorcycle.warrantyDate?.value ? new Date(motorcycle.warrantyDate.value) : null,
+            ownerId: motorcycle.ownerId?.value ?? "",
+          });
+        }
+
+        const userList = await getUsers();
+        const formattedUsers = userList.map(user => ({
+          id: user.id,
+          name: user.role.value === 'admin' || user.role.value === 'manager'
+            ? `${user.username.value} (Triumph Motorcycle)`
+            : user.username.value
+        }));
+        setUsers(formattedUsers);
+      } catch (err) {
+        console.error("Erreur lors de la récupération des données :", err);
+        setError("Une erreur est survenue lors de la récupération des données.");
+      } finally {
+        setLoading(false);
+      }
     };
-    setDefaultValues(mockMoto);
+
+    fetchData();
   }, [params.id]);
 
-  const handleSubmit = (values: MotoFormValues) => {
-    console.log("Moto mis à jour :", values);
+  const handleSubmit = async (values: MotoFormValues) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Token introuvable");
+
+      console.log("Données envoyées à updateMotorcycle :", values); // Debug
+
+      await updateMotorcycle(
+        params.id,
+        {
+          brand: values.brand,
+          model: values.model,
+          licensePlate: values.licensePlate,
+          kilometers: values.kilometers,
+          maintenanceInterval: values.maintenanceInterval,
+          purchaseDate: values.purchaseDate ? format(values.purchaseDate, "yyyy-MM-dd") : null,
+          warrantyDate: values.warrantyDate ? format(values.warrantyDate, "yyyy-MM-dd") : null,
+          ownerId: values.ownerId,
+        },
+        token
+      );
+
+      alert("La moto a été mise à jour avec succès !");
+      router.push("/dashboard/motos"); // Redirection après mise à jour
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour :", err);
+      setError("Une erreur est survenue lors de la mise à jour de la moto.");
+    }
   };
 
-  if (!defaultValues) return <p>Chargement...</p>;
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <SidebarProvider>
@@ -51,7 +109,7 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{defaultValues.licensePlate}</BreadcrumbPage>
+                  <BreadcrumbPage>{defaultValues?.licensePlate ?? "Plaque inconnue"}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -60,7 +118,14 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
 
         <div className="p-4">
           <h1 className="text-2xl font-bold mb-6">Modifier la moto</h1>
-          <AddMotoForm onSubmit={handleSubmit} defaultValues={defaultValues} mode="edit" />
+          {defaultValues && (
+            <AddMotoForm 
+              defaultValues={defaultValues} 
+              mode="edit" 
+              onSubmit={handleSubmit} 
+              users={users} 
+            />
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

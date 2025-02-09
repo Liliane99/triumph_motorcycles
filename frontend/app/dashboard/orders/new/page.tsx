@@ -11,13 +11,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { AddOrderForm, OrderFormValues } from "@/components/orders/add-order-form";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AddOrderForm } from "@/components/orders/add-order-form";
 
 export default function NewOrderPage() {
-  const handleSubmit = (values: OrderFormValues) => {
-    console.log("Nouvelle commande :", values);
-  };
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -43,10 +40,15 @@ export default function NewOrderPage() {
             </Breadcrumb>
           </div>
         </header>
-
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-6">Ajouter une commande</h1>
-          <AddOrderForm onSubmit={handleSubmit} mode="create" />
+          <Card>
+            <CardHeader>
+              <CardTitle>Nouvelle commande</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddOrderForm mode="create" />
+            </CardContent>
+          </Card>
         </div>
       </SidebarInset>
     </SidebarProvider>

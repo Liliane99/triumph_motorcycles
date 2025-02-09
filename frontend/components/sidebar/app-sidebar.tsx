@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
+  const isAdminOrManager = user?.role === "admin" || user?.role === "manager";
 
   const navMain = [
     { title: "Accueil", url: "/dashboard", icon: Home },
@@ -26,17 +27,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       items: [
         { title: "Motos", url: "/dashboard/motos" },
         { title: "Locations", url: "/dashboard/rental" },
-        { title: "Essais", url: "/dashboard/trials" },
+        ...(isAdminOrManager ? [{ title: "Essais", url: "/dashboard/trials" }] : []),
         { title: "Entretiens", url: "/dashboard/maintenance" },
         { title: "Incidents", url: "/dashboard/incidents" },
       ],
     },
-    { title: "Pièces détachées", url: "/dashboard/parts", icon: Package },
-    { title: "Commandes", url: "/dashboard/orders", icon: ShoppingBag },
-    { title: "Clients", url: "/dashboard/clients", icon: User },
+    ...(isAdminOrManager ? [{ title: "Pièces détachées", url: "/dashboard/parts", icon: Package }] : []),
+    ...(isAdminOrManager ? [{ title: "Commandes", url: "/dashboard/orders", icon: ShoppingBag }] : []),
+    ...(isAdminOrManager ? [{ title: "Clients", url: "/dashboard/clients", icon: User }] : []),
   ];
 
-  if (user?.role === "admin" || user?.role === "manager") {
+  if (isAdminOrManager) {
     navMain.push({ title: "Utilisateurs", url: "/dashboard/users", icon: User });
   }
 
