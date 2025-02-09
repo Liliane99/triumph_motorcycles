@@ -1,9 +1,10 @@
 import { Maintenance } from "../../../domain/entities/Maintenance";
 
-export interface MaintenanceRepository {
-  save(maintenance: Maintenance): Promise<Maintenance>;
-  findById(id: string): Promise<Maintenance | null>;
-  getAll(): Promise<Maintenance[]>;
-  delete(id: string): Promise<void>;
-
+export interface IMaintenanceRepository {
+  createMaintenance(maintenance: Maintenance): Promise<Maintenance>;
+  updateMaintenance(maintenance: Maintenance): Promise<Maintenance | null>;
+  deleteMaintenance(id: string): Promise<void>;
+  getMaintenanceById(id: string): Promise<Maintenance | null>;
+  getMaintenanceByReference(reference: string): Promise<Maintenance | null>;
+  listMaintenances(): Promise<Maintenance[]>;
 }

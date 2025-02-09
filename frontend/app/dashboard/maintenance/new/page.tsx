@@ -11,14 +11,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AddMaintenanceForm } from "@/components/maintenance/add-maintenance-form";
-import { MaintenanceFormValues } from "@/components/maintenance/add-maintenance-form";
 
 export default function NewMaintenancePage() {
-  const handleSubmit = (values: MaintenanceFormValues) => {
-    console.log("Nouvel entretien :", values);
-  };
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -32,22 +28,27 @@ export default function NewMaintenancePage() {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/maintenance">Entretiens</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/maintenance">Maintenance</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Nouvel entretien</BreadcrumbPage>
+                  <BreadcrumbPage>Nouvelle maintenance</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-6">Ajouter un entretien</h1>
-          <AddMaintenanceForm onSubmit={handleSubmit} mode="create" />
+          <Card>
+            <CardHeader>
+              <CardTitle>Nouvelle maintenance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddMaintenanceForm mode="create" />
+            </CardContent>
+          </Card>
         </div>
       </SidebarInset>
     </SidebarProvider>

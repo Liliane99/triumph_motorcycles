@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -10,12 +12,35 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { DataTable } from "../../../components/maintenance/data-table";
-import { columns, entretiens } from "../../../components/maintenance/columns";
+import { DataTable } from "@/components/maintenance/data-table";
+import { columns } from "@/components/maintenance/columns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getMaintenances, Maintenance } from "@/lib/api";
+import { toast } from "react-toastify";
 
-export default function EntretiensPage() {
+export default function MaintenancesPage() {
+  const router = useRouter();
+  const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchMaintenances() {
+      try {
+        const fetchedMaintenances = await getMaintenances();
+        setMaintenances(fetchedMaintenances);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Erreur lors de la récupération des maintenances.");
+        router.push("/dashboard");
+      }
+    }
+
+    fetchMaintenances();
+  }, [router]);
+
+  if (loading) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -29,9 +54,9 @@ export default function EntretiensPage() {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Entretiens</BreadcrumbPage>
+                  <BreadcrumbPage>Maintenances</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -39,34 +64,19 @@ export default function EntretiensPage() {
         </header>
 
         <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>Total Entretiens</CardTitle>
+                <CardTitle>Total Maintenances</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">{entretiens.length}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Entretiens Récents</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">5</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Coût Total (€)</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">470</p>
+                <p className="text-3xl font-bold">{maintenances.length}</p>
               </CardContent>
             </Card>
           </div>
+
           <div className="mt-8">
-            <DataTable columns={columns} data={entretiens} />
+            <DataTable columns={columns} data={maintenances} />
           </div>
         </div>
       </SidebarInset>

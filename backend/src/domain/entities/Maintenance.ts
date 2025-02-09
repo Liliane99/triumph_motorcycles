@@ -1,79 +1,87 @@
-import { v4 as uuidv4 } from 'uuid';
-import { Motorcycle } from './Motorcycle';
-import { Part } from './Part';
-import { MaintenanceReference } from '../values/Maintenance/maintenanceReference';
-import { MaintenanceReferenceAlreadyExistsError } from '../errors/Maintenance/MaintenanceReferenceError';
-import { MaintenanceDateInPastError } from '../errors/Maintenance/MaintenanceDateInPastError';
+import { MaintenanceReference } from "../values/maintenances/maintenanceReference";
+import { MaintenanceDate } from "../values/maintenances/MaintenanceDate";
+import { Recommendation } from "../values/maintenances/Recommendation";
 
 export class Maintenance {
-  public reference: MaintenanceReference;
-  public date: Date;
-  public technician: string; 
-  public recommendation: string;
-  public pricePartTotal: number;
-  public priceLabour: number;
-  public priceTotal: number;
-  public motorcycleId: string;
-  public partId: string;
-  public motorcycle: Motorcycle;
-  public part: Part;
-
   constructor(
-    public readonly id: string = uuidv4(),
+    public readonly id: string,
+    public readonly reference: MaintenanceReference,
+    public readonly date: MaintenanceDate,
+    public readonly recommendation: Recommendation,
+    public readonly motorcycleId: string,
+    public readonly createdBy: string,
+    public readonly updatedBy: string,
+    public readonly createdAt: Date,
+    public readonly updatedAt: Date
+  ) {}
+
+  private static validateFields(
     reference: string,
     date: Date,
-    technician: string, 
+    recommendation: string
+  ): {
+    reference: MaintenanceReference | Error;
+    date: MaintenanceDate | Error;
+    recommendation: Recommendation | Error;
+  } {
+    return {
+      reference: MaintenanceReference.from(reference),
+      date: MaintenanceDate.from(date),
+      recommendation: Recommendation.from(recommendation),
+    };
+  }
+
+  static create(
+    id: string,
+    reference: string,
+    date: Date,
     recommendation: string,
-    pricePartTotal: number,
-    priceLabour: number,
-    motorcycle: Motorcycle,
-    part: Part
-  ) {
-    this.validateDate(date);
-    this.validateReference(reference);
+    motorcycleId: string,
+    createdBy: string
+  ): Maintenance | Error {
+    const { reference: validReference, date: validDate, recommendation: validRecommendation } =
+      this.validateFields(reference, date, recommendation);
 
-    this.reference = new MaintenanceReference(reference);
-    this.date = date;
-    this.technician = technician; 
-    this.recommendation = recommendation;
-    this.pricePartTotal = pricePartTotal;
-    this.priceLabour = priceLabour;
-    this.priceTotal = pricePartTotal + priceLabour;
-    this.motorcycle = motorcycle;
-    this.motorcycleId = motorcycle.id;
-    this.part = part;
-    this.partId = part.id;
+    if (validReference instanceof Error) return validReference;
+    if (validDate instanceof Error) return validDate;
+    if (validRecommendation instanceof Error) return validRecommendation;
+
+    return new Maintenance(
+      id,
+      validReference,
+      validDate,
+      validRecommendation,
+      motorcycleId,
+      createdBy,
+      createdBy,
+      new Date(),
+      new Date()
+    );
   }
 
-  private validateDate(date: Date): void {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  update(
+    date?: Date,
+    recommendation?: string,
+    updatedBy?: string
+  ): Maintenance | Error {
+    const validDate = date ? MaintenanceDate.from(date) : this.date;
+    const validRecommendation = recommendation
+      ? Recommendation.from(recommendation)
+      : this.recommendation;
 
-    if (date < today) {
-      throw new MaintenanceDateInPastError();
-    }
-  }
+    if (validDate instanceof Error) return validDate;
+    if (validRecommendation instanceof Error) return validRecommendation;
 
-  private validateReference(reference: string): void {
-    if (!reference || reference.trim() === '') {
-      throw new MaintenanceReferenceAlreadyExistsError(reference);
-    }
-  }
-
-  updateMaintenanceDetails(
-    newDate: Date,
-    newTechnician: string,
-    newRecommendation: string,
-    newPricePartTotal: number,
-    newPriceLabour: number
-  ) {
-    this.validateDate(newDate);
-
-    this.date = newDate;
-    this.technician = newTechnician; 
-    this.recommendation = newRecommendation;
-    this.pricePartTotal = newPricePartTotal;
-    this.priceLabour = newPriceLabour;
-    this.priceTotal = newPricePartTotal + newPriceLabour;
+    return new Maintenance(
+      this.id,
+      this.reference,
+      validDate,
+      validRecommendation,
+      this.motorcycleId,
+      this.createdBy,
+      updatedBy ?? this.updatedBy,
+      this.createdAt,
+      new Date()
+    );
   }
 }

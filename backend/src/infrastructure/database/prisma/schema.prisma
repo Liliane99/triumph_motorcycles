@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  user_id          String   @id @default(uuid()) 
+  user_id          String   @id @default(uuid())
   user_name        String
   email            String   @unique
   password         String
@@ -16,155 +16,131 @@ model User {
   phone_number     String?
   license_number   String?
   experience_level String?
-  created_by       String?  
-  updated_by       String? 
+  created_by       String?
+  updated_by       String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
-  createdMotorcycles  Motorcycle[] @relation("CreatedMotorcycles")
-  updatedMotorcycles  Motorcycle[] @relation("UpdatedMotorcycles")
-  MotorcycleOwner     Motorcycle[] @relation("MotorcycleOwner")
+  createdMotorcycles Motorcycle[] @relation("CreatedMotorcycles")
+  updatedMotorcycles Motorcycle[] @relation("UpdatedMotorcycles")
+  MotorcycleOwner    Motorcycle[] @relation("MotorcycleOwner")
 
-  creator         User? @relation("CreatedUsers", fields: [created_by], references: [user_id])
-  createdUsers    User[] @relation("CreatedUsers")
+  creator      User?  @relation("CreatedUsers", fields: [created_by], references: [user_id])
+  createdUsers User[] @relation("CreatedUsers")
 
-  updater         User? @relation("UpdatedUsers", fields: [updated_by], references: [user_id]) 
-  updatedUsers    User[] @relation("UpdatedUsers")
+  updater      User?  @relation("UpdatedUsers", fields: [updated_by], references: [user_id])
+  updatedUsers User[] @relation("UpdatedUsers")
 
-  createdParts    Part[] @relation("CreatedParts")
-  updatedParts    Part[] @relation("UpdatedParts")
+  createdParts Part[] @relation("CreatedParts")
+  updatedParts Part[] @relation("UpdatedParts")
 
-  createdOrders   Order[] @relation("CreatedOrders")
-  updatedOrders   Order[] @relation("UpdatedOrders")
+  createdOrders Order[] @relation("CreatedOrders")
+  updatedOrders Order[] @relation("UpdatedOrders")
 
-  rentals         Rental[] @relation("UserRentals")
+  rentals Rental[] @relation("UserRentals")
 
-  createdTrials   Trial[] @relation("CreatedTrials")
-  updatedTrials   Trial[] @relation("UpdatedTrials")
+  createdTrials       Trial[] @relation("CreatedTrials")
+  updatedTrials       Trial[] @relation("UpdatedTrials")
   trialParticipations Trial[] @relation("UserTrials")
 
-  createdIncidents   Incident[] @relation("CreatedIncidents")
-  updatedIncidents   Incident[] @relation("UpdatedIncidents")
- 
+  createdIncidents Incident[] @relation("CreatedIncidents")
+  updatedIncidents Incident[] @relation("UpdatedIncidents")
+
+  createdMaintenances Maintenance[] @relation("CreatedMaintenances")
+  updatedMaintenances Maintenance[] @relation("UpdatedMaintenances")
 }
 
 model Part {
-  part_id          String    @id @default(uuid())
-  part_reference   String    @unique
-  part_type        String
-  part_name        String
+  part_id           String   @id @default(uuid())
+  part_reference    String   @unique
+  part_type         String
+  part_name         String
   quantity_in_stock Int
-  part_threshold   Int
-  unit_price       Decimal
-  created_by       String
-  updated_by       String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  part_threshold    Int
+  unit_price        Decimal
+  created_by        String
+  updated_by        String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
 
-  creator         User @relation("CreatedParts", fields: [created_by], references: [user_id])
-  updater         User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
+  creator User  @relation("CreatedParts", fields: [created_by], references: [user_id])
+  updater User? @relation("UpdatedParts", fields: [updated_by], references: [user_id])
 
-  orders          OrderPart[]
-  maintenances     Maintenance[] @relation("PartMaintenances")
+  orders       OrderPart[]
+  maintenances MaintenancePart[] @relation("PartMaintenances")
 }
 
 model Order {
-  order_id         String   @id @default(uuid())
-  order_reference  String    @unique
-  order_date       DateTime 
-  delivery_date    DateTime?
-  created_by       String
-  updated_by       String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  order_id        String    @id @default(uuid())
+  order_reference String    @unique
+  order_date      DateTime
+  delivery_date   DateTime?
+  created_by      String
+  updated_by      String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
-  creator         User @relation("CreatedOrders", fields: [created_by], references: [user_id])
-  updater         User? @relation("UpdatedOrders", fields: [updated_by], references: [user_id])
+  creator User  @relation("CreatedOrders", fields: [created_by], references: [user_id])
+  updater User? @relation("UpdatedOrders", fields: [updated_by], references: [user_id])
 
-  parts           OrderPart[]
+  parts OrderPart[]
 }
 
 model OrderPart {
-  order_id        String
-  part_id         String
+  order_id         String
+  part_id          String
   quantity_ordered Int
 
-  order          Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
-  part           Part @relation(fields: [part_id], references: [part_id], onDelete: Cascade)
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  part  Part  @relation(fields: [part_id], references: [part_id], onDelete: Cascade)
 
-  @@id([order_id, part_id]) 
+  @@id([order_id, part_id])
 }
-  
-  
 
 model Motorcycle {
-  id           String @id @default(uuid())
-  brand        String
-  model        String
-  purchaseDate DateTime 
-  licensePlate String @unique
-  kilometers   Int
-  warrantyDate DateTime 
+  id                  String   @id @default(uuid())
+  brand               String
+  model               String
+  purchaseDate        DateTime
+  licensePlate        String   @unique
+  kilometers          Int
+  warrantyDate        DateTime
   maintenanceInterval Int
-  ownerId      String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  ownerId             String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  
-  createdBy    String?  
-  updatedBy    String?  
+  createdBy String?
+  updatedBy String?
 
-  
-  creator              User?    @relation("CreatedMotorcycles", fields: [createdBy], references: [user_id])
-  updater              User?    @relation("UpdatedMotorcycles", fields: [updatedBy], references: [user_id])
-  owner                User     @relation("MotorcycleOwner", fields: [ownerId], references: [user_id]) 
+  creator User? @relation("CreatedMotorcycles", fields: [createdBy], references: [user_id])
+  updater User? @relation("UpdatedMotorcycles", fields: [updatedBy], references: [user_id])
+  owner   User  @relation("MotorcycleOwner", fields: [ownerId], references: [user_id])
 
-  rentals           Rental[] @relation("MotorcycleRentals")
-  maintenances      Maintenance[] @relation("MotorcycleMaintenances")
-  trials            Trial[] @relation("MotorcycleTrials")
-  incidents       Incident[] @relation("MotorcycleIncidents")
+  rentals      Rental[]      @relation("MotorcycleRentals")
+  maintenances Maintenance[] @relation("MotorcycleMaintenances")
+  trials       Trial[]       @relation("MotorcycleTrials")
+  incidents    Incident[]    @relation("MotorcycleIncidents")
 }
 
 model Rental {
-  id             String   @id @default(uuid())
-  reference      String   @unique
-  rentalDate     DateTime
-  price          Int
-  clientId       String
-  motorcycleId   String
-  
-  client         User     @relation("UserRentals", fields: [clientId], references: [user_id])
-  motorcycle     Motorcycle @relation("MotorcycleRentals", fields: [motorcycleId], references: [id])
+  id           String   @id @default(uuid())
+  reference    String   @unique
+  rentalDate   DateTime
+  price        Int
+  clientId     String
+  motorcycleId String
 
-  createdBy    String?  
-  updatedBy    String? 
+  client     User       @relation("UserRentals", fields: [clientId], references: [user_id])
+  motorcycle Motorcycle @relation("MotorcycleRentals", fields: [motorcycleId], references: [id])
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([clientId, motorcycleId]) 
-}
-
-model Maintenance {
-  id               String       @id @default(uuid())
-  reference        String       @unique
-  date             DateTime
-  technician       String
-  recommendation   String
-  pricePartTotal   Decimal
-  priceLabour      Decimal
-  priceTotal       Decimal
-  motorcycleId     String
-  partId           String
-
-  motorcycle       Motorcycle   @relation("MotorcycleMaintenances", fields: [motorcycleId], references: [id])
-  part             Part         @relation("PartMaintenances", fields: [partId], references: [part_id])
-
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-
-  @@index([motorcycleId, partId])
+  @@index([clientId, motorcycleId])
 }
 
 model Trial {
@@ -177,32 +153,60 @@ model Trial {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  user         User        @relation("UserTrials", fields: [userId], references: [user_id])
-  motorcycle   Motorcycle  @relation("MotorcycleTrials", fields: [motorcycleId], references: [id])
+  user       User       @relation("UserTrials", fields: [userId], references: [user_id])
+  motorcycle Motorcycle @relation("MotorcycleTrials", fields: [motorcycleId], references: [id])
 
-  creator      User        @relation("CreatedTrials", fields: [created_by], references: [user_id])
-  updater      User?       @relation("UpdatedTrials", fields: [updated_by], references: [user_id])
+  creator User  @relation("CreatedTrials", fields: [created_by], references: [user_id])
+  updater User? @relation("UpdatedTrials", fields: [updated_by], references: [user_id])
 
-  @@id([userId, motorcycleId]) 
+  @@id([userId, motorcycleId])
 }
 
 model Incident {
+  id           String   @id @default(uuid())
+  reference    String   @unique
+  description  String
+  date         DateTime
+  status       String   @default("opened")
+  motorcycleId String
+  created_by   String
+  updated_by   String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  motorcycle Motorcycle @relation("MotorcycleIncidents", fields: [motorcycleId], references: [id])
+
+  creator User  @relation("CreatedIncidents", fields: [created_by], references: [user_id])
+  updater User? @relation("UpdatedIncidents", fields: [updated_by], references: [user_id])
+
+  @@index([motorcycleId])
+}
+
+model Maintenance {
   id             String   @id @default(uuid())
   reference      String   @unique
-  description    String
   date           DateTime
-  status         String   @default("opened")
+  recommendation String
   motorcycleId   String
   created_by     String
   updated_by     String?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
-  motorcycle     Motorcycle @relation("MotorcycleIncidents", fields: [motorcycleId], references: [id])
+  motorcycle Motorcycle @relation("MotorcycleMaintenances", fields: [motorcycleId], references: [id])
+  createdBy  User       @relation("CreatedMaintenances", fields: [created_by], references: [user_id])
+  updatedBy  User?      @relation("UpdatedMaintenances", fields: [updated_by], references: [user_id])
 
-  creator        User @relation("CreatedIncidents", fields: [created_by], references: [user_id])
-  updater        User? @relation("UpdatedIncidents", fields: [updated_by], references: [user_id])
-
-  @@index([motorcycleId])
+  parts MaintenancePart[] @relation("MaintenanceParts")
 }
 
+model MaintenancePart {
+  maintenanceId String
+  partId        String
+  quantity_used Int
+
+  maintenance Maintenance @relation("MaintenanceParts", fields: [maintenanceId], references: [id], onDelete: Cascade)
+  part        Part        @relation("PartMaintenances", fields: [partId], references: [part_id], onDelete: Cascade)
+
+  @@id([maintenanceId, partId])
+}
