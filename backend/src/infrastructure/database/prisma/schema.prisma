@@ -42,6 +42,7 @@ model User {
   createdTrials       Trial[] @relation("CreatedTrials")
   updatedTrials       Trial[] @relation("UpdatedTrials")
   trialParticipations Trial[] @relation("UserTrials")
+  drivers        Driver[] @relation("UserDrivers")
 
   createdIncidents Incident[] @relation("CreatedIncidents")
   updatedIncidents Incident[] @relation("UpdatedIncidents")
@@ -120,6 +121,7 @@ model Motorcycle {
   rentals      Rental[]      @relation("MotorcycleRentals")
   maintenances Maintenance[] @relation("MotorcycleMaintenances")
   trials       Trial[]       @relation("MotorcycleTrials")
+  drivers      Driver[] @relation("MotorcycleDrivers")
   incidents    Incident[]    @relation("MotorcycleIncidents")
 }
 
@@ -209,4 +211,21 @@ model MaintenancePart {
   part        Part        @relation("PartMaintenances", fields: [partId], references: [part_id], onDelete: Cascade)
 
   @@id([maintenanceId, partId])
+}
+
+model Driver {
+  driver_id       String   @id @default(uuid())
+  license_number  String
+  experience_level String?
+  date_of_birth   DateTime
+  client_id       String
+  motorcycle_id   String
+
+  client          User       @relation("UserDrivers", fields: [client_id], references: [user_id])
+  motorcycle      Motorcycle @relation("MotorcycleDrivers", fields: [motorcycle_id], references: [id])
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([client_id, motorcycle_id])
 }
