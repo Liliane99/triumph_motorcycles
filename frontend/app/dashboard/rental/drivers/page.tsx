@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const API_URL_BASE = `${process.env.NEXT_PUBLIC_API_URL_EXPRESS}/api`
 
@@ -160,6 +161,17 @@ const DriversPage = () => {
         </div>
       </header>
         <div className="p-4 pt-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card>
+            <CardHeader className="flex items-center justify-center">
+              <CardTitle>Total des conducteurs</CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center">
+              <p className="text-3xl font-bold">{}</p>
+            </CardContent>
+          </Card>
+        </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
