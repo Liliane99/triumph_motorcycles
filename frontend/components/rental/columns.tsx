@@ -41,7 +41,7 @@ export const useRentals = () => {
         const rentalsFormatted: Rental[] = await Promise.all(
           data.map(async (rental: any) => {
             const user = await getUserById(rental.ownerId);
-            const ownerName = user?.user_name || "Utilisateur inconnu";
+            const ownerName = user?.username || "Utilisateur inconnu";
 
             return {
               id: rental.id,

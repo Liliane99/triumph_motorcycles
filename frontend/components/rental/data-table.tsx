@@ -30,8 +30,8 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import Link from "next/link";
-import { useRentals } from "@/components/rental/columns"; // Assurez-vous que ce hook existe et retourne les bonnes données
-import { Rental } from "@/models/Rental"; // Assurez-vous que ce modèle est correct
+import { useRentals } from "@/components/rental/columns"; 
+import { Rental } from "@/lib/apiExpress"; 
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
@@ -117,7 +117,7 @@ export function RentalDataTable({
             </div>
 
             <Button asChild className="flex gap-2" variant="default">
-              <Link href="/dashboard/rentals/new">
+              <Link href="/dashboard/rental/new">
                 <Plus className="w-4 h-4" />
                 Ajouter une location
               </Link>
@@ -148,10 +148,9 @@ export function RentalDataTable({
                     <TableRow key={row.id}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          {typeof cell.getValue() === "object"
+                            ? JSON.stringify(cell.getValue()) // Si la valeur est un objet, on le transforme en chaîne
+                            : flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
                     </TableRow>
