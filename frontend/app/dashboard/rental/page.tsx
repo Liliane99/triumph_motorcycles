@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -11,10 +10,10 @@ import { RentalDataTable } from "@/components/rental/data-table";
 import { columns } from "@/components/rental/columns"; 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useRentals } from "@/components/rental/columns"; // Utilisation du hook personnalisé
+import { useRentals } from "@/components/rental/columns"; 
 
 export default function RentalsPage() {
-  const { rentals, setRentals, loading, error } = useRentals(); // Utilisation du hook pour récupérer les locations
+  const { rentals, loading, error } = useRentals(); 
 
   return (
     <SidebarProvider>
