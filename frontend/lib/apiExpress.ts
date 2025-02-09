@@ -95,12 +95,22 @@ export const deleteMotorcycle = async (id: string, token: string): Promise<void>
 
 export const getMotorcycleById = async (id: string): Promise<ApiMotorcycle | null> => {
   try {
-    const response = await apiExpress.get<ApiMotorcycle>(`/api/motorcycles/${id}`);
+    const token = localStorage.getItem("token");
+    console.log("Token dans getMotorcycleById :", token); 
+
+    const response = await apiExpress.get<ApiMotorcycle>(`/api/motorcycles/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data;
-  } catch {
+  } catch (error) {
+    console.error("Erreur lors de la récupération de la moto :", error); 
     return null;
   }
 };
+
 
 
 export const getMotorcycles = async (): Promise<ApiMotorcycle[]> => {
