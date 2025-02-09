@@ -207,7 +207,7 @@ export function AddUserForm() {
           name="licenseNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Plaque d'immatriculation</FormLabel>
+              <FormLabel>Permis</FormLabel>
               <FormControl>
                 <Input placeholder="AA-123-BB" {...field} />
               </FormControl>

@@ -1,7 +1,7 @@
 "use client";
 
-import dynamic from 'next/dynamic';
-import React from "react";
+import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
 import { AppSidebar } from "../../components/sidebar/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -17,6 +17,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart, Bar, CartesianGrid, XAxis, LabelList, ResponsiveContainer } from "recharts";
 import { LineChart, Line } from "recharts";
+import { getUsers } from "@/lib/api";
+import { format } from "date-fns";
 
 const revenueData = [
   { month: "Jan", revenue: 5000 },
@@ -25,15 +27,6 @@ const revenueData = [
   { month: "Apr", revenue: 8100 },
   { month: "May", revenue: 9200 },
   { month: "Jun", revenue: 10500 },
-];
-
-const clientData = [
-  { month: "Jan", clients: 50 },
-  { month: "Feb", clients: 65 },
-  { month: "Mar", clients: 58 },
-  { month: "Apr", clients: 72 },
-  { month: "May", clients: 80 },
-  { month: "Jun", clients: 90 },
 ];
 
 const topClients = [
@@ -50,6 +43,44 @@ const topClients = [
 ];
 
 function DashboardPage() {
+  const [totalClients, setTotalClients] = useState(0);
+  const [clientData, setClientData] = useState<{ month: string; clients: number }[]>([]);
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const users = await getUsers();
+        const clients = users.filter(user => user.role.value === "client");
+
+        // Mise à jour du nombre total de clients
+        setTotalClients(clients.length);
+
+        // Regrouper les clients par mois selon `createdAt`
+        const months = [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        const monthlyCounts: Record<string, number> = {};
+
+        clients.forEach(client => {
+          const month = format(new Date(client.createdAt), "MMM");
+          monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+        });
+
+        const formattedClientData = months.map(month => ({
+          month,
+          clients: monthlyCounts[month] || 0
+        }));
+
+        setClientData(formattedClientData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des clients :", error);
+      }
+    }
+
+    fetchClients();
+  }, []);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -95,7 +126,7 @@ function DashboardPage() {
                 <CardTitle>Nombre de clients</CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-center">
-                <p className="text-3xl font-bold">120</p>
+                <p className="text-3xl font-bold">{totalClients}</p>
               </CardContent>
             </Card>
           </div>
