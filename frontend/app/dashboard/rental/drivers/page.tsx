@@ -45,6 +45,7 @@ const DriversPage = () => {
   const [driverData, setDriverData] = React.useState<Driver[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState<string>("");
+  const [totalDrivers, setTotalDrivers] = React.useState(0);
 
   React.useEffect(() => {
     const fetchDrivers = async () => {
@@ -53,6 +54,7 @@ const DriversPage = () => {
         if (response.ok) {
           const data = await response.json();
           setDriverData(data);
+          setTotalDrivers(data.length);
         } else {
           console.error("Erreur lors de la récupération des conducteurs");
         }
@@ -168,7 +170,7 @@ const DriversPage = () => {
               <CardTitle>Total des conducteurs</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center justify-center">
-              <p className="text-3xl font-bold">{}</p>
+              <p className="text-3xl font-bold">{totalDrivers}</p>
             </CardContent>
           </Card>
         </div>
