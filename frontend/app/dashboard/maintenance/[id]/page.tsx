@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { format, parseISO, isValid } from "date-fns";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,7 +14,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -26,81 +24,89 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  User,
-  Settings,
-  ClipboardList,
-  Truck,
-  DollarSign,
-  FileText,
-} from "lucide-react";
+import { Wrench, Calendar, User, Bike, DollarSign } from "lucide-react";
+import { getMaintenanceById, getMaintenanceParts, getPartById, Maintenance, MaintenancePart } from "@/lib/api";
+import { toast } from "react-toastify";
 
-type Entretien = {
-  id: string;
-  reference: string;
-  date: string;
-  prix: number;
-  technicien: string;
-  plaque: string;
-  client: string;
-  mileage: string;
-  recommendations: string;
-  createdAt: string;
-  updatedAt: string;
-  updatedBy?: string;
-  parts: Part[];
-};
-
-type Part = {
-  name: string;
-  reference: string;
-  quantity: number;
-  unitPrice: number;
-};
-
-export default function EntretienDetailsPage({ params }: { params: { id: string } }) {
-  const [entretien, setEntretien] = useState<Entretien | null>(null);
+export default function MaintenanceDetailsPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const [maintenance, setMaintenance] = useState<Maintenance | null>(null);
+  const [maintenanceParts, setMaintenanceParts] = useState<
+    { name: string; reference: string; quantity: number; unitPrice: number; totalPrice: number }[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const mockEntretien: Entretien = {
-      id: params.id,
-      reference: "ENT-001",
-      date: "2025-01-01",
-      prix: 150,
-      technicien: "Chabane",
-      plaque: "AA-123-BB",
-      client: "Liliane",
-      mileage: "15,000 km",
-      recommendations: "Vérifier les freins avant après 1,000 km.",
-      createdAt: "2025-01-01T10:00:00Z",
-      updatedAt: "2025-01-05T12:00:00Z",
-      updatedBy: "Manager",
-      parts: [
-        {
-          name: "Filtre à huile",
-          reference: "FO-1234",
-          quantity: 1,
-          unitPrice: 25,
-        },
-        {
-          name: "Huile moteur",
-          reference: "HM-5678",
-          quantity: 2,
-          unitPrice: 15,
-        },
-        {
-          name: "Plaquettes de frein",
-          reference: "PB-9012",
-          quantity: 1,
-          unitPrice: 45,
-        },
-      ],
-    };
-    setEntretien(mockEntretien);
-  }, [params.id]);
+    async function fetchMaintenanceDetails() {
+      try {
+        console.log("Fetching maintenance with ID:", params.id);
+        const fetchedMaintenance = await getMaintenanceById(params.id);
+        console.log("Fetched maintenance:", fetchedMaintenance);
 
-  if (!entretien) return <p>Chargement...</p>;
+        if (!fetchedMaintenance) {
+          toast.error("Maintenance introuvable.");
+          router.push("/dashboard/maintenance");
+          return;
+        }
+
+        // Formatage de la date
+        const formattedMaintenance = {
+          ...fetchedMaintenance,
+          date: fetchedMaintenance.date ? format(
+            parseISO(typeof fetchedMaintenance.date === 'object' ? 
+              fetchedMaintenance.date.value : fetchedMaintenance.date),
+            "dd/MM/yyyy HH:mm"
+          ) : "Non spécifiée"
+        };
+
+        setMaintenance(formattedMaintenance);
+
+        try {
+          console.log("Fetching maintenance parts");
+          const fetchedMaintenanceParts = await getMaintenanceParts(params.id);
+          console.log("Fetched parts:", fetchedMaintenanceParts);
+
+          if (fetchedMaintenanceParts.length > 0) {
+            const partsData = await Promise.all(
+              fetchedMaintenanceParts.map(async (maintenancePart) => {
+                const partDetails = await getPartById(maintenancePart.partId);
+                console.log("Part details:", partDetails);
+
+                const quantity = typeof maintenancePart.quantityUsed === 'object' ? 
+                  maintenancePart.quantityUsed.value : maintenancePart.quantityUsed;
+                const unitPrice = partDetails?.unitPrice.value || 0;
+
+                return {
+                  name: partDetails?.name.value || "Inconnu",
+                  reference: partDetails?.reference.value || "N/A",
+                  quantity,
+                  unitPrice,
+                  totalPrice: unitPrice * quantity,
+                };
+              })
+            );
+            setMaintenanceParts(partsData);
+          }
+        } catch (error) {
+          console.error("Error fetching parts:", error);
+          // On continue même si on n'a pas pu récupérer les pièces
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error in fetchMaintenanceDetails:", error);
+        toast.error("Erreur lors du chargement des détails de la maintenance.");
+        router.push("/dashboard/maintenance");
+      }
+    }
+
+    fetchMaintenanceDetails();
+  }, [params.id, router]);
+
+  if (loading) return <p className="text-center text-lg font-semibold">Chargement...</p>;
+  if (!maintenance) return <p className="text-center text-lg font-semibold">Maintenance introuvable.</p>;
+
+  const totalMaintenancePrice = maintenanceParts.reduce((total, part) => total + part.totalPrice, 0);
 
   return (
     <SidebarProvider>
@@ -115,15 +121,13 @@ export default function EntretienDetailsPage({ params }: { params: { id: string 
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/maintenance">
-                    Entretiens
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/maintenance">Maintenances</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{entretien.reference}</BreadcrumbPage>
+                  <BreadcrumbPage>{maintenance.reference}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -131,58 +135,50 @@ export default function EntretienDetailsPage({ params }: { params: { id: string 
         </header>
 
         <div className="p-4 space-y-8">
-          <h1 className="text-3xl font-bold">Détails de lentretien</h1>
-
           <Card>
             <CardHeader className="flex flex-col items-center">
-              <ClipboardList className="h-16 w-16 rounded-full bg-muted p-3" />
+              <Wrench className="h-16 w-16 rounded-full bg-muted p-3" />
               <CardTitle className="mt-4 text-2xl font-bold">
-                Référence : {entretien.reference}
+                Référence : {maintenance.reference}
               </CardTitle>
               <Badge className="mt-2 bg-blue-500 text-white">
-                {new Date(entretien.date).toLocaleDateString()}
+                {maintenance.date}
               </Badge>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
+                    <Bike className="h-5 w-5 text-muted-foreground" />
+                    <strong>Moto :</strong> {maintenance.motorcycleBrand}
+                  </p>
+                  <p className="flex items-center gap-2 text-lg">
                     <User className="h-5 w-5 text-muted-foreground" />
-                    <strong>Client :</strong> {entretien.client}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Truck className="h-5 w-5 text-muted-foreground" />
-                    <strong>Plaque :</strong> {entretien.plaque}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Settings className="h-5 w-5 text-muted-foreground" />
-                    <strong>Technicien :</strong> {entretien.technicien}
+                    <strong>Créé par :</strong> {maintenance.createdByName}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
                     <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <strong>Prix :</strong> {entretien.prix} €
+                    <strong>Prix total :</strong> {totalMaintenancePrice.toFixed(2)} €
                   </p>
                 </div>
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
-                    <strong>Recommandation:</strong> {entretien.recommendations}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Créé le :</strong>{" "}
-                    {new Date(entretien.createdAt).toLocaleString()}
+                    <strong>Créé le :</strong> {maintenance.createdAt}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Modifié le :</strong>{" "}
-                    {new Date(entretien.updatedAt).toLocaleString()}
+                    <strong>Modifié le :</strong> {maintenance.updatedAt}
                   </p>
-                  {entretien.updatedBy && (
+                  {maintenance.updatedByName && (
                     <p className="flex items-center gap-2 text-lg">
-                      <strong>Modifié par :</strong> {entretien.updatedBy}
+                      <strong>Modifié par :</strong> {maintenance.updatedByName}
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-2">Recommandation :</h3>
+                <p className="text-gray-700">{maintenance.recommendation}</p>
               </div>
             </CardContent>
           </Card>
@@ -191,32 +187,34 @@ export default function EntretienDetailsPage({ params }: { params: { id: string 
               <CardTitle>Pièces utilisées</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nom</TableHead>
-                      <TableHead>Référence</TableHead>
-                      <TableHead>Quantité</TableHead>
-                      <TableHead>Prix unitaire (€)</TableHead>
-                      <TableHead>Prix total (€)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {entretien.parts.map((part, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{part.name}</TableCell>
-                        <TableCell>{part.reference}</TableCell>
-                        <TableCell>{part.quantity}</TableCell>
-                        <TableCell>{part.unitPrice.toFixed(2)}</TableCell>
-                        <TableCell>
-                          {(part.unitPrice * part.quantity).toFixed(2)}
-                        </TableCell>
+              {maintenanceParts.length > 0 ? (
+                <div className="rounded-md border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Référence</TableHead>
+                        <TableHead>Quantité</TableHead>
+                        <TableHead>Prix unitaire (€)</TableHead>
+                        <TableHead>Prix total (€)</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {maintenanceParts.map((part, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{part.name}</TableCell>
+                          <TableCell>{part.reference}</TableCell>
+                          <TableCell>{part.quantity}</TableCell>
+                          <TableCell>{part.unitPrice.toFixed(2)}</TableCell>
+                          <TableCell>{part.totalPrice.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <p className="text-center text-lg font-semibold">Aucune pièce associée à cette maintenance.</p>
+              )}
             </CardContent>
           </Card>
         </div>

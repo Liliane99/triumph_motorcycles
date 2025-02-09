@@ -5,10 +5,11 @@ import { OrderModule } from "./orders/OrderModule";
 import { OrderPartModule } from "./orderParts/OrderPartModule";
 import { MaintenanceModule } from "./maintenances/MaintenanceModule";
 import { TrialModule } from "./trials/TrialModule";
-import { IncidentModule } from "./incident/IncidentModule";
+import { IncidentModule } from "./incidents/IncidentModule";
+import { MaintenancePartModule } from "./maintenanceParts/MaintenancePartModule";
 
 @Module({
-  imports: [UserModule, PartModule, OrderModule, OrderPartModule, MaintenanceModule, TrialModule, IncidentModule],
+  imports: [UserModule, PartModule, OrderModule, OrderPartModule, MaintenanceModule, TrialModule, IncidentModule, MaintenancePartModule],
   
 })
 export class AppModule {}

@@ -1,26 +1,22 @@
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import { MaintenanceController } from "./MaintenanceController";
-import { MaintenanceRepositoryImpl } from "../../adapters/repositories/PrismaMaintenanceRepository";
+import { PrismaMaintenanceRepository } from "../../adapters/repositories/PrismaMaintenanceRepository";
 import { PrismaService } from "../../../../database/prisma/PrismaService";
-import { MaintenanceRepository } from "../../../../../application/ports/repositories/MaintenanceRepository";
-import { MotorcycleRepositoryImpl } from "../../../express/repositories/MotorcycleRepository";  
-import { PrismaPartRepository } from "../../adapters/repositories/PrismaPartRepository"; 
-import { IPartRepository } from "../../../../../application/ports/repositories/PartRepository";  
-import { MotorcycleRepository } from "../../../../../application/ports/repositories/MotorcycleRepository"; 
-
-import { CreateMaintenanceUseCase } from "../../../../../application/usecases/Maintenance/AddMaintenanceUseCase";
-import { UpdateMaintenanceUseCase } from "../../../../../application/usecases/Maintenance/UpdateMaintenanceUseCase";
-import { DeleteMaintenanceUseCase } from "../../../../../application/usecases/Maintenance/DeleteMaintenanceUseCase";
-import { GetMaintenanceUseCase } from "../../../../../application/usecases/Maintenance/GetMaintenanceUseCase";
-import { GetAllMaintenanceUseCase } from "../../../../../application/usecases/Maintenance/GetAllMaintenanceUseCase";
-
-import { CreateMaintenanceHandler } from "../../../../../application/commands/handlers/Maintenance/AddMaintenanceHandler";
-import { UpdateMaintenanceHandler } from "../../../../../application/commands/handlers/Maintenance/UpdateMaintenanceHandler";
-import { DeleteMaintenanceHandler } from "../../../../../application/commands/handlers/Maintenance/DeleteMaintenanceHandler";
-
-import { GetMaintenanceHandler } from "../../../../../application/queries/handlers/Maintenance/GetMaintenanceHandler";
-import { GetAllMaintenanceHandler } from "../../../../../application/queries/handlers/Maintenance/GetAllMaintenanceHandler";
+import { IMaintenanceRepository } from "../../../../../application/ports/repositories/MaintenanceRepository";
+import { IEventPublisherService } from "../../../../../application/ports/services/EventPublisherService";
+import { CreateMaintenanceUseCase } from "../../../../../application/usecases/maintenances/CreateMaintenanceUseCase";
+import { UpdateMaintenanceUseCase } from "../../../../../application/usecases/maintenances/UpdateMaintenanceUseCase";
+import { DeleteMaintenanceUseCase } from "../../../../../application/usecases/maintenances/DeleteMaintenanceUseCase";
+import { GetMaintenanceByIdUseCase } from "../../../../../application/usecases/maintenances/GetMaintenanceByIdUseCase";
+import { ListMaintenancesUseCase } from "../../../../../application/usecases/maintenances/ListMaintenancesUseCase";
+import { CreateMaintenanceCommandHandler } from "../../../../../application/commands/handlers/maintenances/CreateMaintenanceCommandHandler";
+import { UpdateMaintenanceCommandHandler } from "../../../../../application/commands/handlers/maintenances/UpdateMaintenanceCommandHandler";
+import { DeleteMaintenanceCommandHandler } from "../../../../../application/commands/handlers/maintenances/DeleteMaintenanceCommandHandler";
+import { GetMaintenanceByIdQueryHandler } from "../../../../../application/queries/handlers/maintenances/GetMaintenanceByIdQueryHandler";
+import { ListMaintenancesQueryHandler } from "../../../../../application/queries/handlers/maintenances/ListMaintenancesQueryHandler";
+import { MaintenancesAccessGuard } from "../../guards/MaintenancesAccessGuard";
+import { MongoEventRepository } from "../../adapters/repositories/MongoEventRepository";
 
 @Module({
   imports: [CqrsModule],
@@ -29,56 +25,47 @@ import { GetAllMaintenanceHandler } from "../../../../../application/queries/han
     PrismaService,
     {
       provide: "IMaintenanceRepository",
-      useClass: MaintenanceRepositoryImpl,
+      useClass: PrismaMaintenanceRepository,
     },
     {
-      provide: "IMotorcycleRepository", 
-      useClass: MotorcycleRepositoryImpl, 
-    },
-    {
-      provide: "IPartRepository", 
-      useClass: PrismaPartRepository, 
+      provide: "IEventPublisherService",
+      useClass: MongoEventRepository,
     },
     {
       provide: CreateMaintenanceUseCase,
-      useFactory: (
-        maintenanceRepository: MaintenanceRepository,
-        motorcycleRepository: MotorcycleRepository,
-        partRepository: IPartRepository
-      ) =>
-        new CreateMaintenanceUseCase(maintenanceRepository, motorcycleRepository, partRepository),
-      inject: ["IMaintenanceRepository", "IMotorcycleRepository", "IPartRepository"],
+      useFactory: (maintenanceRepository: IMaintenanceRepository, eventStore: IEventPublisherService) =>
+        new CreateMaintenanceUseCase(maintenanceRepository, eventStore),
+      inject: ["IMaintenanceRepository", "IEventPublisherService"],
     },
     {
       provide: UpdateMaintenanceUseCase,
-      useFactory: (maintenanceRepository: MaintenanceRepository) =>
-        new UpdateMaintenanceUseCase(maintenanceRepository),
-      inject: ["IMaintenanceRepository"],
+      useFactory: (maintenanceRepository: IMaintenanceRepository, eventStore: IEventPublisherService) =>
+        new UpdateMaintenanceUseCase(maintenanceRepository, eventStore),
+      inject: ["IMaintenanceRepository", "IEventPublisherService"],
     },
     {
       provide: DeleteMaintenanceUseCase,
-      useFactory: (maintenanceRepository: MaintenanceRepository) =>
-        new DeleteMaintenanceUseCase(maintenanceRepository),
+      useFactory: (maintenanceRepository: IMaintenanceRepository, eventStore: IEventPublisherService) =>
+        new DeleteMaintenanceUseCase(maintenanceRepository, eventStore),
+      inject: ["IMaintenanceRepository", "IEventPublisherService"],
+    },
+    {
+      provide: GetMaintenanceByIdUseCase,
+      useFactory: (maintenanceRepository: IMaintenanceRepository) => new GetMaintenanceByIdUseCase(maintenanceRepository),
       inject: ["IMaintenanceRepository"],
     },
     {
-      provide: GetMaintenanceUseCase,
-      useFactory: (maintenanceRepository: MaintenanceRepository) =>
-        new GetMaintenanceUseCase(maintenanceRepository),
+      provide: ListMaintenancesUseCase,
+      useFactory: (maintenanceRepository: IMaintenanceRepository) => new ListMaintenancesUseCase(maintenanceRepository),
       inject: ["IMaintenanceRepository"],
     },
-    {
-      provide: GetAllMaintenanceUseCase,
-      useFactory: (maintenanceRepository: MaintenanceRepository) =>
-        new GetAllMaintenanceUseCase(maintenanceRepository),
-      inject: ["IMaintenanceRepository"],
-    },
-    CreateMaintenanceHandler,
-    UpdateMaintenanceHandler,
-    DeleteMaintenanceHandler,
-    GetMaintenanceHandler,
-    GetAllMaintenanceHandler,
+    CreateMaintenanceCommandHandler,
+    UpdateMaintenanceCommandHandler,
+    DeleteMaintenanceCommandHandler,
+    GetMaintenanceByIdQueryHandler,
+    ListMaintenancesQueryHandler,
+    MaintenancesAccessGuard,
   ],
-  exports: ["IMaintenanceRepository", "IMotorcycleRepository", "IPartRepository"],
+  exports: ["IMaintenanceRepository", "IEventPublisherService"],
 })
 export class MaintenanceModule {}

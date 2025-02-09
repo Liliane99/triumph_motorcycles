@@ -4,38 +4,44 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Tag, Package, DollarSign, Calendar, Shield } from "lucide-react";
+import { Wrench } from "lucide-react";
 import { getMotorcycleById, Motorcycle } from "@/lib/apiExpress";
-import { getUserById } from "@/lib/api";
 import { toast } from "react-toastify";
+import { format, parseISO, isValid } from "date-fns";
 
 export default function MotoDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
-  const [createdByName, setCreatedByName] = useState<string>("Chargement...");
-  const [updatedByName, setUpdatedByName] = useState<string>("Chargement...");
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchMotorcycleDetails() {
       try {
         const fetchedMotorcycle = await getMotorcycleById(params.id);
+        
+
         if (!fetchedMotorcycle) {
           toast.error("Moto non trouvée.");
           router.push("/dashboard/motos");
           return;
         }
+
+
+        const formattedPurchaseDate = fetchedMotorcycle.purchaseDate 
+          ? isValid(parseISO(fetchedMotorcycle.purchaseDate)) 
+            ? format(parseISO(fetchedMotorcycle.purchaseDate), "dd/MM/yyyy HH:mm") 
+            : "Date invalide" 
+          : "Non spécifiée";
+
+        const formattedWarrantyDate = fetchedMotorcycle.warrantyDate 
+          ? isValid(parseISO(fetchedMotorcycle.warrantyDate)) 
+            ? format(parseISO(fetchedMotorcycle.warrantyDate), "dd/MM/yyyy HH:mm") 
+            : "Date invalide" 
+          : "Non spécifiée";
 
         const formattedMotorcycle: Motorcycle = {
           id: fetchedMotorcycle.id,
@@ -44,31 +50,12 @@ export default function MotoDetailsPage({ params }: { params: { id: string } }) 
           licensePlate: fetchedMotorcycle.licensePlate?.value,
           kilometers: fetchedMotorcycle.kilometers?.value,
           maintenanceInterval: fetchedMotorcycle.maintenanceInterval?.value,
-          purchaseDate: new Date(fetchedMotorcycle.purchaseDate?.value).toLocaleString(),
-          warrantyDate: new Date(fetchedMotorcycle.warrantyDate?.value).toLocaleString(),
+          purchaseDate: formattedPurchaseDate,
+          warrantyDate: formattedWarrantyDate,
           ownerId: fetchedMotorcycle.ownerId?.value,
-          createdByName: "Chargement...",
-          updatedByName: "Chargement...",
-          createdAt: new Date(fetchedMotorcycle.createdAt).toLocaleString(),
-          updatedAt: new Date(fetchedMotorcycle.updatedAt).toLocaleString(),
         };
 
         setMotorcycle(formattedMotorcycle);
-
-        if (fetchedMotorcycle.createdBy) {
-          const createdByUser = await getUserById(fetchedMotorcycle.createdBy);
-          setCreatedByName(createdByUser?.username.value || "Inconnu");
-        } else {
-          setCreatedByName("Système");
-        }
-
-        if (fetchedMotorcycle.updatedBy) {
-          const updatedByUser = await getUserById(fetchedMotorcycle.updatedBy);
-          setUpdatedByName(updatedByUser?.username.value || "Inconnu");
-        } else {
-          setUpdatedByName("Système");
-        }
-
         setLoading(false);
       } catch (error) {
         toast.error("Erreur lors du chargement de la moto.");
@@ -120,48 +107,15 @@ export default function MotoDetailsPage({ params }: { params: { id: string } }) 
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <p className="flex items-center gap-2 text-lg">
-                    <Tag className="h-5 w-5 text-muted-foreground" />
-                    <strong>Marque :</strong> {motorcycle.brand}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Package className="h-5 w-5 text-muted-foreground" />
-                    <strong>Modèle :</strong> {motorcycle.model}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Shield className="h-5 w-5 text-muted-foreground" />
-                    <strong>Numéro de plaque :</strong> {motorcycle.licensePlate}
-                  </p>
+                  <p><strong>Marque :</strong> {motorcycle.brand}</p>
+                  <p><strong>Modèle :</strong> {motorcycle.model}</p>
+                  <p><strong>Plaque :</strong> {motorcycle.licensePlate}</p>
+                  <p><strong>Kilométrage :</strong> {motorcycle.kilometers} km</p>
                 </div>
                 <div className="space-y-4">
-                  <p className="flex items-center gap-2 text-lg">
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
-                    <strong>Kilométrage :</strong> {motorcycle.kilometers} km
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Date d'achat :</strong> {motorcycle.purchaseDate}
-                  </p>
-                  <p className="flex items-center gap-2 text-lg">
-                    <strong>Garantie jusqu'au :</strong> {motorcycle.warrantyDate}
-                  </p>
+                  <p><strong>Date dachat :</strong> {motorcycle.purchaseDate}</p>
+                  <p><strong>Garantie jusquau :</strong> {motorcycle.warrantyDate}</p>
                 </div>
-              </div>
-              <div className="mt-6 space-y-4">
-                <p className="flex items-center gap-2 text-lg">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <strong>Créée le :</strong> {motorcycle.createdAt}
-                </p>
-                <p className="flex items-center gap-2 text-lg">
-                  <strong>Créée par :</strong> {createdByName}
-                </p>
-                <p className="flex items-center gap-2 text-lg">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <strong>Modifiée le :</strong> {motorcycle.updatedAt}
-                </p>
-                <p className="flex items-center gap-2 text-lg">
-                  <strong>Modifiée par :</strong> {updatedByName}
-                </p>
               </div>
             </CardContent>
           </Card>

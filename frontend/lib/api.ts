@@ -1,4 +1,5 @@
 import axios from "axios";
+import { format, parseISO, isValid } from "date-fns";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_NEST;
 const API_URL_EXPRESS = process.env.NEXT_PUBLIC_API_URL_EXPRESS;
@@ -503,7 +504,7 @@ export type Motorcycle = {
 
 export const getMotorcycleById = async (id: string): Promise<{ brand: string } | null> => {
   try {
-    const response = await apiExpress.get(`/motorcycles/${id}`);
+    const response = await apiExpress.get(`/api/motorcycles/${id}`);
     const brand = response.data?.brand?.value || response.data?.brand || "Moto inconnue";
     return { brand };
   } catch (error: any) {
@@ -514,7 +515,7 @@ export const getMotorcycleById = async (id: string): Promise<{ brand: string } |
 
 export const getMotorcycles = async (): Promise<ApiMotorcycle[]> => {
   try {
-    const response = await apiExpress.get<ApiMotorcycle[]>("/motorcycles");
+    const response = await apiExpress.get<ApiMotorcycle[]>("/api/motorcycles");
 
     return response.data;
   } catch (error: any) {
@@ -562,6 +563,415 @@ export const getEnrichedTrials = async (): Promise<EnrichedTrial[]> => {
     return enrichedTrials;
   } catch (error) {
     throw error.response?.data?.message || "Erreur inconnue lors de la récupération des essais enrichis.";
+  }
+};
+
+export type ApiIncident = {
+  id: string;
+  reference: { value: string };
+  description: { value: string };
+  status: { value: "opened" | "resolved" };
+  date: { value: string };  // Correction ici, la date est un objet avec une propriété value
+  motorcycleId: string;
+  createdBy: string;
+  updatedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Incident = {
+  id: string;
+  reference: string;
+  description: string;
+  status: "opened" | "resolved";
+  date: string;
+  motorcycleLicensePlate: string;
+  createdByName: string;
+  updatedByName?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const getIncidents = async (): Promise<Incident[]> => {
+  try {
+    const response = await api.get<ApiIncident[]>("/incidents");
+    
+    const enrichedIncidents = await Promise.all(
+      response.data.map(async (incident) => {
+        try {
+          const [createdByUser, updatedByUser, motorcycle] = await Promise.all([
+            getUserById(incident.createdBy),
+            incident.updatedBy ? getUserById(incident.updatedBy) : Promise.resolve(null),
+            getMotorcycleById(incident.motorcycleId)
+          ]);
+
+          // Pour le debug
+          console.log('Raw incident:', incident);
+          console.log('CreatedByUser:', createdByUser);
+          console.log('UpdatedByUser:', updatedByUser);
+          console.log('Motorcycle:', motorcycle);
+
+          const enrichedIncident: Incident = {
+            id: incident.id,
+            reference: incident.reference.value,
+            description: incident.description.value,
+            status: incident.status.value,
+            // La date est dans l'objet value
+            date: typeof incident.date === 'object' && incident.date.value 
+              ? new Date(incident.date.value).toISOString() 
+              : new Date(incident.date).toISOString(),
+            motorcycleLicensePlate: motorcycle?.brand || "Moto inconnue",
+            createdByName: createdByUser?.username?.value || "Inconnu",
+            updatedByName: updatedByUser?.username?.value || "N/A",
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt
+          };
+
+          return enrichedIncident;
+        } catch (error) {
+          console.error(`Erreur lors de l'enrichissement de l'incident ${incident.id}:`, error);
+          return {
+            id: incident.id,
+            reference: incident.reference.value || "",
+            description: incident.description.value || "",
+            status: incident.status.value || "opened",
+            date: typeof incident.date === 'object' && incident.date.value 
+              ? new Date(incident.date.value).toISOString() 
+              : new Date(incident.date).toISOString(),
+            motorcycleLicensePlate: "Moto inconnue",
+            createdByName: "Inconnu",
+            updatedByName: "N/A",
+            createdAt: incident.createdAt,
+            updatedAt: incident.updatedAt
+          };
+        }
+      })
+    );
+
+    return enrichedIncidents;
+  } catch (error) {
+    console.error("Erreur dans getIncidents:", error);
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la récupération des incidents.";
+    }
+    throw "Erreur lors de la récupération des incidents.";
+  }
+};
+
+export const getIncidentById = async (id: string): Promise<Incident | null> => {
+  try {
+    const response = await api.get<ApiIncident>(`/incidents/${id}`);
+
+    const createdByUser = await getUserById(response.data.createdBy);
+    const updatedByUser = response.data.updatedBy ? await getUserById(response.data.updatedBy) : null;
+    const motorcycle = await getMotorcycleById(response.data.motorcycleId);
+
+    const incidentDateStr = response.data.date.value;
+    const formattedIncidentDate = incidentDateStr ? 
+      isValid(parseISO(incidentDateStr)) ? 
+        format(parseISO(incidentDateStr), "dd/MM/yyyy HH:mm") : 
+        "Date invalide" : 
+        "Non spécifiée";
+
+    return {
+      id: response.data.id,
+      reference: response.data.reference.value,
+      description: response.data.description.value,
+      status: response.data.status.value,
+      date: formattedIncidentDate,
+      motorcycleLicensePlate: motorcycle?.brand || "Moto inconnue",
+      createdByName: createdByUser?.username.value || "Inconnu",
+      updatedByName: updatedByUser?.username.value || "N/A",
+      createdAt: new Date(response.data.createdAt).toLocaleString(),
+      updatedAt: new Date(response.data.updatedAt).toLocaleString()
+    };
+  } catch {
+    return null;
+  }
+};
+export const createIncident = async (
+  incidentData: Omit<ApiIncident, "id" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt">,
+  token: string
+): Promise<void> => {
+  try {
+    await api.post("/incidents", incidentData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la création de l'incident.";
+  }
+};
+
+export const updateIncident = async (
+  id: string,
+  incidentData: Partial<Omit<ApiIncident, "id" | "createdBy" | "updatedBy" | "createdAt" | "updatedAt">>,
+  token: string
+): Promise<void> => {
+  try {
+    await api.put(`/incidents/${id}`, incidentData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la mise à jour de l'incident.";
+  }
+};
+
+export const deleteIncident = async (id: string, token: string): Promise<void> => {
+  try {
+    await api.delete(`/incidents/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error: any) {
+    throw error.response?.data?.message || "Erreur lors de la suppression de l'incident.";
+  }
+};
+
+export type ApiMaintenance = {
+  id: string;
+  reference: { value: string };
+  date: { value: string }; 
+  recommendation: { value: string };
+  motorcycleId: string;
+  createdBy: string; 
+  updatedBy?: string; 
+  createdAt: string; 
+  updatedAt: string; 
+};
+
+export type Maintenance = {
+  id: string;
+  reference: string;
+  date: string;
+  recommendation: string;
+  motorcycleBrand: string;
+  createdByName: string;
+  updatedByName?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const getMaintenances = async (): Promise<Maintenance[]> => {
+  try {
+    const response = await api.get<ApiMaintenance[]>("/maintenances");
+    
+    console.log("Données brutes des maintenances :", response.data);
+    
+    const enrichedMaintenances = await Promise.all(
+      response.data.map(async (maintenance) => {
+        console.log("Vérification des IDs :", maintenance.createdBy, maintenance.updatedBy); 
+        
+        const [createdByUser, updatedByUser, motorcycle] = await Promise.all([
+          maintenance.createdBy ? getUserById(maintenance.createdBy) : Promise.resolve(null),
+          maintenance.updatedBy ? getUserById(maintenance.updatedBy) : Promise.resolve(null), 
+          getMotorcycleById(maintenance.motorcycleId),
+        ]);
+
+        return {
+          id: maintenance.id,
+          reference: maintenance.reference.value,
+          date: maintenance.date.value, 
+          recommendation: maintenance.recommendation.value,
+          motorcycleBrand: motorcycle?.brand || "Moto inconnue",
+          createdByName: createdByUser?.username?.value || "Inconnu",
+          updatedByName: updatedByUser?.username?.value || "N/A",
+          createdAt: maintenance.createdAt, 
+          updatedAt: maintenance.updatedAt, 
+        };
+      })
+    );
+
+    return enrichedMaintenances;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la récupération des maintenances.";
+    }
+    throw "Erreur lors de la récupération des maintenances.";
+  }
+};
+
+export const getMaintenanceById = async (id: string): Promise<Maintenance | null> => {
+  try {
+    console.log("Fetching maintenance with ID:", id);
+    const [maintenance, maintenanceParts] = await Promise.all([
+      api.get<ApiMaintenance>(`/maintenances/${id}`),
+      getMaintenanceParts(id)
+    ]);
+
+    const [createdByUser, updatedByUser, motorcycle] = await Promise.all([
+      getUserById(maintenance.data.createdBy),
+      maintenance.data.updatedBy ? getUserById(maintenance.data.updatedBy) : Promise.resolve(null),
+      getMotorcycleById(maintenance.data.motorcycleId)
+    ]);
+
+    // Récupérer les détails des pièces
+    const partsDetails = await Promise.all(
+      maintenanceParts.map(async (part) => {
+        const partDetails = await getPartById(part.partId);
+        return {
+          partId: part.partId,
+          name: partDetails?.name.value || "Inconnu",
+          reference: partDetails?.reference.value || "N/A",
+          quantity: part.quantityUsed.value,
+          unitPrice: partDetails?.unitPrice.value || 0,
+          totalPrice: (partDetails?.unitPrice.value || 0) * part.quantityUsed.value
+        };
+      })
+    );
+
+    return {
+      id: maintenance.data.id,
+      reference: maintenance.data.reference.value,
+      date: maintenance.data.date.value,
+      recommendation: maintenance.data.recommendation.value,
+      motorcycleId: maintenance.data.motorcycleId,
+      motorcycleBrand: motorcycle?.brand || "Moto inconnue",
+      createdByName: createdByUser?.username?.value || "Inconnu",
+      updatedByName: updatedByUser?.username?.value || "N/A",
+      createdAt: maintenance.data.createdAt,
+      updatedAt: maintenance.data.updatedAt,
+      parts: partsDetails
+    };
+  } catch (error) {
+    console.error("Error in getMaintenanceById:", error);
+    return null;
+  }
+};
+
+export const createMaintenance = async (
+  maintenanceData: {
+    reference: string;
+    date: string;
+    recommendation: string;
+    motorcycleId: string;
+  },
+  token: string
+): Promise<{ id: string; message: string }> => {
+  try {
+    const response = await api.post("/maintenances", maintenanceData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la création de la maintenance.";
+    }
+    throw "Erreur lors de la création de la maintenance.";
+  }
+};
+
+export const updateMaintenance = async (
+  id: string,
+  maintenanceData: {
+    recommendation?: string;
+    date?: string;
+  },
+  token: string
+): Promise<{ message: string }> => {
+  try {
+    const response = await api.put(`/maintenances/${id}`, maintenanceData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la mise à jour de la maintenance.";
+    }
+    throw "Erreur lors de la mise à jour de la maintenance.";
+  }
+};
+
+export const deleteMaintenance = async (id: string, token: string): Promise<void> => {
+  try {
+    await api.delete(`/maintenances/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur lors de la suppression de la maintenance.";
+    }
+    throw "Erreur lors de la suppression de la maintenance.";
+  }
+};
+
+
+export type ApiMaintenancePart = {
+  maintenanceId: string;
+  partId: string;
+  quantityUsed: { value: number } | number;
+};
+
+export type MaintenancePart = {
+  maintenanceId: string;
+  partId: string;
+  quantityUsed: number;
+};
+
+export const getMaintenanceParts = async (maintenanceId: string): Promise<ApiMaintenancePart[]> => {
+  try {
+    const response = await api.get<ApiMaintenancePart[]>(`/maintenance-parts/${maintenanceId}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur inconnue lors de la récupération des pièces.";
+    }
+    throw "Une erreur inconnue s'est produite.";
+  }
+};
+
+export const addPartToMaintenance = async (
+  maintenanceId: string,
+  partId: string,
+  quantityUsed: number,
+  token: string
+): Promise<void> => {
+  try {
+    await api.post(
+      "/maintenance-parts",
+      { maintenanceId, partId, quantityUsed },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur inconnue lors de l'ajout de la pièce à la maintenance.";
+    }
+    throw "Une erreur inconnue s'est produite.";
+  }
+};
+
+export const updatePartInMaintenance = async (
+  maintenanceId: string,
+  partId: string,
+  quantityUsed: number,
+  token: string
+): Promise<void> => {
+  try {
+    await api.put(
+      `/maintenance-parts/${maintenanceId}/${partId}`,
+      { quantityUsed },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur inconnue lors de la mise à jour de la quantité.";
+    }
+    throw "Une erreur inconnue s'est produite.";
+  }
+};
+
+export const removePartFromMaintenance = async (
+  maintenanceId: string,
+  partId: string,
+  token: string
+): Promise<void> => {
+  try {
+    await api.delete(`/maintenance-parts/${maintenanceId}/${partId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data?.message || "Erreur inconnue lors de la suppression de la pièce.";
+    }
+    throw "Une erreur inconnue s'est produite.";
   }
 };
 

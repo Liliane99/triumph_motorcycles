@@ -32,8 +32,8 @@ import { format } from "date-fns";
 import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]; 
-  data: TData[]; 
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
 export function DataTable<TData extends object, TValue>({
@@ -58,10 +58,10 @@ export function DataTable<TData extends object, TValue>({
     },
     globalFilterFn: (row, columnId, filterValue) => {
       const reference = row.getValue<string>("reference")?.toLowerCase();
-      const client = row.getValue<string>("client")?.toLowerCase();
+      const recommendation = row.getValue<string>("recommendation")?.toLowerCase();
       return (
         reference?.includes(filterValue.toLowerCase()) ||
-        client?.includes(filterValue.toLowerCase())
+        recommendation?.includes(filterValue.toLowerCase())
       );
     },
   });
@@ -79,12 +79,11 @@ export function DataTable<TData extends object, TValue>({
       <div className="flex justify-between items-center py-4">
         <div className="flex gap-4">
           <Input
-            placeholder="Rechercher par référence ou client..."
+            placeholder="Rechercher par référence ou recommandation..."
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm"
           />
-
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -95,7 +94,7 @@ export function DataTable<TData extends object, TValue>({
                 {dateFilter ? format(dateFilter, "dd/MM/yyyy") : "Filtrer par date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent>
               <Calendar
                 mode="single"
                 selected={dateFilter}
@@ -105,11 +104,10 @@ export function DataTable<TData extends object, TValue>({
             </PopoverContent>
           </Popover>
         </div>
-
         <Button asChild className="flex gap-2" variant="default">
           <Link href="/dashboard/maintenance/new">
             <Plus className="w-4 h-4" />
-            Ajouter un entretien
+            Ajouter une maintenance
           </Link>
         </Button>
       </div>
@@ -138,17 +136,17 @@ export function DataTable<TData extends object, TValue>({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length + 1}
+                  className="h-24 text-center"
+                >
                   Aucun résultat.
                 </TableCell>
               </TableRow>

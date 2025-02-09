@@ -8,8 +8,8 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { getMotorcycles, deleteMotorcycle } from "@/lib/apiExpress";
 import { getUserById } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
-// Types
 export type User = {
   user_id: string;
   user_name: string;
@@ -30,10 +30,10 @@ export type Moto = {
   ownerRole?: string;
 };
 
-
 export const useMotos = () => {
   const [motos, setMotos] = useState<Moto[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const chargerMotos = async () => {
@@ -44,13 +44,11 @@ export const useMotos = () => {
           data.map(async (moto: any) => {
             const utilisateur = await getUserById(moto.ownerId);
             
-            
-            const role = utilisateur?.role?.value; 
-            
+            const role = utilisateur?.role?.value;
             
             const nomAffiche = role === 'admin' || role === 'manager' 
               ? "Triumph Motorcycles"
-              : utilisateur?.username || "Utilisateur inconnu";
+              : utilisateur?.username?.value || "Utilisateur inconnu";
             
             return {
               id: moto.id,
@@ -63,12 +61,17 @@ export const useMotos = () => {
               maintenanceInterval: moto.maintenanceInterval,
               ownerId: moto.ownerId,
               ownerName: nomAffiche,
-              ownerRole: utilisateur?.role
+              ownerRole: utilisateur?.role?.value
             };
           })
         );
 
-        setMotos(motosFormatees);
+        // Filtrer les motos selon le rôle de l'utilisateur
+        const motosFiltrees = user?.role === 'admin' || user?.role === 'manager'
+          ? motosFormatees // Admins et managers voient toutes les motos
+          : motosFormatees.filter(moto => moto.ownerId === user?.userId); // Les clients ne voient que leurs motos
+
+        setMotos(motosFiltrees);
       } catch (error) {
         console.error("Erreur lors du chargement des motos:", error);
       } finally {
@@ -77,11 +80,10 @@ export const useMotos = () => {
     };
 
     chargerMotos();
-  }, []);
+  }, [user]);
 
   return { motos, setMotos, loading };
 };
-
 
 const extraireValeur = (valeur: any): string => {
   if (valeur === null || valeur === undefined) return "Non renseigné";
@@ -90,7 +92,6 @@ const extraireValeur = (valeur: any): string => {
   }
   return String(valeur);
 };
-
 
 const formaterDate = (date: any): string => {
   if (!date) return "Non renseigné";
@@ -103,8 +104,17 @@ const formaterDate = (date: any): string => {
   }
 };
 
+const supprimerMoto = async (
+  id: string, 
+  setMotos: React.Dispatch<React.SetStateAction<Moto[]>>, 
+  user: any
+) => {
+  // Vérifier les permissions
+  if (!user || (user.role !== 'admin' && user.role !== 'manager')) {
+    alert("Vous n'avez pas les droits pour supprimer une moto.");
+    return;
+  }
 
-const supprimerMoto = async (id: string, setMotos: React.Dispatch<React.SetStateAction<Moto[]>>) => {
   if (confirm("Voulez-vous vraiment supprimer cette moto ?")) {
     try {
       const token = localStorage.getItem("token") || "";
@@ -118,7 +128,6 @@ const supprimerMoto = async (id: string, setMotos: React.Dispatch<React.SetState
     }
   }
 };
-
 
 export const columns: ColumnDef<Moto>[] = [
   {
@@ -210,21 +219,38 @@ export const columns: ColumnDef<Moto>[] = [
     header: () => <div className="text-center">Actions</div>,
     cell: ({ row, table }) => {
       const moto = row.original;
+      const { user } = useAuth();
+
+      // Vérifier si l'utilisateur a le droit de modifier/supprimer
+      const canEdit = user && (
+        user.role === 'admin' || 
+        user.role === 'manager' || 
+        (user.role === 'client' && user.userId === moto.ownerId)
+      );
+
+      const isAdminOrManager = user?.role === 'admin' || user?.role === 'manager';
+
       return (
         <div className="flex justify-center gap-2">
-          <Link href={`/dashboard/motos/${moto.id}/edit`}>
-            <Button variant="ghost" size="sm">
-              <Edit className="w-4 h-4" />
-            </Button>
-          </Link>
+          {canEdit && (
+            <>
+              <Link href={`/dashboard/motos/${moto.id}/edit`}>
+                <Button variant="ghost" size="sm">
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </Link>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => supprimerMoto(moto.id, table.options.meta?.setMotos)}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+              {isAdminOrManager && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => supprimerMoto(moto.id, table.options.meta?.setMotos, user)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </>
+          )}
 
           <Link href={`/dashboard/motos/${moto.id}`}>
             <Button variant="ghost" size="sm">

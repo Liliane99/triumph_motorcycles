@@ -14,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { AddMotoForm } from "@/components/moto/add-moto-form";
 import { MotoFormValues } from "@/components/moto/add-moto-form";
-import { createMotorcycle } from "@/lib/apiExpress"; // Assure-toi d'importer la fonction
+import { createMotorcycle } from "@/lib/apiExpress"; 
 
 export default function NewMotoPage() {
   const [loading, setLoading] = useState(false);

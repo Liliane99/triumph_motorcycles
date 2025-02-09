@@ -1,135 +1,96 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../database/prisma/PrismaService';
-import { MaintenanceRepository } from '../../../../../application/ports/repositories/MaintenanceRepository';
-import { Maintenance } from '../../../../../domain/entities/Maintenance';
-import { Motorcycle } from '../../../../../domain/entities/Motorcycle';
-import { Part } from '../../../../../domain/entities/Part';
-import { MaintenanceReference } from '../../../../../domain/values/Maintenance/maintenanceReference';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../../../database/prisma/PrismaService";
+import { IMaintenanceRepository } from "../../../../../application/ports/repositories/MaintenanceRepository";
+import { Maintenance } from "../../../../../domain/entities/Maintenance";
+import { Maintenance as PrismaMaintenance } from "@prisma/client";
+import { MaintenanceReference } from "../../../../../domain/values/maintenances/maintenanceReference";
+import { MaintenanceDate } from "../../../../../domain/values/maintenances/MaintenanceDate";
+import { Recommendation } from "../../../../../domain/values/maintenances/Recommendation";
 
 @Injectable()
-export class MaintenanceRepositoryImpl implements MaintenanceRepository {
+export class PrismaMaintenanceRepository implements IMaintenanceRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private mapToMaintenance(prismaMaintenance: any): Maintenance {
-    return new Maintenance(
-      prismaMaintenance.id,
-      new MaintenanceReference(prismaMaintenance.reference).getReference(),
-      new Date(prismaMaintenance.date),
-      prismaMaintenance.technician,
-      prismaMaintenance.recommendation,
-      Number(prismaMaintenance.pricePartTotal),
-      Number(prismaMaintenance.priceLabour),
-      new Motorcycle(
-        prismaMaintenance.motorcycle.id,
-        prismaMaintenance.motorcycle.brand,
-        prismaMaintenance.motorcycle.model,
-        new Date(prismaMaintenance.motorcycle.purchaseDate),
-        prismaMaintenance.motorcycle.licensePlate,
-        prismaMaintenance.motorcycle.kilometers,
-        new Date(prismaMaintenance.motorcycle.warrantyDate),
-        prismaMaintenance.motorcycle.maintenanceInterval,
-        prismaMaintenance.motorcycle.ownerId,
-        prismaMaintenance.motorcycle.createdBy,
-        prismaMaintenance.motorcycle.updatedBy,
-      ),
-      new Part(
-        prismaMaintenance.part.id,
-        prismaMaintenance.part.part_reference,
-        prismaMaintenance.part.part_type,
-        prismaMaintenance.part.part_name,
-        prismaMaintenance.part.quantity_in_stock,
-        prismaMaintenance.part.part_threshold,
-        prismaMaintenance.part.unit_price,
-        prismaMaintenance.part.created_by,
-        prismaMaintenance.part.updated_by,
-        new Date(prismaMaintenance.part.created_at),
-        new Date(prismaMaintenance.part.updated_at)
-      )
-    );
-  }
-
-  async save(maintenance: Maintenance): Promise<Maintenance> {
-    const maintenanceDateParsed = maintenance.date instanceof Date ? maintenance.date : new Date(maintenance.date);
-    const pricePartTotalParsed = Number(maintenance.pricePartTotal);
-    const priceLabourParsed = Number(maintenance.priceLabour);
-
-    const existingMaintenance = await this.prisma.maintenance.findUnique({
-      where: { reference: maintenance.reference.getReference() },
+  async createMaintenance(maintenance: Maintenance): Promise<Maintenance> {
+    const createdMaintenance = await this.prisma.maintenance.create({
+      data: {
+        id: maintenance.id,
+        reference: maintenance.reference.value,
+        date: maintenance.date.value,
+        recommendation: maintenance.recommendation.value,
+        motorcycleId: maintenance.motorcycleId,
+        created_by: maintenance.createdBy,
+        updated_by: maintenance.updatedBy,
+        created_at: maintenance.createdAt,
+        updated_at: maintenance.updatedAt,
+      },
     });
 
-    if (existingMaintenance) {
-      const updatedMaintenance = await this.prisma.maintenance.update({
-        where: { id: maintenance.id },
-        data: {
-          reference: maintenance.reference.getReference(),
-          date: maintenanceDateParsed,
-          technician: maintenance.technician,
-          recommendation: maintenance.recommendation,
-          pricePartTotal: pricePartTotalParsed,
-          priceLabour: priceLabourParsed,
-          priceTotal: pricePartTotalParsed + priceLabourParsed,
-          motorcycleId: maintenance.motorcycle.id,
-          partId: maintenance.part.id,
-          updatedAt: new Date(),
-        },
-        include: {
-          motorcycle: true,
-          part: true,
-        },
-      });
-      return this.mapToMaintenance(updatedMaintenance);
+    return this.mapToDomain(createdMaintenance);
+  }
+
+  async updateMaintenance(maintenance: Maintenance): Promise<Maintenance | null> {
+    const updatedMaintenance = await this.prisma.maintenance.update({
+      where: { id: maintenance.id },
+      data: {
+        date: maintenance.date.value,
+        recommendation: maintenance.recommendation.value,
+        updated_by: maintenance.updatedBy,
+        updated_at: new Date(),
+      },
+    });
+
+    return updatedMaintenance ? this.mapToDomain(updatedMaintenance) : null;
+  }
+
+  async getMaintenanceById(id: string): Promise<Maintenance | null> {
+    const maintenance = await this.prisma.maintenance.findUnique({
+      where: { id },
+    });
+
+    return maintenance ? this.mapToDomain(maintenance) : null;
+  }
+
+  async getMaintenanceByReference(reference: string): Promise<Maintenance | null> {
+    const maintenance = await this.prisma.maintenance.findUnique({
+      where: { reference },
+    });
+
+    return maintenance ? this.mapToDomain(maintenance) : null;
+  }
+
+  async listMaintenances(): Promise<Maintenance[]> {
+    const maintenances = await this.prisma.maintenance.findMany();
+    return maintenances.map((maintenance) => this.mapToDomain(maintenance));
+  }
+
+  async deleteMaintenance(id: string): Promise<void> {
+    await this.prisma.maintenance.delete({ where: { id } });
+  }
+
+  private mapToDomain(maintenance: PrismaMaintenance): Maintenance {
+    const validReference = MaintenanceReference.from(maintenance.reference);
+    const validDate = MaintenanceDate.from(maintenance.date);
+    const validRecommendation = Recommendation.from(maintenance.recommendation);
+
+    if (
+      validReference instanceof Error ||
+      validDate instanceof Error ||
+      validRecommendation instanceof Error
+    ) {
+      throw new Error("Erreur lors de la conversion des valeurs du modèle Prisma vers Maintenance");
     }
 
-    const newMaintenance = await this.prisma.maintenance.create({
-      data: {
-        reference: maintenance.reference.getReference(),
-        date: maintenanceDateParsed,
-        technician: maintenance.technician,
-        recommendation: maintenance.recommendation,
-        pricePartTotal: pricePartTotalParsed,
-        priceLabour: priceLabourParsed,
-        priceTotal: pricePartTotalParsed + priceLabourParsed,
-        motorcycleId: maintenance.motorcycle.id,
-        partId: maintenance.part.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      include: {
-        motorcycle: true,
-        part: true,
-      },
-    });
-
-    return this.mapToMaintenance(newMaintenance);
-  }
-
-  async findById(id: string): Promise<Maintenance | null> {
-    const prismaMaintenance = await this.prisma.maintenance.findUnique({
-      where: { id },
-      include: {
-        motorcycle: true,
-        part: true,
-      },
-    });
-
-    if (!prismaMaintenance) return null;
-    return this.mapToMaintenance(prismaMaintenance);
-  }
-
-  async getAll(): Promise<Maintenance[]> {
-    const prismaMaintenances = await this.prisma.maintenance.findMany({
-      include: {
-        motorcycle: true,
-        part: true,
-      },
-    });
-
-    return prismaMaintenances.map(this.mapToMaintenance);
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.prisma.maintenance.delete({
-      where: { id },
-    });
+    return new Maintenance(
+      maintenance.id,
+      validReference,
+      validDate,
+      validRecommendation,
+      maintenance.motorcycleId,
+      maintenance.created_by ?? "system",
+      maintenance.updated_by ?? "system",
+      new Date(maintenance.created_at),
+      new Date(maintenance.updated_at),
+    );
   }
 }

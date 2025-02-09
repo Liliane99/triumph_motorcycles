@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AddMaintenanceForm, MaintenanceFormValues } from "@/components/maintenance/add-maintenance-form";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -11,32 +14,74 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { AddMaintenanceForm, MaintenanceFormValues } from "@/components/maintenance/add-maintenance-form";
-import { useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { getMaintenanceById, getMaintenanceParts } from "@/lib/api";
+import { toast } from "react-toastify";
 
 export default function EditMaintenancePage({ params }: { params: { id: string } }) {
-  const [defaultValues, setDefaultValues] = useState<MaintenanceFormValues | null>(null);
+  const router = useRouter();
+  const [defaultValues, setDefaultValues] = useState<Partial<MaintenanceFormValues> | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const mockEntretien: MaintenanceFormValues = {
-      reference: "ENT-001",
-      date: new Date("2025-01-01"),
-      plaque: "AA-123-BB",
-      client: "Liliane",
-      recommendations: "Vérifier les freins après 500 km",
-      parts: [
-        { name: "Filtre à huile", reference: "FO-1234", quantity: 1, unitPrice: 25 },
-        { name: "Huile moteur", reference: "HM-5678", quantity: 2, unitPrice: 15 },
-      ],
+    const fetchMaintenanceDetails = async () => {
+      try {
+        const [maintenance, maintenanceParts] = await Promise.all([
+          getMaintenanceById(params.id),
+          getMaintenanceParts(params.id)
+        ]);
+
+        if (!maintenance) {
+          toast.error("Maintenance introuvable");
+          router.push("/dashboard/maintenance");
+          return;
+        }
+
+        // Conversion de la date string en objet Date
+        let maintenanceDate = null;
+        try {
+          if (maintenance.date) {
+            maintenanceDate = new Date(maintenance.date);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la conversion de la date:", error);
+        }
+
+        // Formatage des pièces
+        const formattedParts = maintenanceParts.map(part => ({
+          partId: part.partId,
+          name: "",  // Sera rempli lors de la sélection dans le formulaire
+          reference: "",  // Sera rempli lors de la sélection dans le formulaire
+          quantity: typeof part.quantityUsed === 'object' ? part.quantityUsed.value : part.quantityUsed,
+          unitPrice: 0,  // Sera rempli lors de la sélection dans le formulaire
+          totalPrice: 0  // Sera calculé lors de la sélection dans le formulaire
+        }));
+
+        const formValues: Partial<MaintenanceFormValues> = {
+          reference: maintenance.reference,
+          date: maintenanceDate,
+          recommendation: maintenance.recommendation,
+          motorcycleId: maintenance.motorcycleBrand,
+          parts: formattedParts,
+          totalPrice: formattedParts.reduce((sum, part) => sum + part.totalPrice, 0)
+        };
+
+        console.log("Valeurs récupérées:", formValues);
+        setDefaultValues(formValues);
+      } catch (error) {
+        console.error("Erreur lors du chargement de la maintenance:", error);
+        toast.error("Erreur lors du chargement de la maintenance");
+        router.push("/dashboard/maintenance");
+      } finally {
+        setLoading(false);
+      }
     };
-    setDefaultValues(mockEntretien);
-  }, [params.id]);
 
-  const handleSubmit = (values: MaintenanceFormValues) => {
-    console.log("Entretien mis à jour :", values);
-  };
+    fetchMaintenanceDetails();
+  }, [params.id, router]);
 
-  if (!defaultValues) return <p>Chargement...</p>;
+  if (loading) return <p className="text-center pt-8">Chargement...</p>;
+  if (!defaultValues) return <p className="text-center pt-8">Maintenance introuvable</p>;
 
   return (
     <SidebarProvider>
@@ -51,13 +96,13 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/maintenance">Entretiens</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/maintenance">Maintenance</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{defaultValues.reference}</BreadcrumbPage>
+                  <BreadcrumbPage>Modifier la maintenance</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -65,8 +110,18 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
         </header>
 
         <div className="p-4">
-          <h1 className="text-2xl font-bold mb-6">Modifier entretien</h1>
-          <AddMaintenanceForm onSubmit={handleSubmit} defaultValues={defaultValues} mode="edit" />
+          <Card>
+            <CardHeader>
+              <CardTitle>Modifier la maintenance {defaultValues.reference}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddMaintenanceForm 
+                defaultValues={defaultValues} 
+                mode="edit" 
+                maintenanceId={params.id}
+              />
+            </CardContent>
+          </Card>
         </div>
       </SidebarInset>
     </SidebarProvider>

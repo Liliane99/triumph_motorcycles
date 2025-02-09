@@ -18,39 +18,62 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, AlertCircle } from "lucide-react";
+import { Calendar, User, AlertCircle, Bike } from "lucide-react";
+import { Incident, getIncidentById } from "@/lib/api";
+import { toast } from "react-toastify";
+import { format, parseISO, isValid } from "date-fns";
 
-type Incident = {
-  incident_id: string;
-  date: string;
-  description: string;
-  status: "créer" | "résolu";
-  comment?: string;
-  motorcycleId?: number;
-  createdAt: string;
-  updatedAt: string;
-  updatedBy?: string;
-};
-
-export default function IncidentDetailsPage({ params }: { params: { incident_id: string } }) {
+export default function IncidentDetailsPage({ params }: { params: { id: string } }) {
   const [incident, setIncident] = useState<Incident | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const mockIncident: Incident = {
-      incident_id: params.incident_id,
-      date: "2025-01-01",
-      description: "Accident mineur sur route",
-      status: "créer",
-      comment: "Aucune blessure",
-      motorcycleId: 101,
-      createdAt: "2025-01-01T10:00:00Z",
-      updatedAt: "2025-01-05T12:00:00Z",
-      updatedBy: "Manager",
+    const fetchIncident = async () => {
+      try {
+        const incidentData = await getIncidentById(params.id);
+        if (!incidentData) {
+          setError("Incident non trouvé");
+          return;
+        }
+        setIncident(incidentData);
+      } catch (err) {
+        console.error("Erreur lors de la récupération de l'incident:", err);
+        toast.error("Erreur lors de la récupération de l'incident");
+        setError("Erreur lors de la récupération de l'incident");
+      } finally {
+        setLoading(false);
+      }
     };
-    setIncident(mockIncident);
-  }, [params.incident_id]);
 
-  if (!incident) return <p>Chargement...</p>;
+    fetchIncident();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-lg">Chargement des détails de l'incident...</p>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
+  if (error || !incident) {
+    return (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-lg text-red-500">{error || "Incident non trouvé"}</p>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -67,11 +90,11 @@ export default function IncidentDetailsPage({ params }: { params: { incident_id:
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/incidents">Incident</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/incidents">Incidents</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Incident {incident.incident_id}</BreadcrumbPage>
+                  <BreadcrumbPage>Incident {incident.reference}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -85,10 +108,13 @@ export default function IncidentDetailsPage({ params }: { params: { incident_id:
             <CardHeader className="flex flex-col items-center">
               <AlertCircle className="h-16 w-16 rounded-full bg-muted p-3" />
               <CardTitle className="mt-4 text-2xl font-bold">
-                Incident sur moto {incident.motorcycleId || "N/A"}
+                Incident {incident.reference}
               </CardTitle>
-              <Badge className="mt-2 bg-blue-500 text-white">
-                {new Date(incident.date).toLocaleDateString()}
+              <Badge 
+                variant={incident.status === "opened" ? "destructive" : "success"}
+                className="mt-2"
+              >
+                {incident.status === "opened" ? "En cours" : "Résolu"}
               </Badge>
             </CardHeader>
             <CardContent>
@@ -99,24 +125,37 @@ export default function IncidentDetailsPage({ params }: { params: { incident_id:
                     <strong>Description :</strong> {incident.description}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Statut :</strong> {incident.status}
+                    <Bike className="h-5 w-5 text-muted-foreground" />
+                    <strong>Moto :</strong> {incident.motorcycleLicensePlate}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Commentaire :</strong> {incident.comment || "-"}
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                    <strong>Date de lincident :</strong>{" "}
+                    {new Date(incident.date).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="space-y-4">
                   <p className="flex items-center gap-2 text-lg">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <strong>Créé le :</strong> {new Date(incident.createdAt).toLocaleString()}
+                    <User className="h-5 w-5 text-muted-foreground" />
+                    <strong>Créé par :</strong> {incident.createdByName}
                   </p>
                   <p className="flex items-center gap-2 text-lg">
-                    <strong>Modifié le :</strong> {new Date(incident.updatedAt).toLocaleString()}
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                    <strong>Créé le :</strong>{" "}
+                    {new Date(incident.createdAt).toLocaleString()}
                   </p>
-                  {incident.updatedBy && (
-                    <p className="flex items-center gap-2 text-lg">
-                      <strong>Modifié par :</strong> {incident.updatedBy}
-                    </p>
+                  {incident.updatedByName && (
+                    <>
+                      <p className="flex items-center gap-2 text-lg">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                        <strong>Modifié par :</strong> {incident.updatedByName}
+                      </p>
+                      <p className="flex items-center gap-2 text-lg">
+                        <Calendar className="h-5 w-5 text-muted-foreground" />
+                        <strong>Modifié le :</strong>{" "}
+                        {new Date(incident.updatedAt).toLocaleString()}
+                      </p>
+                    </>
                   )}
                 </div>
               </div>

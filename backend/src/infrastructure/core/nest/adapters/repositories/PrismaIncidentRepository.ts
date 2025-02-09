@@ -1,105 +1,101 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../database/prisma/PrismaService';
-import { IncidentRepository } from '../../../../../application/ports/repositories/IncidentRepository';
-import { Incident } from '../../../../../domain/entities/Incident';
-import { Motorcycle } from '../../../../../domain/entities/Motorcycle';
-
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../../../database/prisma/PrismaService";
+import { IIncidentRepository } from "../../../../../application/ports/repositories/IncidentRepository";
+import { Incident } from "../../../../../domain/entities/Incident";
+import { Incident as PrismaIncident } from "@prisma/client";
+import { IncidentReference } from "../../../../../domain/values/incidents/IncidentReference";
+import { IncidentDescription } from "../../../../../domain/values/incidents/IncidentDescription";
+import { IncidentStatus } from "../../../../../domain/values/incidents/IncidentStatus";
+import { IncidentDate } from "../../../../../domain/values/incidents/IncidentDate";
 
 @Injectable()
-export class IncidentRepositoryImpl implements IncidentRepository {
+export class PrismaIncidentRepository implements IIncidentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  private mapToIncident(prismaIncident: any): Incident {
-    return new Incident(
-      prismaIncident.id,
-      prismaIncident.reference,
-      prismaIncident.description,
-      new Date(prismaIncident.date),
-      new Motorcycle(
-        prismaIncident.motorcycle.id,
-        prismaIncident.motorcycle.brand,
-        prismaIncident.motorcycle.model,
-        new Date(prismaIncident.motorcycle.purchaseDate),
-        prismaIncident.motorcycle.licensePlate,
-        prismaIncident.motorcycle.kilometers,
-        new Date(prismaIncident.motorcycle.warrantyDate),
-        prismaIncident.motorcycle.maintenanceInterval,
-        prismaIncident.motorcycle.ownerId,
-        prismaIncident.motorcycle.createdBy,
-        prismaIncident.motorcycle.updatedBy
-      ),
-    );
-  }
-
-  async save(incident: Incident): Promise<Incident> {
-    const incidentDateParsed = incident.date instanceof Date ? incident.date : new Date(incident.date);
-
-    
-    const existingIncident = await this.prisma.incident.findUnique({
-      where: { reference: incident.reference.getReference() },
+  async createIncident(incident: Incident): Promise<Incident> {
+    const createdIncident = await this.prisma.incident.create({
+      data: {
+        id: incident.id,
+        reference: incident.reference.value,
+        description: incident.description.value,
+        status: incident.status.value,
+        date: incident.date.value,
+        motorcycleId: incident.motorcycleId,
+        created_by: incident.createdBy,
+        updated_by: incident.updatedBy,
+        created_at: incident.createdAt,
+        updated_at: incident.updatedAt,
+      },
     });
 
-    if (existingIncident) {
-      const updatedIncident = await this.prisma.incident.update({
-        where: { id: incident.id },
-        data: {
-          reference: incident.reference.getReference(),
-          description: incident.description,
-          date: incidentDateParsed,
-          motorcycleId: incident.motorcycle.id,
-          updated_at: new Date(),
-        },
-        include: {
-          motorcycle: true,
-        },
-      });
+    return this.mapToDomain(createdIncident);
+  }
 
-      return this.mapToIncident(updatedIncident);
-    }
-
-   
-    const newIncident = await this.prisma.incident.create({
+  async updateIncident(incident: Incident): Promise<Incident | null> {
+    const updatedIncident = await this.prisma.incident.update({
+      where: { id: incident.id },
       data: {
-        reference: incident.reference.getReference(),
-        description: incident.description,
-        date: incidentDateParsed,
-        motorcycleId: incident.motorcycle.id,
-        created_at: new Date(),
+        description: incident.description.value,
+        status: incident.status.value,
+        updated_by: incident.updatedBy,
         updated_at: new Date(),
       },
-      include: {
-        motorcycle: true,
-      },
     });
 
-    return this.mapToIncident(newIncident);
+    return updatedIncident ? this.mapToDomain(updatedIncident) : null;
   }
 
-  async findById(id: string): Promise<Incident | null> {
-    const prismaIncident = await this.prisma.incident.findUnique({
-      where: { id },
-      include: {
-        motorcycle: true,
-      },
-    });
-
-    if (!prismaIncident) return null;
-    return this.mapToIncident(prismaIncident);
-  }
-
-  async getAll(): Promise<Incident[]> {
-    const prismaIncidents = await this.prisma.incident.findMany({
-      include: {
-        motorcycle: true,
-      },
-    });
-
-    return prismaIncidents.map(this.mapToIncident);
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.prisma.incident.delete({
+  async getIncidentById(id: string): Promise<Incident | null> {
+    const incident = await this.prisma.incident.findUnique({
       where: { id },
     });
+
+    return incident ? this.mapToDomain(incident) : null;
+  }
+
+  async getIncidentByReference(reference: string): Promise<Incident | null> {
+    const incident = await this.prisma.incident.findUnique({
+      where: { reference },
+    });
+
+    return incident ? this.mapToDomain(incident) : null;
+  }
+
+  async listIncidents(): Promise<Incident[]> {
+    const incidents = await this.prisma.incident.findMany();
+    return incidents.map((incident) => this.mapToDomain(incident));
+  }
+
+  async deleteIncident(id: string): Promise<void> {
+    await this.prisma.incident.delete({ where: { id } });
+  }
+
+  private mapToDomain(incident: PrismaIncident): Incident {
+    const validReference = IncidentReference.from(incident.reference);
+    const validDescription = IncidentDescription.from(incident.description);
+    const validStatus = IncidentStatus.from(incident.status);
+    const validDate = IncidentDate.from(incident.date);
+
+    if (
+      validReference instanceof Error ||
+      validDescription instanceof Error ||
+      validStatus instanceof Error ||
+      validDate instanceof Error
+    ) {
+      throw new Error("Erreur lors de la conversion des valeurs du modèle Prisma vers Incident");
+    }
+
+    return new Incident(
+      incident.id,
+      validReference,
+      validDescription,
+      validDate,
+      validStatus,
+      incident.motorcycleId,
+      incident.created_by ?? "system",
+      incident.updated_by ?? "system",
+      new Date(incident.created_at),
+      new Date(incident.updated_at)
+    );
   }
 }

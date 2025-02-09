@@ -6,7 +6,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbL
 import { Separator } from "@/components/ui/separator";
 import { AddMotoForm, MotoFormValues } from "@/components/moto/add-moto-form";
 import { useEffect, useState } from "react";
-import { getMotorcycleById, updateMotorcycle } from "@/lib/apiexpress";
+import { getMotorcycleById, updateMotorcycle } from "@/lib/apiExpress";
 import { getUsers } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
