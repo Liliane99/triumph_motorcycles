@@ -7,6 +7,8 @@ import { DeleteMotorcycleCommand } from '../../../../application/commands/defini
 import { GetMotorcycleQuery } from '../../../../application/queries/definitions/Motorcycle/GetMotorcycleQuery';
 import { GetAllMotorcyclesQuery } from '../../../../application/queries/definitions/Motorcycle/GetMotorcycleQuery';
 import { JwtPayload } from "../../nest/guards/JwtAuthGuard";
+import dotenv from "dotenv";
+dotenv.config();
 
 import * as jwt from "jsonwebtoken";
 
@@ -25,6 +27,8 @@ const protectRoute = (req: Request, res: Response, next: NextFunction): void => 
     res.status(401).json({ error: "Unauthorized: No token provided" });
     return;
   }
+
+  
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "jwt_secret_key") as JwtPayload;
