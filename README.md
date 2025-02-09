@@ -1,7 +1,8 @@
 # Triumph motorcycles
 Cette application est un site de gestion de flotte pour les gestionnaires/concessionnaires (gestion des motos, locations, entretiens, incidents, etc).
 Il a été conçu avec une structure qui respecte la clean architecture  + cqrs et event sourcing.
-L'application tourne sous 2 technologie Backend (NestJs + Epress) et une technologie Frontend (react avec Next.Js).
+L'application tourne sous 2 technologie Backend (NestJs + Epress) et une technologie Frontend (react avec Next.Js). Les données sont stockés sur 2 bases de données ; SQL et NOSQL. 
+Les données relatives aux Uses Cases de l'application sont sur Postgresql (SQL), tant dis que l'écriture de l'event sourcing se fait sur MongoDB (NOSQL)
 
 L'application n'a pas été mise en production. 
 Pour l'allumer en local, il faut : 
@@ -9,6 +10,10 @@ Pour l'allumer en local, il faut :
 ```npm run start:nest``` & ```npm run start:express``` 
 - Allumer le Frontend : 
 ```npm run dev```
+
+URL NestJS  : http://localhost:4002
+URL Express : http://localhost:4001
+URL Frontend : http://localhost:3000
 
 
 ## Login 
