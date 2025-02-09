@@ -48,7 +48,10 @@ export class OrderController {
         new CreateOrderCommand(id, body.reference, orderDate, createdBy, deliveryDate)
       );
 
-      return res.status(HttpStatus.CREATED).json({ message: "Commande créée avec succès !" });
+      return res.status(HttpStatus.CREATED).json({ 
+        message: "Commande créée avec succès !",
+        id: id
+      });
 
     } catch (error) {
       console.error("Erreur lors de la création de la commande :", error);
@@ -82,7 +85,9 @@ export class OrderController {
         new UpdateOrderCommand(id, updatedBy, deliveryDate)
       );
 
-      return res.status(HttpStatus.OK).json({ message: "Commande mise à jour avec succès !" });
+      return res.status(HttpStatus.OK).json({ 
+        message: "Commande mise à jour avec succès !", 
+        id: id });
 
     } catch (error) {
       console.error("Erreur lors de la mise à jour de la commande :", error);

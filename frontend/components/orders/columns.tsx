@@ -1,28 +1,15 @@
-"use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
-import { format } from "date-fns";
-
-export type Order = {
-  id: string;
-  reference: string;
-  orderDate: string;
-  deliveryDate: string;
-  manager: string;
-  totalPrice: number;
-};
+import { format, parseISO, isValid } from "date-fns";
+import { Order } from "@/lib/api"; 
 
 export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "reference",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Référence <ArrowUpDown />
       </Button>
     ),
@@ -30,25 +17,53 @@ export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "orderDate",
     header: "Date de commande",
-    cell: ({ row }) =>
-      format(new Date(row.getValue<string>("orderDate")), "dd/MM/yyyy"),
+    cell: ({ row }) => {
+      const dateObj = row.getValue<{ value: string }>("orderDate");
+      const dateStr = dateObj?.value;
+
+      if (!dateStr) return "Non spécifiée";
+      const date = parseISO(dateStr);
+      return isValid(date) ? format(date, "dd/MM/yyyy HH:mm") : "Date invalide";
+    },
   },
   {
     accessorKey: "deliveryDate",
     header: "Date de livraison",
-    cell: ({ row }) =>
-      format(new Date(row.getValue<string>("deliveryDate")), "dd/MM/yyyy"),
-  },
-  {
-    accessorKey: "manager",
-    header: "Manager",
-  },
-  {
-    accessorKey: "totalPrice",
-    header: "Prix Total (€)",
     cell: ({ row }) => {
-      const value = row.getValue<number>("totalPrice");
-      return `${value.toFixed(2)} €`;
+      const dateObj = row.getValue<{ value: string }>("deliveryDate");
+      const dateStr = dateObj?.value;
+
+      if (!dateStr) return "Non spécifiée";
+      const date = parseISO(dateStr);
+      return isValid(date) ? format(date, "dd/MM/yyyy HH:mm") : "Date invalide";
+    },
+  },
+  {
+    accessorKey: "createdByName",
+    header: "Créé par",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Créé le",
+    cell: ({ row }) => {
+      const dateStr = row.getValue<string>("createdAt");
+
+      if (!dateStr) return "Non spécifiée";
+      return new Date(dateStr).toLocaleString();
+    },
+  },
+  {
+    accessorKey: "updatedByName",
+    header: "Modifié par",
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Modifié le",
+    cell: ({ row }) => {
+      const dateStr = row.getValue<string>("updatedAt");
+
+      if (!dateStr) return "Non spécifiée";
+      return new Date(dateStr).toLocaleString();
     },
   },
   {
@@ -70,42 +85,11 @@ export const columns: ColumnDef<Order>[] = [
             </Button>
           </Link>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => console.log("Supprimer :", order.id)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => console.log("Supprimer :", order.id)}>
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       );
     },
-  },
-];
-
-export const orders: Order[] = [
-  {
-    id: "1",
-    reference: "CMD-001",
-    orderDate: "2025-01-01",
-    deliveryDate: "2025-01-05",
-    manager: "Manager A",
-    totalPrice: 300,
-  },
-  {
-    id: "2",
-    reference: "CMD-002",
-    orderDate: "2025-01-10",
-    deliveryDate: "2025-01-15",
-    manager: "Manager B",
-    totalPrice: 500,
-  },
-  {
-    id: "3",
-    reference: "CMD-003",
-    orderDate: "2025-01-20",
-    deliveryDate: "2025-01-25",
-    manager: "Manager C",
-    totalPrice: 450,
   },
 ];
