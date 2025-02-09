@@ -1,4 +1,4 @@
-# triumph_motorcycles
+# Triumph motorcycles
 Cette application est un site de gestion de flotte pour les gestionnaires/concessionnaires (gestion des motos, locations, entretiens, incidents, etc).
 Il a été conçu avec une structure qui respecte la clean architecture  + cqrs et event sourcing.
 L'application tourne sous 2 technologie Backend (NestJs + Epress) et une technologie Frontend (react avec Next.Js).
