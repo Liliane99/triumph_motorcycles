@@ -7,59 +7,41 @@ import { ArrowUpDown, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { getRentals, deleteRental } from "@/lib/apiExpress";
-import { getUserById } from "@/lib/api";
-
-// Types
-export type User = {
-  user_id: string;
-  user_name: string;
-  role: string;
-};
 
 export type Rental = {
   id: string;
-  reference: string;
+  reference: string;  
   rentalDate: string;
   price: number;
   motorcycleId: string;
   ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-  ownerName?: string;
+  ownerName: string; 
 };
 
-// Custom hook for fetching rentals
 export const useRentals = () => {
   const [rentals, setRentals] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadRentals = async () => {
       try {
         const data = await getRentals();
 
-        const rentalsFormatted: Rental[] = await Promise.all(
-          data.map(async (rental: any) => {
-            const user = await getUserById(rental.ownerId);
-            const ownerName = user?.username || "Utilisateur inconnu";
-
-            return {
-              id: rental.id,
-              reference: rental.reference,
-              rentalDate: rental.rentalDate,
-              price: rental.price,
-              motorcycleId: rental.motorcycleId,
-              ownerId: rental.ownerId,
-              createdAt: rental.createdAt,
-              updatedAt: rental.updatedAt,
-              ownerName: ownerName
-            };
-          })
-        );
+        const rentalsFormatted: Rental[] = data.map((rental: any) => ({
+          id: rental.id,
+          reference: rental.reference?.reference || "Référence inconnue", 
+          rentalDate: rental.rentalDate,
+          price: rental.price,
+          motorcycleId: rental.motorcycleId,
+          ownerId: rental.ownerId,
+          ownerName: rental.client?.username || "Utilisateur inconnu",
+        }));
 
         setRentals(rentalsFormatted);
       } catch (error) {
         console.error("Erreur lors du chargement des locations:", error);
+        setError("Erreur lors du chargement des données.");
       } finally {
         setLoading(false);
       }
@@ -68,10 +50,9 @@ export const useRentals = () => {
     loadRentals();
   }, []);
 
-  return { rentals, setRentals, loading };
+  return { rentals, setRentals, loading, error };
 };
 
-// Helper function to format date
 const formatDate = (date: string): string => {
   if (!date) return "Non renseigné";
   try {
@@ -82,7 +63,6 @@ const formatDate = (date: string): string => {
   }
 };
 
-// Function to delete a rental
 const deleteRentalById = async (id: string, setRentals: React.Dispatch<React.SetStateAction<Rental[]>>) => {
   if (confirm("Voulez-vous vraiment supprimer cette location ?")) {
     try {
@@ -98,46 +78,37 @@ const deleteRentalById = async (id: string, setRentals: React.Dispatch<React.Set
   }
 };
 
-// Columns definition for rental data table
 export const columns: ColumnDef<Rental>[] = [
   {
     accessorKey: "reference",
-    header: ({ column }) => (
-      <div className="text-center">
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Référence <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
-    ),
+    header: () => <div className="text-center">Référence</div>,
     cell: ({ row }) => (
-      <div className="text-center">
-        {row.getValue("reference") as string}
-      </div>
+      <div className="text-center">{row.original.reference}</div>
     ),
   },
   {
     accessorKey: "rentalDate",
     header: () => <div className="text-center">Date</div>,
     cell: ({ row }) => (
-      <div className="text-center">{formatDate(row.getValue("rentalDate") as string)}</div>
+      <div className="text-center">{formatDate(row.original.rentalDate)}</div>
     ),
   },
   {
     accessorKey: "price",
     header: () => <div className="text-center">Prix</div>,
     cell: ({ row }) => (
-      <div className="text-center">{(row.getValue("price") as number).toFixed(2)} €</div>
+      <div className="text-center">{row.original.price.toFixed(2)} €</div>
     ),
   },
   {
     accessorKey: "motorcycleId",
     header: () => <div className="text-center">ID Moto</div>,
-    cell: ({ row }) => <div className="text-center">{row.getValue("motorcycleId") as string}</div>,
+    cell: ({ row }) => <div className="text-center">{row.original.motorcycleId}</div>,
   },
   {
     accessorKey: "ownerName",
     header: () => <div className="text-center">Propriétaire</div>,
-    cell: ({ row }) => <div className="text-center">{row.getValue("ownerName") as string}</div>,
+    cell: ({ row }) => <div className="text-center">{row.original.ownerName}</div>,
   },
   {
     id: "actions",
@@ -152,8 +123,7 @@ export const columns: ColumnDef<Rental>[] = [
         <Button
           variant="outline"
           className="ml-2"
-          onClick={() => deleteRentalById(row.original.id, table.options.meta?.setRentals)
-          }
+          onClick={() => deleteRentalById(row.original.id, table.options.meta?.setRentals)}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
