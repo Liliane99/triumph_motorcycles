@@ -17,6 +17,59 @@ URL Express : http://localhost:4001.
 
 URL Frontend : http://localhost:3000.
 
+## Partage de tâche: 
+
+### Ines Hadidi 
+- Trials CRUD (Front + Back).
+- Dashboard Interface.
+- Login (Front + Back).
+- Sidebar.
+- Users CRUD (Back + Front).
+- Maintenance CRUD (Front + Back).
+- Clients interface.
+- Change password Interface.
+- Orders Management (Front + Back).
+- Role management (user, manager, admin).
+- Spare parts CRUD (Back + Front).
+- Mail Alert for low stock.
+- Incidents CRUD (Front + Back).
+- Motorcycle - Link front.
+- Architectural structure.
+- Docker.
+- UML
+
+### Liliane Mezani
+- Motorcycle CRUD (Back + Front).
+- Rental Crud (Back).
+- Incident Crud (Back).
+- Maintenance Crud (Back).
+- Dashboard interface (motorcycle, rental, incidents)
+- Navbar.
+- About(client).
+- Moto (client)
+- Moto details (client).
+- Trial(interface client).
+- Alert mail maintenance intervall.
+- Architectural strcture.
+- UML.
+- Schèma Clean archi + CQRS.
+
+### Cheick Lanikpekoun
+- Landing page.
+- Profil interface.
+- Trial interface(admin).
+- Driver CRUD (Back)
+- Link rental(Front)
+- Link Driver.(Front+ back)
+
+  ## Schèma clean archi , cqrs + event sourcing :
+
+<img width="758" alt="Capture d’écran 2025-02-10 à 01 20 22" src="https://github.com/user-attachments/assets/a22a7d2b-25ac-4938-b890-7d6b0a6faeda" />
+
+<img width="725" alt="Capture d’écran 2025-02-10 à 01 20 49" src="https://github.com/user-attachments/assets/5eb07248-e970-47d0-8e9a-b54e8e60769d" />
+
+<img width="725" alt="Capture d’écran 2025-02-10 à 01 21 12" src="https://github.com/user-attachments/assets/d045c05f-8979-4bd0-a5ec-ac845b1faac1" />
+
 
 
 ## Login 
