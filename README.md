@@ -64,6 +64,8 @@ URL Frontend : http://localhost:3000.
 - Driver CRUD (Back)
 - Link rental(Front)
 - Link Driver.(Front+ back)
+- Front architecture
+- Navbar 
 
   ## Schèma clean archi , cqrs + event sourcing :
 
