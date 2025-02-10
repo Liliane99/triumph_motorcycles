@@ -99,6 +99,8 @@ URL Frontend : http://localhost:3000.
 
 <img width="1470" alt="Capture d’écran 2025-02-09 à 19 49 19" src="https://github.com/user-attachments/assets/8833ad5a-b98f-4b89-a257-1fd7d0848946" />
 
+### Dashboard
+<img width="1468" alt="Capture d’écran 2025-02-10 à 01 27 52" src="https://github.com/user-attachments/assets/457b7fda-4cfe-4cc7-a92f-ee4b93ef6bde" />
 
 ## Schéma CQRS :
 
