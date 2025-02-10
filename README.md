@@ -14,9 +14,9 @@ Pour l'allumer en local, il faut :
 - Allumer le Frontend : 
 ```npm run dev```
 
-URL NestJS  : http://localhost:4002.
+URL NestJS  : http://localhost:4001.
 
-URL Express : http://localhost:4001.
+URL Express : http://localhost:4002.
 
 URL Frontend : http://localhost:3000.
 
