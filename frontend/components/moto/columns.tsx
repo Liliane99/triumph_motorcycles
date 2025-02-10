@@ -66,10 +66,10 @@ export const useMotos = () => {
           })
         );
 
-        // Filtrer les motos selon le rôle de l'utilisateur
+        
         const motosFiltrees = user?.role === 'admin' || user?.role === 'manager'
-          ? motosFormatees // Admins et managers voient toutes les motos
-          : motosFormatees.filter(moto => moto.ownerId === user?.userId); // Les clients ne voient que leurs motos
+          ? motosFormatees 
+          : motosFormatees.filter(moto => moto.ownerId === user?.userId); 
 
         setMotos(motosFiltrees);
       } catch (error) {
@@ -109,7 +109,7 @@ const supprimerMoto = async (
   setMotos: React.Dispatch<React.SetStateAction<Moto[]>>, 
   user: any
 ) => {
-  // Vérifier les permissions
+  
   if (!user || (user.role !== 'admin' && user.role !== 'manager')) {
     alert("Vous n'avez pas les droits pour supprimer une moto.");
     return;
@@ -221,7 +221,7 @@ export const columns: ColumnDef<Moto>[] = [
       const moto = row.original;
       const { user } = useAuth();
 
-      // Vérifier si l'utilisateur a le droit de modifier/supprimer
+      
       const canEdit = user && (
         user.role === 'admin' || 
         user.role === 'manager' || 

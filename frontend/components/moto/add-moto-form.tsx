@@ -79,9 +79,9 @@ export function AddMotoForm({
         }));
         setUsers(formattedUsers);
         
-        // Si nous sommes en mode édition et que nous avons un ownerId par défaut
+        
         if (mode === "edit" && defaultValues?.ownerId) {
-          // On s'assure que le formulaire est mis à jour avec la valeur
+          
           form.setValue("ownerId", defaultValues.ownerId);
         }
       } catch (error) {
@@ -92,7 +92,7 @@ export function AddMotoForm({
     fetchUsers();
   }, [mode, defaultValues?.ownerId, form]);
 
-  // Mise à jour du formulaire quand les dates changent
+  
   useEffect(() => {
     if (purchaseDate) {
       form.setValue('purchaseDate', purchaseDate);

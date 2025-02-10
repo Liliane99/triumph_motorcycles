@@ -44,7 +44,7 @@ export class RentalRepositoryImpl implements RentalRepository {
   }
 
   async save(rental: Rental): Promise<Rental> {
-    console.log("Attempting to save rental:", rental);
+    
     
     const rentalDateParsed = rental.rentalDate instanceof Date ? rental.rentalDate : new Date(rental.rentalDate);
     if (isNaN(rentalDateParsed.getTime())) {
@@ -56,11 +56,6 @@ export class RentalRepositoryImpl implements RentalRepository {
       throw new Error(`Invalid price value. Expected a number, got: ${rental.price}`);
     }
 
-    console.log("➡️ Rental Reference:", rental.reference.getReference());
-    console.log("➡️ Rental Date (Parsed):", rentalDateParsed);
-    console.log("➡️ Rental Price (Parsed):", priceParsed);
-    console.log("➡️ Client ID:", rental.client.id);
-    console.log("➡️ Motorcycle ID:", rental.motorcycle.id);
 
     const existingRental = await prisma.rental.findUnique({
       where: { reference: rental.reference.getReference() },
@@ -88,7 +83,7 @@ export class RentalRepositoryImpl implements RentalRepository {
       return this.mapToRental(updatedRental);
     }
 
-    console.log("No existing rental found, creating new...");
+    
     const newRental = await prisma.rental.create({
       data: {
         reference: rental.reference.getReference(),
@@ -110,7 +105,7 @@ export class RentalRepositoryImpl implements RentalRepository {
   }
 
   async findById(id: string): Promise<Rental | null> {
-    console.log(` Looking for rental with ID: ${id}`);
+    
     const prismaRental = await prisma.rental.findUnique({
       where: { id },
       include: {
@@ -120,16 +115,16 @@ export class RentalRepositoryImpl implements RentalRepository {
     });
 
     if (!prismaRental) {
-      console.log("Rental not found.");
+      
       return null;
     }
 
-    console.log("Rental found:", prismaRental);
+    
     return this.mapToRental(prismaRental);
   }
 
   async getAll(): Promise<Rental[]> {
-    console.log("Fetching all rentals...");
+   
     const prismaRentals = await prisma.rental.findMany({
       include: {
         client: true,
@@ -137,15 +132,15 @@ export class RentalRepositoryImpl implements RentalRepository {
       },
     });
 
-    console.log(`Found ${prismaRentals.length} rentals.`);
+    
     return prismaRentals.map(this.mapToRental);
   }
 
   async delete(id: string): Promise<void> {
-    console.log(`Attempting to delete rental with ID: ${id}`);
+    
     await prisma.rental.delete({
       where: { id },
     });
-    console.log("Rental deleted successfully.");
+    
   }
 }

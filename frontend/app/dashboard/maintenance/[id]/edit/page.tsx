@@ -37,7 +37,7 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
           return;
         }
 
-        // Conversion de la date string en objet Date
+        
         let maintenanceDate = null;
         try {
           if (maintenance.date) {
@@ -47,14 +47,14 @@ export default function EditMaintenancePage({ params }: { params: { id: string }
           console.error("Erreur lors de la conversion de la date:", error);
         }
 
-        // Formatage des pièces
+       
         const formattedParts = maintenanceParts.map(part => ({
           partId: part.partId,
-          name: "",  // Sera rempli lors de la sélection dans le formulaire
-          reference: "",  // Sera rempli lors de la sélection dans le formulaire
+          name: "",  
+          reference: "",  
           quantity: typeof part.quantityUsed === 'object' ? part.quantityUsed.value : part.quantityUsed,
-          unitPrice: 0,  // Sera rempli lors de la sélection dans le formulaire
-          totalPrice: 0  // Sera calculé lors de la sélection dans le formulaire
+          unitPrice: 0,  
+          totalPrice: 0 
         }));
 
         const formValues: Partial<MaintenanceFormValues> = {

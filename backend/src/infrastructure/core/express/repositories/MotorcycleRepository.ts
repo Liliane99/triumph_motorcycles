@@ -30,7 +30,7 @@ export class MotorcycleRepositoryImpl implements MotorcycleRepository {
   }
 
   async save(motorcycle: Motorcycle): Promise<Motorcycle> {
-    console.log("Motorcycle to save:", motorcycle);
+    
   
     const existingMotorcycle = await prisma.motorcycle.findUnique({
       where: { licensePlate: motorcycle.licensePlate.get() },

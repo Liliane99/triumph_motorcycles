@@ -58,10 +58,12 @@ const trialSchema = z.object({
 const formatDate = (dateValue: any) => {
   if (!dateValue) return null;
   
+
   if (dateValue instanceof Date && isValid(dateValue)) {
     return dateValue;
   }
   
+
   const dateStr = typeof dateValue === "string" ? dateValue : dateValue?.value;
   if (!dateStr) return null;
   
@@ -84,6 +86,7 @@ export function AddTrialForm({
   const [trials, setTrials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [availableMotorcycles, setAvailableMotorcycles] = useState<Array<{ id: string; label: string }>>([]);
+
 
   const formattedDefaultValues = defaultValues ? {
     ...defaultValues,
@@ -110,6 +113,7 @@ export function AddTrialForm({
           getTrials()
         ]);
 
+
         const filteredClients = usersData
           .filter(user => user.role.value === 'client')
           .map(user => ({
@@ -125,6 +129,7 @@ export function AddTrialForm({
         setMotorcycles(allMotorcycles);
         setClients(filteredClients);
         setTrials(trialsData);
+
 
         if (mode === 'edit' && defaultValues) {
           const currentMotorcycle = allMotorcycles.find(
@@ -147,6 +152,7 @@ export function AddTrialForm({
   }, [mode, defaultValues]);
 
   const isMotorcycleAvailable = (motoId: string, startDate: Date, endDate: Date) => {
+
     if (mode === 'edit' && motoId === defaultValues?.motorcycle_id) {
       return true;
     }
@@ -155,6 +161,7 @@ export function AddTrialForm({
       if (trial.motorcycleId !== motoId) {
         return false;
       }
+
 
       if (mode === 'edit' && 
           trial.userId === defaultValues?.user_id && 
@@ -169,6 +176,7 @@ export function AddTrialForm({
       return startDate <= trialEnd && endDate >= trialStart;
     });
   };
+
 
   useEffect(() => {
     const startDate = form.getValues('start_date');

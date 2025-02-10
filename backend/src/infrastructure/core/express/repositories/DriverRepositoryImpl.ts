@@ -57,7 +57,7 @@ export class DriverRepositoryImpl implements DriverRepository {
   }
 
   async save(driver: Driver): Promise<Driver> {
-    console.log("Attempting to save driver:", driver);
+    
 
     const dateOfBirthParsed = driver.dateOfBirth.value.toISOString();
     const licenseNumberParsed = driver.licenseNumber.value;
@@ -69,18 +69,13 @@ export class DriverRepositoryImpl implements DriverRepository {
     const clientId = driver.clientId;
     const motorcycleId = driver.motorcycleId;
 
-    console.log("➡️ Driver License Number:", licenseNumberParsed);
-    console.log("➡️ Date of Birth (Parsed):", dateOfBirthParsed);
-    console.log("➡️ Experience Level:", driver.experienceLevel);
-    console.log("➡️ Client ID:", clientId);
-    console.log("➡️ Motorcycle ID:", motorcycleId);
 
     const existingDriver = await prisma.driver.findUnique({
       where: { driver_id: driver.driverId },
     });
 
     if (existingDriver) {
-      console.log("Existing driver found, updating...");
+      
       const updatedDriver = await prisma.driver.update({
         where: { driver_id: driver.driverId },
         data: {
@@ -100,7 +95,7 @@ export class DriverRepositoryImpl implements DriverRepository {
       return this.mapToDriver(updatedDriver);
     }
 
-    console.log("No existing driver found, creating new...");
+    
     const newDriver = await prisma.driver.create({
       data: {
         license_number: licenseNumberParsed,
@@ -132,11 +127,11 @@ export class DriverRepositoryImpl implements DriverRepository {
       });
 
       if (!prismaDriver) {
-        console.log("Driver not found.");
+        
         return null;
       }
 
-      console.log("Driver found:", prismaDriver);
+      
       return this.mapToDriver(prismaDriver);
     } catch (error) {
       console.error("Error finding driver:", error);
